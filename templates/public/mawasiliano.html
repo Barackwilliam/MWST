@@ -1,0 +1,76 @@
+{% extends "public/base.html" %}
+{% load i18n mwst_tags %}
+{% block title %}{% trans "Mawasiliano" %}{% endblock %}
+
+{% block body %}
+{% include "public/_pagehero.html" %}
+
+<section class="section">
+  <div class="grid grid--4">
+    {% for c in channels %}
+      <div class="contact-tile reveal">
+        <span class="contact-tile__ico tint-{{ c.tint }}"><svg><use href="#i-{{ c.icon }}"></use></svg></span>
+        <span>
+          <h4>{{ c.title|tr }}</h4>
+          {% for l in c.lines %}<p>{{ l|tr }}</p>{% endfor %}
+        </span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="grid grid--1-2" style="align-items:start;gap:22px">
+    <div class="reveal">
+      <span class="section__eyebrow">{% trans "Matawi" %}</span>
+      <h2 class="section__title" style="text-align:left;font-size:24px">{% trans "Ofisi Zetu" %}</h2>
+      <div class="card"><div class="card__body" style="padding:14px">
+        {% for b in branches %}
+          <div class="rowlist__item">
+            <span class="rowlist__icon tint-green"><svg><use href="#i-building"></use></svg></span>
+            <span class="rowlist__body">
+              <span class="rowlist__title">{{ b.name|tr }}</span>
+              <span class="rowlist__sub">{{ b.addr|tr }}</span>
+              <span class="rowlist__sub">{{ b.phone }}</span>
+            </span>
+          </div>
+        {% endfor %}
+      </div></div>
+    </div>
+
+    <div class="card reveal"><div class="card__body" style="padding:22px">
+      <h3 class="card__title" style="font-size:17px;margin-bottom:4px">{% trans "Tuma Ujumbe" %}</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px">{% trans "Tutakujibu ndani ya saa 24 za kazi." %}</p>
+      <div class="grid grid--2" style="gap:12px">
+        <div class="field"><label class="field__label">{% trans "Jina Kamili" %} <em>*</em></label><input class="input" placeholder="{% trans 'Ingiza jina kamili' %}"></div>
+        <div class="field"><label class="field__label">{% trans "Namba ya Simu" %} <em>*</em></label><input class="input" placeholder="0769 000 000"></div>
+        <div class="field"><label class="field__label">{% trans "Barua Pepe" %} <em>*</em></label><input class="input" type="email" placeholder="jina@mfano.com"></div>
+        <div class="field"><label class="field__label">{% trans "Mada" %} <em>*</em></label>
+          <select class="select">{% for s in subjects %}<option>{{ s|tr }}</option>{% endfor %}</select>
+        </div>
+        <div class="field" style="grid-column:1/-1"><label class="field__label">{% trans "Ujumbe" %} <em>*</em></label>
+          <textarea class="textarea" style="min-height:120px" placeholder="{% trans 'Andika ujumbe wako hapa...' %}"></textarea>
+        </div>
+      </div>
+      <button class="btn btn--primary btn--block" style="margin-top:16px" data-backend="Kutuma ujumbe">
+        <svg><use href="#i-mail"></use></svg> {% trans "Tuma Ujumbe" %}
+      </button>
+    </div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section__head reveal">
+    <span class="section__eyebrow">{% trans "Msaada" %}</span>
+    <h2 class="section__title">{% trans "Maswali Yanayoulizwa Sana" %}</h2>
+  </div>
+  <div style="max-width:760px;margin:0 auto">
+    {% for f in faqs %}
+      <div class="acc__item reveal">
+        <button class="acc__btn"><svg><use href="#i-chevron-right"></use></svg>{{ f.q|tr }}</button>
+        <div class="acc__panel"><div class="acc__inner">{{ f.a|tr }}</div></div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "public/base.html" %}
+{% load i18n mwst_tags %}
+{% block title %}{% trans "Jiunge Sasa" %}{% endblock %}
+
+{% block body %}
+{% include "public/_pagehero.html" %}
+
+<section class="section">
+  <div class="grid grid--2-1" style="align-items:start;gap:22px">
+    <div class="card reveal">
+      <div class="sectionband"><svg><use href="#i-user-plus"></use></svg><b>{% trans "Fomu ya Usajili" %}</b></div>
+      <div class="card__body" style="padding:20px">
+        <div class="stepper">
+          <div class="step is-current"><span class="step__num">1</span><span class="step__label">{% trans "Taarifa Binafsi" %}</span></div>
+          <div class="step"><span class="step__num">2</span><span class="step__label">{% trans "Mawasiliano" %}</span></div>
+          <div class="step"><span class="step__num">3</span><span class="step__label">{% trans "Aina ya Uanachama" %}</span></div>
+          <div class="step"><span class="step__num">4</span><span class="step__label">{% trans "Malipo" %}</span></div>
+        </div>
+
+        <div class="grid grid--2" style="gap:12px">
+          <div class="field" style="grid-column:1/-1"><label class="field__label">{% trans "Jina Kamili" %} <em>*</em></label><input class="input" placeholder="{% trans 'Ingiza jina kamili' %}"></div>
+          <div class="field"><label class="field__label">{% trans "Jinsia" %} <em>*</em></label>
+            <select class="select"><option>{% trans "Chagua Jinsia" %}</option><option>{% trans "Mwanaume" %}</option><option>{% trans "Mwanamke" %}</option></select></div>
+          <div class="field"><label class="field__label">{% trans "Tarehe ya Kuzaliwa" %} <em>*</em></label><input class="input" type="date"></div>
+          <div class="field"><label class="field__label">{% trans "Namba ya Kitambulisho" %}</label><input class="input" placeholder="{% trans 'Ingiza Namba ya Kitambulisho' %}"></div>
+          <div class="field"><label class="field__label">{% trans "Namba ya Simu" %} <em>*</em></label><input class="input" placeholder="0769 000 000"></div>
+          <div class="field"><label class="field__label">{% trans "Barua Pepe" %} <em>*</em></label><input class="input" type="email" placeholder="jina@mfano.com"></div>
+          <div class="field"><label class="field__label">{% trans "Mkoa" %} <em>*</em></label>
+            <select class="select"><option>{% trans "Chagua Mkoa" %}</option><option>Dodoma</option><option>Dar es Salaam</option><option>Arusha</option><option>Mwanza</option><option>Mbeya</option></select></div>
+          <div class="field" style="grid-column:1/-1"><label class="field__label">{% trans "Anuani Kamili" %} <em>*</em></label>
+            <textarea class="textarea" placeholder="{% trans 'Ingiza anuani kamili' %}"></textarea></div>
+        </div>
+
+        <div class="field" style="margin-top:14px">
+          <label class="field__label">{% trans "Aina ya Uanachama" %} <em>*</em></label>
+          <div class="grid grid--4" style="gap:9px">
+            {% for t in tiers %}
+              <label class="qa" style="cursor:pointer">
+                <input type="radio" name="tier" {% if t.featured %}checked{% endif %} style="accent-color:var(--g-500)">
+                <span class="qa__label"><b>{{ t.name }}</b><br>{{ t.price }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <label class="hstack" style="margin-top:16px;font-size:12.5px;align-items:flex-start;gap:9px">
+          <input type="checkbox" style="margin-top:3px;accent-color:var(--g-500)">
+          <span>{% trans "Nakubali masharti na kanuni za uanachama wa MWST." %}</span>
+        </label>
+
+        <button class="btn btn--primary btn--block" style="margin-top:16px;height:46px" data-backend="Kutuma maombi ya uanachama">
+          <svg><use href="#i-check"></use></svg> {% trans "Tuma Maombi" %}
+        </button>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card reveal"><div class="card__body" style="padding:18px">
+        <h3 class="card__title" style="margin-bottom:12px">{% trans "Hatua Nne Tu" %}</h3>
+        {% for s in steps %}
+          <div style="display:flex;gap:11px;padding:9px 0">
+            <span class="rankrow__n">{{ s.n }}</span>
+            <span><b style="display:block;font-size:12.8px">{{ s.title|tr }}</b>
+            <span style="font-size:11.5px;color:var(--muted)">{{ s.text|tr }}</span></span>
+          </div>
+        {% endfor %}
+      </div></div>
+
+      <div class="card reveal" style="background:linear-gradient(150deg,var(--g-700),var(--g-950));border:0;color:#fff">
+        <div class="card__body" style="padding:20px">
+          <svg width="26" height="26" style="color:var(--gold-400)"><use href="#i-headset"></use></svg>
+          <h3 style="font-size:15px;font-weight:700;margin:10px 0 5px">{% trans "Unahitaji Msaada?" %}</h3>
+          <p style="font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.65">{% trans "Piga simu au tembelea ofisi ya tawi lililo karibu nawe." %}</p>
+          <a href="tel:+255769600102" class="btn btn--gold btn--block" style="margin-top:14px">+255 769 600 102</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

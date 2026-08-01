@@ -1,0 +1,200 @@
+{% extends "base/app.html" %}
+{% load i18n mwst_tags %}
+{% block title %}Michango{% endblock %}
+
+{% block page %}
+
+  <div class="grid grid--6">
+    {% for k in kpis %}{% include "components/kpi_note.html" %}{% endfor %}
+  </div>
+
+  <div class="grid grid--4 mt">
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">{% trans "Michango kwa Mwezi" %}<span>(Mwaka 2026)</span></h3>
+        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">2026 <svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+      </div>
+      <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chDonMonth"></canvas></div></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Michango kwa Aina" %}<span>(Mwaka 2026)</span></h3></div>
+      <div class="card__body">
+        <div class="donutwrap">
+          <div class="donutwrap__chart"><canvas id="chDonType"></canvas></div>
+          <div class="donutwrap__legend">
+            {% for r in by_type.rows %}
+              <div class="legend-row" style="align-items:flex-start">
+                <span class="legend-row__dot" style="background:{{ r.color }};margin-top:4px"></span>
+                <span class="legend-row__label" style="white-space:normal">
+                  {{ r.label|tr }}<br>
+                  <b>{{ r.display }}</b> <span style="color:var(--muted);font-size:11px">({{ r.note|tr }})</span>
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Michango kwa Mkoa" %}<span>(Top 5)</span></h3></div>
+      <div class="card__body">
+        <div class="barlist">
+          {% for r in by_region %}
+            <div class="barlist__row" style="grid-template-columns:88px 1fr auto">
+              <span class="barlist__label">{{ r.name|tr }}</span>
+              <span class="barlist__track"><i class="barlist__fill" data-prog="{{ r.pct }}" style="width:0"></i></span>
+              <span class="barlist__value" style="font-size:11.5px">{{ r.display }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Michango ya mikoa yote' %}">{% trans "Tazama yote" %}</a></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Michango kwa Miradi" %}<span>(Top 5)</span></h3></div>
+      <div class="card__body">
+        <div class="ranklist">
+          {% for p in by_project %}
+            <div class="rankrow">
+              <span class="rankrow__n" data-n="{{ p.n }}">{{ p.n }}</span>
+              <span class="rankrow__body"><span class="rankrow__label">{{ p.label|tr }}</span></span>
+              <span class="rankrow__value">{{ p.value }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Orodha ya miradi' %}">{% trans "Tazama miradi yote" %}</a></div>
+    </section>
+  </div>
+
+  <div class="grid grid--2-1 mt">
+
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">{% trans "Rekodi za Michango za Hivi Karibuni" %}</h3>
+        <div class="hstack">
+          <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchuja kwa aina' %}">{% trans "Chagua Aina" %}<svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+          <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchuja kwa tarehe' %}"><svg width="13" height="13"><use href="#i-calendar"></use></svg>{% trans "Tarehe" %}</button>
+          <button class="btn btn--primary btn--sm" data-backend="{% trans 'Kurekodi mchango mpya' %}"><svg><use href="#i-plus"></use></svg>{% trans "Rekodi Mchango" %}</button>
+        </div>
+      </div>
+      <div class="card__body card__body--flush">
+        <div class="tablewrap">
+          <table class="table">
+            <thead><tr>
+              <th>#</th><th>{% trans "Jina la Mchangiaji" %}</th><th>{% trans "Na. ya Mwanachama" %}</th><th>{% trans "Aina ya Mchango" %}</th>
+              <th class="t-num">{% trans "Kiasi (TZS)" %}</th><th>{% trans "Mradi / Maelezo" %}</th><th>{% trans "Tarehe" %}</th>
+              <th>{% trans "Njia ya Malipo" %}</th><th>{% trans "Hali" %}</th><th>{% trans "Kitendo" %}</th>
+            </tr></thead>
+            <tbody>
+              {% for r in records %}
+                <tr>
+                  <td>{{ r.n }}</td>
+                  <td class="t-name">{{ r.name|tr }}</td>
+                  <td class="t-mono">{{ r.no }}</td>
+                  <td>
+                    <span class="badge" style="background:var(--{% if r.badge == 'purple' %}cat-platinum-bg{% elif r.badge == 'orange' %}warn-bg{% elif r.badge == 'teal' %}info-bg{% else %}ok-bg{% endif %});color:var(--{% if r.badge == 'purple' %}cat-platinum{% elif r.badge == 'orange' %}warn{% elif r.badge == 'teal' %}info{% else %}ok{% endif %})">{{ r.type|tr }}</span>
+                  </td>
+                  <td class="t-num">{{ r.amount }}</td>
+                  <td>{{ r.project }}</td>
+                  <td class="t-mono">{{ r.date }}</td>
+                  <td>{{ r.method }}</td>
+                  <td><span class="badge badge--ok">{% trans "Imethibitisha" %}</span></td>
+                  <td>
+                    <span class="table__actions">
+                      <button class="table__act" data-backend="{% trans 'Kuona maelezo ya mchango' %}"><svg width="15" height="15"><use href="#i-eye"></use></svg></button>
+                      <button class="table__act" data-backend="{% trans 'Kupakua risiti' %}"><svg width="15" height="15"><use href="#i-download"></use></svg></button>
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <span class="pager__info">Inaonyesha 1 hadi 10 ya 342 rekodi</span>
+          <span class="pager__nav">
+            <button class="pager__btn" data-backend="{% trans 'Ukurasa wa kwanza' %}">{% trans "Kwanza" %}</button>
+            <button class="pager__btn" data-backend="{% trans 'Ukurasa uliopita' %}">&lsaquo; Nyuma</button>
+            <button class="pager__btn is-active">1</button>
+            <button class="pager__btn">2</button><button class="pager__btn">3</button>
+            <button class="pager__btn">4</button><button class="pager__btn">5</button>
+            <button class="pager__btn" disabled>...</button><button class="pager__btn">35</button>
+            <button class="pager__btn" data-backend="{% trans 'Ukurasa unaofuata' %}">Mbele &rsaquo;</button>
+            <button class="pager__btn" data-backend="{% trans 'Ukurasa wa mwisho' %}">{% trans "Mwisho" %}</button>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="card">
+        <div class="card__head"><h3 class="card__title">{% trans "Michango na Malengo" %}<span>(Mwaka 2026)</span></h3></div>
+        <div class="card__body card__body--flush">
+          <div class="tablewrap">
+            <table class="table">
+              <thead><tr>
+                <th>{% trans "Aina ya Mchango" %}</th><th class="t-num">{% trans "Lengo (TZS)" %}</th>
+                <th class="t-num">{% trans "Imefikiwa" %}</th><th style="width:78px">%</th>
+              </tr></thead>
+              <tbody>
+                {% for t in targets %}
+                  <tr>
+                    <td>{{ t.label|tr }}</td>
+                    <td class="t-num">{{ t.target }}</td>
+                    <td class="t-num">{{ t.actual }}</td>
+                    <td>
+                      <span style="display:block;font-size:11px;font-weight:700;text-align:right">{{ t.pct }}%</span>
+                      <span class="prog" style="height:5px;margin-top:3px"><i data-prog="{{ t.pct }}" style="width:0"></i></span>
+                    </td>
+                  </tr>
+                {% endfor %}
+                <tr style="background:var(--canvas)">
+                  <td><b>{{ targets_total.label|tr }}</b></td>
+                  <td class="t-num"><b>{{ targets_total.target }}</b></td>
+                  <td class="t-num"><b>{{ targets_total.actual }}</b></td>
+                  <td>
+                    <span style="display:block;font-size:11px;font-weight:700;text-align:right">{{ targets_total.pct }}%</span>
+                    <span class="prog" style="height:5px;margin-top:3px"><i data-prog="{{ targets_total.pct }}" style="width:0"></i></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {% with qa=action_card %}{% endwith %}
+      <section class="card">
+        <div class="card__head"><h3 class="card__title">{% trans "Vitendo vya Haraka" %}</h3></div>
+        <div class="card__body">
+          <div class="qa-grid">
+            {% for a in actions %}
+              <button class="qa" data-backend="{{ a.label|tr }}">
+                <span class="qa__icon tint-{{ a.tint }}"><svg><use href="#i-{{ a.icon }}"></use></svg></span>
+                <span class="qa__label">{{ a.label|tr }}</span>
+              </button>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+  MWST.bar("#chDonMonth", {{ by_month.labels|safe }},
+    [{ label: "Michango", data: {{ by_month.data|safe }}, color: MWST.css("--c1") }]);
+
+  MWST.donut("#chDonType",
+    [{% for r in by_type.rows %}"{{ r.label|tr }}",{% endfor %}],
+    [{% for r in by_type.rows %}{{ r.value }},{% endfor %}],
+    [{% for r in by_type.rows %}"{{ r.color }}",{% endfor %}]);
+</script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "public/base.html" %}
+{% load static i18n mwst_tags %}
+{% block title %}{% trans "Ingia Mfumo" %}{% endblock %}
+
+{% block body %}
+<section class="section" style="min-height:70vh;display:grid;place-items:center;
+  background:radial-gradient(110% 120% at 20% 0%, rgba(212,175,55,.10), transparent 60%), var(--canvas)">
+  <div style="width:min(940px,100%)" class="grid grid--2" >
+
+    <div class="reveal" style="align-self:center">
+      <span class="section__eyebrow">{% trans "Karibu Tena" %}</span>
+      <h2 class="section__title" style="text-align:left;font-size:30px">{% trans "Ingia Kwenye Akaunti Yako" %}</h2>
+      <p class="section__text">{% trans "Fikia kadi yako ya uanachama, historia ya malipo, pointi na huduma zote za MWST." %}</p>
+
+      <div class="vstack" style="margin-top:22px">
+        {% for r in roles %}
+          <a href="{{ r.url }}" class="contact-tile" style="padding:13px 15px">
+            <span class="contact-tile__ico tint-{{ r.tint }}" style="width:36px;height:36px"><svg width="17" height="17"><use href="#i-{{ r.icon }}"></use></svg></span>
+            <span style="flex:1">
+              <h4>{% trans "Ingia kama" %} {{ r.label|tr }}</h4>
+              <p>{{ r.desc|tr }}</p>
+            </span>
+            <svg width="17" height="17" style="color:var(--muted);align-self:center"><use href="#i-chevron-right"></use></svg>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="loginpanel reveal" style="background:linear-gradient(150deg,var(--g-800),var(--g-950));align-self:center">
+      <h3>{% trans "Ingia Mfumo" %}</h3>
+      <p>{% trans "Access your account" %}</p>
+
+      <label class="loginfield">
+        <svg width="16" height="16"><use href="#i-user"></use></svg>
+        <input type="text" placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}">
+      </label>
+      <label class="loginfield">
+        <svg width="16" height="16"><use href="#i-lock"></use></svg>
+        <input type="password" placeholder="{% trans 'Nenosiri' %}">
+        <button type="button" data-backend="{% trans 'Kuonyesha nenosiri' %}"><svg width="16" height="16"><use href="#i-eye"></use></svg></button>
+      </label>
+
+      <div class="loginpanel__row">
+        <label><input type="checkbox" style="accent-color:var(--gold-500)"> {% trans "Kumbuka mimi" %}</label>
+        <a href="#" data-backend="{% trans 'Kurejesha nenosiri' %}">{% trans "Umesahau nywila?" %}</a>
+      </div>
+
+      <button class="btn btn--gold btn--block" data-backend="{% trans 'Kuingia kwenye mfumo' %}">{% trans "Ingia" %}</button>
+
+      <p class="loginpanel__sep">— {% trans "Bado huna akaunti?" %} —</p>
+      <a href="{% url 'core:jiunge' %}" class="btn btn--block" style="border:1px solid rgba(255,255,255,.25);color:#fff">
+        <svg><use href="#i-user-plus"></use></svg> {% trans "Jiunge Sasa" %}
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

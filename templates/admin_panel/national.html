@@ -1,0 +1,200 @@
+{% extends "base/app.html" %}
+{% load i18n mwst_tags %}
+{% block title %}Dashboard ya Taifa{% endblock %}
+
+{% block page %}
+
+  <div class="pagehead" style="margin-bottom:14px">
+    <div></div>
+    <div class="pagehead__actions">
+      <button class="scope-pick" data-backend="{% trans 'Kubadili eneo' %}">
+        <span style="width:22px;height:15px;border-radius:3px;background:linear-gradient(var(--g-500) 33%,var(--gold-500) 33% 66%,#000 66%)"></span>
+        {{ scope }}
+        <svg width="14" height="14"><use href="#i-chevron-down"></use></svg>
+      </button>
+    </div>
+  </div>
+
+  {# ---------------- KPI 6 ---------------- #}
+  <div class="grid grid--6">
+    {% for k in kpis %}{% include "components/kpi.html" %}{% endfor %}
+  </div>
+
+  {# ---------------- Charts ---------------- #}
+  <div class="grid grid--4 mt">
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">{% trans "Wanachama kwa Mwezi" %}<span>(2026)</span></h3>
+        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">2026 <svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+      </div>
+      <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chMembers"></canvas></div></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">{% trans "Mapato kwa Mwezi" %}<span>(TZS)</span></h3>
+        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">2026 <svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+      </div>
+      <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chRev"></canvas></div></div>
+    </section>
+
+    {% with d=by_category %}{% include "components/donut_card.html" %}{% endwith %}
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Wanachama kwa Mikoa" %}<span>(Top 5)</span></h3></div>
+      <div class="card__body">
+        <div class="barlist">
+          {% for r in top_regions %}
+            <div class="barlist__row">
+              <span class="barlist__label">{{ r.name|tr }}</span>
+              <span class="barlist__track"><i class="barlist__fill" data-prog="{{ r.pct }}" style="width:0"></i></span>
+              <span class="barlist__value">{{ r.display }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Orodha kamili ya mikoa' %}">{% trans "Tazama zote" %}</a></div>
+    </section>
+  </div>
+
+  {# ---------------- Ramani | Shughuli | Quick Actions | Kalenda ---------------- #}
+  <div class="grid grid--4 mt">
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Ramani ya Wanachama kwa Mikoa" %}</h3></div>
+      <div class="card__body">
+        {% include "components/tzmap.html" %}
+      </div>
+      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Ripoti kamili ya mikoa' %}">{% trans "Tazama Ripoti Kamili" %}</a></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Shughuli za Hivi Karibuni" %}</h3></div>
+      <div class="card__body">
+        <div class="rowlist">
+          {% for a in activities %}
+            <div class="rowlist__item">
+              <span class="rowlist__icon tint-{{ a.tint }}"><svg><use href="#i-{{ a.icon }}"></use></svg></span>
+              <span class="rowlist__body">
+                <span class="rowlist__title">{{ a.title|tr }}</span>
+                <span class="rowlist__sub">{{ a.sub|tr }}</span>
+              </span>
+              <span class="rowlist__meta">{{ a.time }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Shughuli zote' %}">{% trans "Tazama zote" %}</a></div>
+    </section>
+
+    {% with qa=quick_actions %}{% include "components/quick_actions.html" %}{% endwith %}
+
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">{% trans "Kalenda ya Matukio Muhimu" %}</h3>
+        <a href="/matukio/" class="link-more">{% trans "Tazama Kalenda" %}</a>
+      </div>
+      <div class="card__body">
+        {% for e in calendar_events %}
+          <div class="evrow">
+            <span class="evdate"><b>{{ e.d }}</b><span>{{ e.m }}</span></span>
+            <span class="evrow__body">
+              <span class="evrow__title">{{ e.title|tr }}</span>
+              <span class="evrow__meta">{{ e.venue|tr }}</span>
+            </span>
+            <span class="rowlist__meta">{{ e.time }}</span>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="card__foot"><a href="/matukio/" class="link-more">{% trans "Tazama kalenda yote" %}</a></div>
+    </section>
+  </div>
+
+  {# ---------------- Kifedha | Miradi | Media ---------------- #}
+  <div class="grid grid--2-1 mt">
+
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">{% trans "Muhtasari wa Kifedha" %}<span>(Mwaka 2026)</span></h3>
+        <a href="#" class="link-more" data-backend="{% trans 'Ripoti kamili ya fedha' %}">{% trans "Tazama Ripoti Kamili" %}</a>
+      </div>
+      <div class="card__body">
+        <div class="fundgrid">
+          {% for f in funds %}
+            <div class="fund">
+              <span class="fund__ico tint-{{ f.tint }}"><svg><use href="#i-{{ f.icon }}"></use></svg></span>
+              <span style="min-width:0">
+                <span class="fund__lbl">{{ f.label|tr }}</span>
+                <span class="fund__val" style="color:var(--n-700)">{{ f.value }}</span>
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="fundgrid" style="margin-top:10px;grid-template-columns:repeat(2,minmax(0,1fr))">
+          {% for f in fund_totals %}
+            <div class="fund">
+              <span class="fund__ico tint-{{ f.tint }}"><svg><use href="#i-{{ f.icon }}"></use></svg></span>
+              <span style="min-width:0">
+                <span class="fund__lbl">{{ f.label|tr }}</span>
+                <span class="fund__val" style="{% if f.danger %}color:var(--danger){% else %}color:var(--ok){% endif %}">{{ f.value }}</span>
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <div class="stack">
+      {% with d=projects %}{% include "components/donut_card.html" %}{% endwith %}
+    </div>
+  </div>
+
+  <div class="grid mt">
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">Media &amp; Habari Mpya</h3>
+        <a href="/media/" class="link-more">{% trans "Tazama zote" %}</a>
+      </div>
+      <div class="card__body">
+        <div class="grid grid--3">
+          {% for m in media_news %}
+            <a href="/media/" class="mediacard">
+              <span class="mediacard__frame">
+                <span style="display:block;height:108px;background:linear-gradient(135deg,var(--g-400),var(--n-700))"></span>
+              </span>
+              <span class="mediacard__title">{{ m.title|tr }}</span>
+              <span class="mediacard__meta">{{ m.date }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  </div>
+
+{% endblock %}
+
+
+{% block sidebar %}
+{% include "base/sidebar.html" %}
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+  MWST.line("#chMembers", {{ members_month.labels|safe }},
+    [{ label: "Wanachama", data: {{ members_month.data|safe }}, color: MWST.css("--c1"), fill: true }]);
+
+  MWST.bar("#chRev", {{ revenue_month.labels|safe }},
+    [{ label: "Mapato (TZS)", data: {{ revenue_month.data|safe }}, color: "#2563eb" }]);
+
+  MWST.donut("#chCat",
+    [{% for r in by_category.rows %}"{{ r.label|tr }}",{% endfor %}],
+    [{% for r in by_category.rows %}{{ r.value }},{% endfor %}],
+    [{% for r in by_category.rows %}"{{ r.color }}",{% endfor %}]);
+
+  MWST.donut("#chProjects",
+    [{% for r in projects.rows %}"{{ r.label|tr }}",{% endfor %}],
+    [{% for r in projects.rows %}{{ r.value }},{% endfor %}],
+    [{% for r in projects.rows %}"{{ r.color }}",{% endfor %}]);
+</script>
+{% endblock %}

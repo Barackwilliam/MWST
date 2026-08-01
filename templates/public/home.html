@@ -1,0 +1,181 @@
+{% extends "public/base.html" %}
+{% load static i18n mwst_tags %}
+{% block title %}{% trans "Nyumbani" %}{% endblock %}
+
+{% block head %}
+<style>
+  .hero--home {
+    background:
+      linear-gradient(100deg, rgba(4,35,24,.94) 0%, rgba(6,48,31,.80) 40%,
+                      rgba(10,64,40,.34) 70%, rgba(10,64,40,.14) 100%),
+      url("{% static 'img/hero-mosque.svg' %}") center/cover no-repeat;
+  }
+  @media (max-width: 1024px) {
+    .hero--home {
+      background:
+        linear-gradient(180deg, rgba(4,35,24,.90) 0%, rgba(6,48,31,.88) 100%),
+        url("{% static 'img/hero-mosque.svg' %}") center/cover no-repeat;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+
+{# ---------------- Hero + Login ---------------- #}
+<section class="hero hero--home" id="login">
+  <div class="reveal">
+    <p class="hero__eyebrow">{{ hero.eyebrow|tr }}</p>
+    <h1>{{ hero.title|tr|safe }}</h1>
+    <p>{{ hero.text|tr }}</p>
+    <div class="hero__cta">
+      <a href="{% url 'core:jiunge' %}" class="hero-btn">
+        <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-user-plus"></use></svg></span>
+        <span><b>{% trans "Jiunge Sasa" %}</b><small>{% trans "Usajili wa Uanachama" %}</small></span>
+      </a>
+      <a href="#" class="hero-btn" data-backend="{% trans 'Video ya utangulizi' %}">
+        <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-video"></use></svg></span>
+        <span><b>{% trans "Tazama Video" %}</b><small>{% trans "Jifunze Zaidi Kuhusu MWST" %}</small></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="loginpanel reveal">
+    <h3>{% trans "Ingia Mfumo" %}</h3>
+    <p>{% trans "Access your account" %}</p>
+
+    <label class="loginfield">
+      <svg width="16" height="16"><use href="#i-user"></use></svg>
+      <input type="text" placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}" aria-label="{% trans 'Namba ya Uanachama / Barua pepe' %}">
+    </label>
+    <label class="loginfield">
+      <svg width="16" height="16"><use href="#i-lock"></use></svg>
+      <input type="password" placeholder="{% trans 'Nenosiri' %}" aria-label="{% trans 'Nenosiri' %}">
+      <button type="button" data-backend="{% trans 'Kuonyesha nenosiri' %}" aria-label="{% trans 'Kuonyesha nenosiri' %}">
+        <svg width="16" height="16"><use href="#i-eye"></use></svg>
+      </button>
+    </label>
+
+    <div class="loginpanel__row">
+      <label><input type="checkbox" style="accent-color:var(--gold-500)"> {% trans "Kumbuka mimi" %}</label>
+      <a href="#" data-backend="{% trans 'Kurejesha nenosiri' %}">{% trans "Umesahau nywila?" %}</a>
+    </div>
+
+    <button class="btn btn--gold btn--block" data-backend="{% trans 'Kuingia kwenye mfumo' %}">{% trans "Ingia" %}</button>
+
+    <p class="loginpanel__sep">— {% trans "Au ingia kama" %} —</p>
+    <div class="rolegrid">
+      {% for r in roles %}
+        <a href="{{ r.url }}" class="rolebtn">
+          <span class="rolebtn__ico tint-{{ r.tint }}"><svg><use href="#i-{{ r.icon }}"></use></svg></span>
+          <span>{{ r.label|tr }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ---------------- Takwimu ---------------- #}
+<div class="statstrip">
+  {% for s in stats %}
+    <div class="statstrip__item reveal">
+      <svg class="statstrip__ico"><use href="#i-{{ s.icon }}"></use></svg>
+      <span>
+        <span class="statstrip__val num">{{ s.value }}</span>
+        <span class="statstrip__lbl">{{ s.label|tr }}</span>
+        <span class="statstrip__delta">{{ s.delta|tr }}</span>
+      </span>
+    </div>
+  {% endfor %}
+</div>
+
+{# ---------------- Huduma ---------------- #}
+<div class="servicebar reveal">
+  {% for s in services %}
+    <a href="{{ s.url }}">
+      <svg><use href="#i-{{ s.icon }}"></use></svg>
+      <span>{{ s.label|tr }}</span>
+    </a>
+  {% endfor %}
+</div>
+
+{# ---------------- Matukio | Habari | Picha ---------------- #}
+<div class="grid grid--3" style="padding:0 26px 22px">
+
+  <section class="card reveal">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Matukio ya Hivi Karibuni" %}</h3>
+      <a href="{% url 'core:matukio_umma' %}" class="link-more">{% trans "Tazama Yote" %}</a>
+    </div>
+    <div class="card__body">
+      {% for e in events %}
+        <div class="evrow">
+          <span class="evdate"><b>{{ e.d }}</b><span>{{ e.m }}</span><small>{{ e.y }}</small></span>
+          <span class="evrow__body">
+            <span class="evrow__title">{{ e.title|tr }}</span>
+            <span class="evrow__meta">{{ e.venue|tr }}</span>
+            <span class="evrow__meta">{{ e.time }}</span>
+          </span>
+          <span class="badge badge--{{ e.badge }}">{{ e.status|tr }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="card__foot"><a href="{% url 'core:matukio_umma' %}" class="link-more">{% trans "Tazama Matukio Yote" %} <svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
+  </section>
+
+  <section class="card reveal">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Habari Mpya" %}</h3>
+      <a href="{% url 'core:habari' %}" class="link-more">{% trans "Tazama Yote" %}</a>
+    </div>
+    <div class="card__body">
+      {% for n in news %}
+        <div class="newsrow">
+          <span class="newsrow__thumb" style="background:linear-gradient(135deg,var(--g-300),var(--g-700))"></span>
+          <span class="newsrow__body">
+            <span class="newsrow__title">{{ n.title|tr }}</span>
+            <span class="newsrow__date">{{ n.date }}</span>
+            <span class="newsrow__text">{{ n.text|tr }}</span>
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="card__foot"><a href="{% url 'core:habari' %}" class="link-more">{% trans "Tazama Habari Zote" %} <svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
+  </section>
+
+  <section class="card reveal">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Picha Zilizohudumiwa Kila Mwezi" %}</h3>
+      <a href="{% url 'core:habari' %}" class="link-more">{% trans "Tazama Galeria Yote" %}</a>
+    </div>
+    <div class="card__body">
+      <div class="gallery">
+        {% for g in gallery %}
+          <a href="#" class="gallery__item" data-backend="{% trans 'Kufungua albamu' %}">
+            <span style="display:block;height:92px;border-radius:var(--r);background:linear-gradient(135deg,var(--g-400),var(--n-700))"></span>
+            <span class="gallery__cap">{{ g.cap|tr }}</span>
+            <span class="gallery__meta"><svg width="12" height="12"><use href="#i-image"></use></svg>{{ g.count|tr }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card__foot"><a href="{% url 'core:habari' %}" class="link-more">{% trans "Tazama Picha Zote" %} <svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
+  </section>
+</div>
+
+{# ---------------- Takwimu za chini ---------------- #}
+<div class="grid grid--4" style="padding:0 26px 26px">
+  {% for b in bottom_stats %}
+    <div class="kpi reveal">
+      <span class="kpi__icon tint-{{ b.tint }}"><svg><use href="#i-{{ b.icon }}"></use></svg></span>
+      <span class="kpi__body">
+        <span class="kpi__label">{{ b.label|tr }}</span>
+        <span class="kpi__value" style="font-size:18px">{{ b.value|tr }}</span>
+        <span class="kpi__meta"><span class="kpi__note" style="color:var(--ok);font-weight:600">{{ b.delta|tr }}</span></span>
+      </span>
+    </div>
+  {% endfor %}
+</div>
+
+{% include "public/_cta.html" %}
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "base/app.html" %}
+{% load i18n mwst_tags %}
+{% block title %}Malipo ya Ada{% endblock %}
+
+{% block page %}
+
+  <div class="grid grid--6">
+    {% for k in kpis %}{% include "components/kpi_stacked.html" %}{% endfor %}
+  </div>
+
+  <div class="grid grid--4 mt">
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">{% trans "Mapato kwa Mwezi" %}<span>(2026)</span></h3>
+        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">2026 <svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+      </div>
+      <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chPayRev"></canvas></div></div>
+    </section>
+
+    {% with d=by_category %}{% include "components/donut_card.html" %}{% endwith %}
+    {% with d=status_mix %}{% include "components/donut_card.html" %}{% endwith %}
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Malipo kwa Vyanzo" %}</h3></div>
+      <div class="card__body">
+        {% for s in sources %}
+          <div style="padding:7px 0">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+              <span>{{ s.label|tr }}</span>
+              <b class="num">{{ s.value }} <span style="color:var(--muted);font-weight:500">({{ s.pct }}%)</span></b>
+            </div>
+            <div class="prog"><i data-prog="{{ s.pct }}" style="width:0;background:{{ s.color }}"></i></div>
+          </div>
+        {% endfor %}
+        <div style="display:flex;justify-content:space-between;padding-top:11px;margin-top:6px;border-top:1px solid var(--line);font-size:13px">
+          <b>{% trans "Jumla" %}</b><b class="num">{{ sources_total }}</b>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="grid grid--2-1 mt">
+
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">{% trans "Rekodi za Malipo ya Ada" %}</h3>
+        <div class="hstack">
+          <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchuja malipo' %}">{% trans "Hamisha Malipo" %}<svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+          <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kupakua ripoti' %}">{% trans "Pakua Ripoti" %}<svg width="13" height="13"><use href="#i-download"></use></svg></button>
+          <button class="btn btn--primary btn--sm" data-backend="{% trans 'Kurekodi malipo mapya' %}"><svg><use href="#i-plus"></use></svg>{% trans "Rekodi Malipo" %}</button>
+        </div>
+      </div>
+      <div class="card__body card__body--flush">
+        <div class="tablewrap">
+          <table class="table">
+            <thead><tr>
+              <th>#</th><th>{% trans "Namba ya Mwanachama" %}</th><th>{% trans "Jina la Mwanachama" %}</th><th>{% trans "Aina ya Uanachama" %}</th>
+              <th>{% trans "Mwaka" %}</th><th class="t-num">{% trans "Kiasi (TZS)" %}</th><th>{% trans "Tarehe ya Malipo" %}</th>
+              <th>{% trans "Njia ya Malipo" %}</th><th>{% trans "Hali ya Malipo" %}</th><th>{% trans "Risiti" %}</th><th>{% trans "Vitendo" %}</th>
+            </tr></thead>
+            <tbody>
+              {% for r in records %}
+                <tr>
+                  <td>{{ r.n }}</td>
+                  <td class="t-mono">{{ r.no }}</td>
+                  <td class="t-name">{{ r.name|tr }}</td>
+                  <td><span class="badge badge--{{ r.cat|lower }}">{{ r.cat }}</span></td>
+                  <td class="num">{{ r.year }}</td>
+                  <td class="t-num">{{ r.amount }}</td>
+                  <td class="t-mono">{{ r.date }}</td>
+                  <td>{{ r.method }}</td>
+                  <td><span class="badge badge--{{ r.badge }}">{{ r.status|tr }}</span></td>
+                  <td><button class="table__act" data-backend="{% trans 'Kuona risiti' %}"><svg width="15" height="15"><use href="#i-receipt"></use></svg></button></td>
+                  <td>
+                    <span class="table__actions">
+                      <button class="table__act" data-backend="{% trans 'Kuona maelezo ya malipo' %}"><svg width="15" height="15"><use href="#i-eye"></use></svg></button>
+                      <button class="table__act" data-backend="{% trans 'Kupakua risiti' %}"><svg width="15" height="15"><use href="#i-download"></use></svg></button>
+                      <button class="table__act" data-backend="{% trans 'Vitendo zaidi' %}"><svg width="15" height="15"><use href="#i-dots"></use></svg></button>
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <span class="pager__info">Inaonyesha 1 hadi 10 ya 342 rekodi</span>
+          <span class="pager__nav">
+            <button class="pager__btn" data-backend="{% trans 'Ukurasa wa kwanza' %}">{% trans "Kwanza" %}</button>
+            <button class="pager__btn" data-backend="{% trans 'Ukurasa uliopita' %}">&lsaquo; Nyuma</button>
+            <button class="pager__btn is-active">1</button>
+            <button class="pager__btn">2</button><button class="pager__btn">3</button>
+            <button class="pager__btn">4</button><button class="pager__btn">5</button>
+            <button class="pager__btn" disabled>...</button><button class="pager__btn">35</button>
+            <button class="pager__btn" data-backend="{% trans 'Ukurasa unaofuata' %}">Mbele &rsaquo;</button>
+            <button class="pager__btn" data-backend="{% trans 'Ukurasa wa mwisho' %}">{% trans "Mwisho" %}</button>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="card">
+        <div class="card__head">
+          <h3 class="card__title" style="display:flex;align-items:center;gap:7px">
+            <span class="fund__ico tint-red" style="width:24px;height:24px"><svg width="13" height="13"><use href="#i-alert"></use></svg></span>{% trans "Malipo Yaliyokosekana" %}<span>(Top 5)</span>
+          </h3>
+        </div>
+        <div class="card__body">
+          {% for m in missed %}
+            <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:12.5px">
+              <span>{{ m.n }}. {{ m.label|tr }}</span><b class="num">{{ m.value }}</b>
+            </div>
+          {% endfor %}
+          <div style="display:flex;justify-content:space-between;padding-top:11px;font-size:13px">
+            <b>{% trans "Jumla" %}</b><b class="num" style="color:var(--danger)">{{ missed_total }}</b>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head"><h3 class="card__title">{% trans "Mapendekezo ya Haraka" %}</h3></div>
+        <div class="card__body">
+          {% for s in suggestions %}
+            <button class="actionbar__btn" style="width:100%;justify-content:flex-start;margin-bottom:8px;height:44px" data-backend="{{ s.label|tr }}">
+              <span class="fund__ico tint-{{ s.tint }}" style="width:26px;height:26px"><svg width="14" height="14"><use href="#i-{{ s.icon }}"></use></svg></span>
+              {{ s.label|tr }}
+            </button>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+  </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+  MWST.bar("#chPayRev", {{ revenue_month.labels|safe }},
+    [{ label: "Mapato", data: {{ revenue_month.data|safe }}, color: MWST.css("--c1") }]);
+
+  MWST.donut("#chPayCat",
+    [{% for r in by_category.rows %}"{{ r.label|tr }}",{% endfor %}],
+    [{% for r in by_category.rows %}{{ r.value }},{% endfor %}],
+    [{% for r in by_category.rows %}"{{ r.color }}",{% endfor %}]);
+
+  MWST.donut("#chPayStatus",
+    [{% for r in status_mix.rows %}"{{ r.label|tr }}",{% endfor %}],
+    [{% for r in status_mix.rows %}{{ r.value }},{% endfor %}],
+    [{% for r in status_mix.rows %}"{{ r.color }}",{% endfor %}]);
+</script>
+{% endblock %}

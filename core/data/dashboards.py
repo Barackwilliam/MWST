@@ -1,0 +1,383 @@
+"""
+Data ya dashboards za usimamizi.
+Namba zote zimechukuliwa moja kwa moja kutoka kwenye picha za muundo.
+"""
+from .common import MONTHS, C, tzs, REGIONS
+
+
+# ===========================================================================
+#  MSIMAMIZI MKUU — TAIFA
+# ===========================================================================
+def national():
+    return {
+        "scope": "Tanzania Bara",
+        "kpis": [
+            {"label": "Wanachama Jumla", "value": "142,718", "icon": "users", "tint": "green",
+             "delta": "8.7%", "dir": "up", "note": "Ikilinganishwa na mwezi jana"},
+            {"label": "Wanachama Wapya", "value": "1,856", "icon": "user-plus", "tint": "navy",
+             "delta": "12.9%", "dir": "up", "note": "Mwezi Huu"},
+            {"label": "Maombi Yanayosubiri", "value": "128", "icon": "clock", "tint": "orange",
+             "delta": "6.3%", "dir": "down", "note": "Inasubiri idhini"},
+            {"label": "Ada Zilizokusanywa (Mwezi Huu)", "value": tzs(1_245_680_000), "icon": "wallet",
+             "tint": "green", "money": True, "delta": "15.2%", "dir": "up", "note": "Ikilinganishwa na mwezi jana"},
+            {"label": "Mapato ya Jumla (Mwaka Huu)", "value": tzs(11_845_320_000), "icon": "chart-bar",
+             "tint": "purple", "money": True, "delta": "18.6%", "dir": "up", "note": "Mwaka 2026"},
+            {"label": "Pointi Zilizotolewa (Mwaka Huu)", "value": "2,890,245", "icon": "star",
+             "tint": "gold", "delta": "16.4%", "dir": "up", "note": "Mwaka 2026"},
+        ],
+        "members_month": {"labels": MONTHS,
+                          "data": [98000, 106000, 112000, 118000, 122000, 126000,
+                                   130000, 133000, 136000, 138500, 140800, 142718]},
+        "revenue_month": {"labels": MONTHS,
+                          "data": [820_000_000, 940_000_000, 760_000_000, 1_180_000_000,
+                                   1_020_000_000, 880_000_000, 1_450_000_000, 1_120_000_000,
+                                   980_000_000, 1_310_000_000, 1_245_000_000, 1_140_000_000]},
+        "by_category": {
+            "id": "chCat", "title": "Aina za Wanachama",
+            "center_value": "142,718", "center_label": "Jumla",
+            "rows": [
+                {"label": "Bronze",   "value": 52145, "display": "52,145", "pct": "36.5", "color": C["red"]},
+                {"label": "Silver",   "value": 39126, "display": "39,126", "pct": "27.4", "color": C["blue"]},
+                {"label": "Gold",     "value": 29875, "display": "29,875", "pct": "20.9", "color": C["gold"]},
+                {"label": "Platinum", "value": 21572, "display": "21,572", "pct": "15.2", "color": C["green"]},
+            ]},
+        "top_regions": [
+            {"name": "Dar es Salaam", "value": 18745, "display": "18,745", "pct": 100},
+            {"name": "Mwanza",        "value": 12830, "display": "12,830", "pct": 68},
+            {"name": "Arusha",        "value": 11254, "display": "11,254", "pct": 60},
+            {"name": "Mbeya",         "value": 9845,  "display": "9,845",  "pct": 53},
+            {"name": "Morogoro",      "value": 8967,  "display": "8,967",  "pct": 48},
+        ],
+        "regions": REGIONS,
+        "activities": [
+            {"title": "Mwanachama mpya amejiunga", "sub": "Mkoa wa Arusha", "time": "10:15 AM",
+             "icon": "user-plus", "tint": "green"},
+            {"title": "Malipo mapya yamepokelewa", "sub": "TZS 150,000 kutoka Uchaguzi - DSM",
+             "time": "09:45 AM", "icon": "wallet", "tint": "navy"},
+            {"title": "Maombi mapya ya uanachama", "sub": "Mkoa wa Mwanza", "time": "09:20 AM",
+             "icon": "user-check", "tint": "purple"},
+            {"title": "Pointi zimeongezwa", "sub": "1,250 Pointi kwa Asha Hamis - DSM",
+             "time": "08:50 AM", "icon": "star", "tint": "gold"},
+            {"title": "Kadi mpya imetolewa", "sub": "Kadi No. MWST/P/12/2026", "time": "08:30 AM",
+             "icon": "id-card", "tint": "teal"},
+        ],
+        "quick_actions": {"title": "Quick Actions", "cols": 3, "items": [
+            {"label": "Jumla ya Ripoti", "icon": "chart-bar", "tint": "green"},
+            {"label": "Ripoti za Mikoa", "icon": "map", "tint": "navy"},
+            {"label": "Ripoti za Wilaya", "icon": "file", "tint": "purple"},
+            {"label": "Tuma SMS kwa Wote", "icon": "message", "tint": "teal"},
+            {"label": "Tuma Email kwa Wote", "icon": "mail", "tint": "orange"},
+            {"label": "Tangaza Habari", "icon": "megaphone", "tint": "gold"},
+            {"label": "Ongeza Habari", "icon": "image", "tint": "green"},
+            {"label": "Pakia Picha", "icon": "upload", "tint": "navy"},
+            {"label": "Ongeza Matukio", "icon": "calendar", "tint": "red"},
+        ]},
+        "calendar_events": [
+            {"d": "05", "m": "AGO", "title": "Mkutano Mkuu wa Mikoa",
+             "venue": "Dodoma - Ukumbi wa AICC", "time": "09:00 AM"},
+            {"d": "12", "m": "AGO", "title": "Semina ya Uweteshaji Kiuchumi",
+             "venue": "Mwanza - Ukumbi wa CCM", "time": "09:00 AM"},
+            {"d": "19", "m": "AGO", "title": "Mafunzo ya Uongozi kwa Vijana",
+             "venue": "Dar es Salaam - Ukumbi wa MWST", "time": "09:00 AM"},
+            {"d": "26", "m": "AGO", "title": "Ziara ya Miradi",
+             "venue": "Morogoro - Miradi ya Maendeleo", "time": "08:00 AM"},
+            {"d": "02", "m": "SEP", "title": "Mkutano wa Wazee (Elders Forum)",
+             "venue": "Arusha - Ukumbi wa Mosque", "time": "09:00 AM"},
+        ],
+        "funds": [
+            {"label": "Ada za Uanachama", "value": tzs(6_450_000_000), "icon": "wallet", "tint": "green"},
+            {"label": "Michango ya Hiari", "value": tzs(2_125_000_000), "icon": "hand-heart", "tint": "navy"},
+            {"label": "Zaka", "value": tzs(1_520_000_000), "icon": "coins", "tint": "gold"},
+            {"label": "Sadaqa", "value": tzs(850_000_000), "icon": "heart", "tint": "purple"},
+            {"label": "Waqf", "value": tzs(620_000_000), "icon": "mosque", "tint": "teal"},
+            {"label": "Miradi", "value": tzs(1_845_320_000), "icon": "building", "tint": "orange"},
+        ],
+        "fund_totals": [
+            {"label": "Matumizi Jumla", "value": tzs(4_125_680_000), "icon": "receipt", "tint": "red", "danger": True},
+            {"label": "Salio la Mwaka", "value": tzs(7_719_640_000), "icon": "check-circle", "tint": "green"},
+        ],
+        "projects": {
+            "id": "chProjects", "title": "Utekelezaji wa Miradi", "sub": "(2026)",
+            "center_value": "48", "center_label": "Miradi Jumla",
+            "rows": [
+                {"label": "Imekamilika", "value": 18, "display": "18", "pct": "37.5", "color": C["green"]},
+                {"label": "Inaendelea",  "value": 22, "display": "22", "pct": "45.8", "color": C["gold"]},
+                {"label": "Imesimama",   "value": 5,  "display": "5",  "pct": "10.4", "color": C["orange"]},
+                {"label": "Haijaanza",   "value": 3,  "display": "3",  "pct": "6.3",  "color": C["red"]},
+            ]},
+        "media_news": [
+            {"title": "Kikundi cha Wajane Chapata Mafunzo ya Ujuzi - Arusha", "date": "30 Julai 2026"},
+            {"title": "Ugawaji wa Vifaa vya Elimu kwa Shule - Mwanza", "date": "29 Julai 2026"},
+            {"title": "Mradi wa Kisima cha Maji Kondoa - Dodoma", "date": "28 Julai 2026"},
+        ],
+        "summary": [
+            {"label": "Idadi ya Mikoa", "value": "26", "icon": "map"},
+            {"label": "Idadi ya Wilaya", "value": "184", "icon": "map-pin"},
+            {"label": "Wanachama Hai", "value": "142,718", "icon": "users"},
+            {"label": "Wanachama Wapya (Mwezi)", "value": "1,856", "icon": "user-plus"},
+            {"label": "Ada Zilizokusanywa (Mwezi)", "value": tzs(1_245_680_000), "icon": "wallet"},
+        ],
+    }
+
+
+# ===========================================================================
+#  AFISA USAJILI
+# ===========================================================================
+def usajili():
+    return {
+        "kpis": [
+            {"label": "Maombi Leo", "value": "24", "icon": "users", "tint": "green",
+             "delta": "9.1%", "dir": "up", "note": "ikilinganishwa na jana"},
+            {"label": "Maombi Haya Mwezi", "value": "342", "icon": "file", "tint": "navy",
+             "delta": "12.7%", "dir": "up", "note": "mwezi jana"},
+            {"label": "Maombi Yaliyopitishwa", "value": "298", "icon": "clock", "tint": "gold",
+             "delta": "14.9%", "dir": "up", "note": "mwezi jana"},
+            {"label": "Maombi Yanayosubiri", "value": "44", "icon": "clock", "tint": "purple",
+             "delta": "4.3%", "dir": "down", "note": "mwezi jana"},
+            {"label": "Maombi Yaliyoakataliwa", "value": "12", "icon": "check-circle", "tint": "teal",
+             "delta": "2.1%", "dir": "down", "note": "mwezi jana"},
+        ],
+        "steps": [
+            {"n": 1, "label": "Taarifa Binafsi", "state": "is-current"},
+            {"n": 2, "label": "Taarifa za Mawasiliano", "state": ""},
+            {"n": 3, "label": "Taarifa za Uanachama", "state": ""},
+            {"n": 4, "label": "Malipo", "state": ""},
+            {"n": 5, "label": "Ukaguzi & Uthibitisho", "state": ""},
+        ],
+        "step_help": [
+            {"n": 1, "title": "Taarifa Binafsi", "text": "Jaza taarifa zako binafsi"},
+            {"n": 2, "title": "Taarifa za Mawasiliano", "text": "Jaza anuani na mawasiliano"},
+            {"n": 3, "title": "Taarifa za Uanachama", "text": "Chagua aina ya uanachama"},
+            {"n": 4, "title": "Malipo", "text": "Rekodi malipo ya ada"},
+            {"n": 5, "title": "Ukaguzi & Uthibitisho", "text": "Thibitisha na kamilisha usajili"},
+        ],
+        "summary": [
+            {"label": "Jumla ya Wanachama", "value": "12,458", "icon": "users", "tint": "green"},
+            {"label": "Wanachama Hai", "value": "11,890", "icon": "check-circle", "tint": "green"},
+            {"label": "Wanachama Waliositishwa", "value": "223", "icon": "x-circle", "tint": "gold"},
+            {"label": "Kadi Zilizotolewa", "value": "10,987", "icon": "id-card", "tint": "navy"},
+            {"label": "Kadi Zinazosubiri", "value": "145", "icon": "clock", "tint": "orange"},
+        ],
+        "recent": [
+            {"initials": "JK", "name": "Juma K. Abdallah", "place": "Dodoma - Kondoa",
+             "status": "Inasubiri", "badge": "warn", "time": "10:15 AM"},
+            {"initials": "AS", "name": "Aisha M. Salum", "place": "Arusha - Arusha DC",
+             "status": "Imepitishwa", "badge": "ok", "time": "09:40 AM"},
+            {"initials": "MS", "name": "Mohammed S. Omari", "place": "Dar es Salaam - Kinondoni",
+             "status": "Inasubiri", "badge": "warn", "time": "09:20 AM"},
+            {"initials": "FH", "name": "Fatma H. Ali", "place": "Mwanza - Ilemela",
+             "status": "Imepitishwa", "badge": "ok", "time": "08:50 AM"},
+            {"initials": "SH", "name": "Salim R. Hassan", "place": "Morogoro - Morogoro MC",
+             "status": "Imekataliwa", "badge": "danger", "time": "08:20 AM"},
+        ],
+        "apps_month": {"labels": MONTHS,
+                       "data": [180, 210, 195, 240, 260, 235, 280, 300, 320, 345, 360, 342]},
+        "apps_status": {
+            "id": "chAppStatus", "title": "Hali ya Maombi", "sub": "(2026)",
+            "center_value": "342", "center_label": "Jumla",
+            "rows": [
+                {"label": "Imepitishwa", "value": 298, "display": "298", "pct": "87.1", "color": C["green"]},
+                {"label": "Inasubiri",   "value": 44,  "display": "44",  "pct": "12.9", "color": C["gold"]},
+                {"label": "Imekataliwa", "value": 12,  "display": "12",  "pct": "3.5",  "color": C["red"]},
+            ]},
+        "cards_month": {"labels": MONTHS,
+                        "data": [620, 700, 660, 780, 720, 840, 800, 760, 880, 820, 900, 940]},
+        "actions": [
+            {"label": "Sajili Mwanachama", "icon": "user-plus", "tint": "green"},
+            {"label": "Maombi Mapya", "icon": "file", "tint": "navy"},
+            {"label": "Idhinisha Maombi", "icon": "check-circle", "tint": "green"},
+            {"label": "Rekodi Malipo", "icon": "wallet", "tint": "orange"},
+            {"label": "Chapisha Kadi", "icon": "id-card", "tint": "purple"},
+            {"label": "Tengeneza Ripoti", "icon": "chart-bar", "tint": "teal"},
+            {"label": "Tuma SMS", "icon": "message", "tint": "navy"},
+            {"label": "Tuma Email", "icon": "mail", "tint": "gold"},
+        ],
+    }
+
+
+# ===========================================================================
+#  AFISA MALIPO YA ADA
+# ===========================================================================
+def malipo():
+    return {
+        "kpis": [
+            {"label": "Jumla ya Wanachama", "value": "12,458", "icon": "users", "tint": "green",
+             "sub_label": "Wanachama Hai", "sub_value": "11,890"},
+            {"label": "Ada Zilizokusanywa Leo", "value": tzs(2_450_000), "icon": "cash", "tint": "navy",
+             "money": True, "sub_label": "Idadi ya Malipo", "sub_value": "152"},
+            {"label": "Mapato ya Mwezi Huu", "value": tzs(38_765_000), "icon": "chart-line", "tint": "green",
+             "money": True, "sub_label": "Malipo Yenye Uthibitisho", "sub_value": "1,892"},
+            {"label": "Mapato ya Mwaka Huu", "value": tzs(452_890_000), "icon": "coins", "tint": "gold",
+             "money": True, "sub_label": "Lengo la Mwaka", "sub_value": tzs(500_000_000), "gauge": 90},
+            {"label": "Malipo Yaliyokosekana", "value": tzs(5_780_000), "icon": "clock", "tint": "purple",
+             "money": True, "sub_label": "Idadi", "sub_value": "286"},
+            {"label": "Malipo Yaliyothibitishwa", "value": "97.3%", "icon": "check-circle", "tint": "teal",
+             "sub_label": "Kiwango cha Uthibitisho", "sub_value": "Mzuri"},
+        ],
+        "revenue_month": {"labels": MONTHS,
+                          "data": [28_000_000, 31_000_000, 27_000_000, 38_000_000, 45_000_000,
+                                   33_000_000, 40_000_000, 52_000_000, 36_000_000, 44_000_000,
+                                   47_000_000, 38_765_000]},
+        "by_category": {
+            "id": "chPayCat", "title": "Malipo kwa Aina ya Uanachama",
+            "center_value": "", "center_label": "",
+            "rows": [
+                {"label": "Bronze",   "value": 8_450_000,  "display": tzs(8_450_000),  "pct": "21.8", "color": C["green"]},
+                {"label": "Silver",   "value": 9_870_000,  "display": tzs(9_870_000),  "pct": "25.5", "color": C["blue"]},
+                {"label": "Gold",     "value": 11_560_000, "display": tzs(11_560_000), "pct": "29.8", "color": C["gold"]},
+                {"label": "Platinum", "value": 8_885_000,  "display": tzs(8_885_000),  "pct": "22.9", "color": C["purple"]},
+            ]},
+        "status_mix": {
+            "id": "chPayStatus", "title": "Hali ya Malipo", "sub": "(Mwezi Huu)",
+            "center_value": "", "center_label": "",
+            "rows": [
+                {"label": "Yaliyolipwa",          "value": 1892, "display": "1,892", "pct": "72.3", "color": C["green"]},
+                {"label": "Yaliyokosekana",       "value": 286,  "display": "286",   "pct": "10.9", "color": C["red"]},
+                {"label": "Yanasubiri Uthibitisho","value": 234, "display": "234",   "pct": "9.0",  "color": C["slate"]},
+                {"label": "Yameghairiwa",         "value": 210,  "display": "210",   "pct": "7.8",  "color": C["gold"]},
+            ]},
+        "sources": [
+            {"label": "Benki",           "value": tzs(24_650_000), "pct": 63.6, "color": C["navy"]},
+            {"label": "Lipa kwa M-Pesa", "value": tzs(9_850_000),  "pct": 25.4, "color": C["green"]},
+            {"label": "Tigo Pesa",       "value": tzs(2_450_000),  "pct": 6.3,  "color": C["blue"]},
+            {"label": "Airtel Money",    "value": tzs(1_320_000),  "pct": 3.4,  "color": C["red"]},
+            {"label": "Nyingine",        "value": tzs(495_000),    "pct": 1.3,  "color": C["slate"]},
+        ],
+        "sources_total": tzs(38_765_000),
+        "records": [
+            {"n": 1,  "no": "MWST/F/001/2026", "name": "Mohammed Omari Kapera", "cat": "Platinum",
+             "year": 2026, "amount": "1,000,000", "date": "31/07/2026 09:45 AM", "method": "Benki - CRDB",
+             "status": "Yaliyothibitisha", "badge": "ok"},
+            {"n": 2,  "no": "MWST/F/002/2026", "name": "Aisha M. Salum", "cat": "Gold",
+             "year": 2026, "amount": "750,000", "date": "31/07/2026 09:20 AM", "method": "M-Pesa",
+             "status": "Yaliyothibitisha", "badge": "ok"},
+            {"n": 3,  "no": "MWST/F/003/2026", "name": "Juma K. Abdallah", "cat": "Silver",
+             "year": 2026, "amount": "500,000", "date": "31/07/2026 08:55 AM", "method": "Tigo Pesa",
+             "status": "Yaliyothibitisha", "badge": "ok"},
+            {"n": 4,  "no": "MWST/F/004/2026", "name": "Fatma H. Ali", "cat": "Silver",
+             "year": 2026, "amount": "500,000", "date": "31/07/2026 08:30 AM", "method": "Airtel Money",
+             "status": "Yanasubiri Uthibitisho", "badge": "warn"},
+            {"n": 5,  "no": "MWST/F/005/2026", "name": "Salim R. Hassan", "cat": "Bronze",
+             "year": 2026, "amount": "250,000", "date": "30/07/2026 07:40 PM", "method": "Benki - NMB",
+             "status": "Yaliyothibitisha", "badge": "ok"},
+            {"n": 6,  "no": "MWST/F/006/2026", "name": "Hawa M. Juma", "cat": "Gold",
+             "year": 2026, "amount": "750,000", "date": "30/07/2026 06:15 PM", "method": "M-Pesa",
+             "status": "Yaliyothibitisha", "badge": "ok"},
+            {"n": 7,  "no": "MWST/F/007/2026", "name": "Abdul A. Said", "cat": "Silver",
+             "year": 2026, "amount": "500,000", "date": "30/07/2026 05:10 PM", "method": "Benki - CRDB",
+             "status": "Yameghairiwa", "badge": "danger"},
+            {"n": 8,  "no": "MWST/F/008/2026", "name": "Zainab K. Omar", "cat": "Platinum",
+             "year": 2026, "amount": "1,000,000", "date": "30/07/2026 03:25 PM", "method": "M-Pesa",
+             "status": "Yaliyothibitisha", "badge": "ok"},
+            {"n": 9,  "no": "MWST/F/009/2026", "name": "Yusuf M. Simba", "cat": "Bronze",
+             "year": 2026, "amount": "250,000", "date": "30/07/2026 02:50 PM", "method": "Tigo Pesa",
+             "status": "Yaliyokosekana", "badge": "danger"},
+            {"n": 10, "no": "MWST/F/010/2026", "name": "Rehema A. Rashid", "cat": "Silver",
+             "year": 2026, "amount": "500,000", "date": "30/07/2026 12:40 PM", "method": "Benki - NBC",
+             "status": "Yanasubiri Uthibitisho", "badge": "warn"},
+        ],
+        "missed": [
+            {"n": 1, "label": "Dar es Salaam", "value": tzs(1_890_000)},
+            {"n": 2, "label": "Mwanza",        "value": tzs(1_250_000)},
+            {"n": 3, "label": "Arusha",        "value": tzs(950_000)},
+            {"n": 4, "label": "Mbeya",         "value": tzs(880_000)},
+            {"n": 5, "label": "Morogoro",      "value": tzs(810_000)},
+        ],
+        "missed_total": tzs(5_780_000),
+        "suggestions": [
+            {"label": "Tuma Kikumbusho kwa Waliokosekana", "icon": "bell", "tint": "gold"},
+            {"label": "Tengeneza Ripoti ya Malipo", "icon": "file", "tint": "navy"},
+            {"label": "Rekodi Malipo Mpya", "icon": "plus", "tint": "green"},
+        ],
+    }
+
+
+# ===========================================================================
+#  AFISA MICHANGO
+# ===========================================================================
+def michango():
+    return {
+        "kpis": [
+            {"label": "Jumla ya Michango", "value": tzs(38_765_000), "icon": "users", "tint": "green",
+             "money": True, "note": "Mwaka 2026", "delta": "18.6%", "dir": "up", "note2": "vs mwaka jana"},
+            {"label": "Michango ya Hiari", "value": tzs(19_450_000), "icon": "hand-heart", "tint": "navy",
+             "money": True, "note": "Mwaka 2026", "delta": "21.3%", "dir": "up", "note2": "vs mwaka jana"},
+            {"label": "Zaka", "value": tzs(8_950_000), "icon": "user", "tint": "purple",
+             "money": True, "note": "Mwaka 2026", "delta": "15.2%", "dir": "up", "note2": "vs mwaka jana"},
+            {"label": "Sadaqa", "value": tzs(6_780_000), "icon": "gift", "tint": "orange",
+             "money": True, "note": "Mwaka 2026", "delta": "16.8%", "dir": "up", "note2": "vs mwaka jana"},
+            {"label": "Waqf", "value": tzs(2_350_000), "icon": "mosque", "tint": "teal",
+             "money": True, "note": "Mwaka 2026", "delta": "17.4%", "dir": "up", "note2": "vs mwaka jana"},
+            {"label": "Michango iliyothibitishwa", "value": tzs(37_650_000), "icon": "check-circle",
+             "tint": "green", "money": True, "note": "Asilimia", "big_note": "97.1%"},
+        ],
+        "by_month": {"labels": MONTHS,
+                     "data": [3_200_000, 4_100_000, 3_600_000, 5_200_000, 4_400_000, 5_800_000,
+                              4_900_000, 6_400_000, 5_100_000, 6_800_000, 5_600_000, 7_200_000]},
+        "by_type": {
+            "id": "chDonType", "title": "Michango kwa Aina", "sub": "(Mwaka 2026)",
+            "center_value": "", "center_label": "",
+            "rows": [
+                {"label": "Michango ya Hiari", "value": 19_450_000, "display": "50.2%", "pct": None,
+                 "color": C["green"], "note": tzs(19_450_000)},
+                {"label": "Zaka", "value": 8_950_000, "display": "23.1%", "pct": None,
+                 "color": C["blue"], "note": tzs(8_950_000)},
+                {"label": "Sadaqa", "value": 6_780_000, "display": "17.5%", "pct": None,
+                 "color": C["gold"], "note": tzs(6_780_000)},
+                {"label": "Waqf", "value": 2_350_000, "display": "6.1%", "pct": None,
+                 "color": C["purple"], "note": tzs(2_350_000)},
+                {"label": "Miradi maalum", "value": 1_235_000, "display": "3.1%", "pct": None,
+                 "color": C["navy"], "note": tzs(1_235_000)},
+            ]},
+        "by_region": [
+            {"name": "Dar es Salaam", "display": tzs(9_850_000), "pct": 100},
+            {"name": "Arusha",        "display": tzs(6_750_000), "pct": 69},
+            {"name": "Mwanza",        "display": tzs(6_120_000), "pct": 62},
+            {"name": "Dodoma",        "display": tzs(4_950_000), "pct": 50},
+            {"name": "Morogoro",      "display": tzs(3_890_000), "pct": 39},
+        ],
+        "by_project": [
+            {"n": 1, "label": "Ujenzi wa Shule ya Sekondari", "value": tzs(8_250_000)},
+            {"n": 2, "label": "Ujenzi wa Kituo cha Afya",     "value": tzs(6_500_000)},
+            {"n": 3, "label": "Msaada wa Wajane na Yatima",   "value": tzs(5_450_000)},
+            {"n": 4, "label": "Visima vya Maji Safi",         "value": tzs(4_300_000)},
+            {"n": 5, "label": "Masjid na Vituo vya Ibada",    "value": tzs(3_650_000)},
+        ],
+        "records": [
+            {"n": 1, "name": "Juma K. Abdallah", "no": "MWST/F/001/2026", "type": "Zaka", "badge": "purple",
+             "amount": "1,000,000", "project": "Zaka ya Mwaka 2026", "date": "31/07/2026 09:45 AM", "method": "CRDB"},
+            {"n": 2, "name": "Aisha M. Salum", "no": "MWST/F/002/2026", "type": "Sadaqa", "badge": "orange",
+             "amount": "500,000", "project": "Sadaqa ya Hiari", "date": "31/07/2026 09:20 AM", "method": "M-Pesa"},
+            {"n": 3, "name": "Mohammed S. Omari", "no": "MWST/F/003/2026", "type": "Michango ya Hiari", "badge": "green",
+             "amount": "750,000", "project": "Uendeshaji wa Jumla", "date": "31/07/2026 08:55 AM", "method": "Tigo Pesa"},
+            {"n": 4, "name": "Fatma H. Ali", "no": "MWST/F/004/2026", "type": "Michango ya Hiari", "badge": "green",
+             "amount": "300,000", "project": "Uendeshaji wa Jumla", "date": "31/07/2026 08:30 AM", "method": "Airtel Money"},
+            {"n": 5, "name": "Salim R. Hassan", "no": "MWST/F/005/2026", "type": "Zaka", "badge": "purple",
+             "amount": "1,000,000", "project": "Zaka ya Biashara", "date": "30/07/2026 07:40 PM", "method": "CRDB"},
+            {"n": 6, "name": "Hawa M. Juma", "no": "MWST/F/006/2026", "type": "Sadaqa", "badge": "orange",
+             "amount": "200,000", "project": "Sadaqa ya Hiari", "date": "30/07/2026 06:15 PM", "method": "M-Pesa"},
+            {"n": 7, "name": "Abdul A. Said", "no": "MWST/F/007/2026", "type": "Waqf", "badge": "teal",
+             "amount": "1,500,000", "project": "Waqf ya Ardhi", "date": "30/07/2026 05:10 PM", "method": "CRDB"},
+            {"n": 8, "name": "Zainab K. Omar", "no": "MWST/F/008/2026", "type": "Michango ya Hiari", "badge": "green",
+             "amount": "150,000", "project": "Uendeshaji wa Jumla", "date": "30/07/2026 03:25 PM", "method": "Tigo Pesa"},
+            {"n": 9, "name": "Yusuf M. Simba", "no": "MWST/F/009/2026", "type": "Sadaqa", "badge": "orange",
+             "amount": "250,000", "project": "Sadaqa ya Hiari", "date": "30/07/2026 02:50 PM", "method": "M-Pesa"},
+            {"n": 10, "name": "Rehema A. Rashid", "no": "MWST/F/010/2026", "type": "Zaka", "badge": "purple",
+             "amount": "750,000", "project": "Zaka ya Mwaka", "date": "30/07/2026 12:40 PM", "method": "NBC"},
+        ],
+        "targets": [
+            {"label": "Michango ya Hiari", "target": "25,000,000", "actual": "19,450,000", "pct": 77.8},
+            {"label": "Zaka",              "target": "10,000,000", "actual": "8,950,000",  "pct": 89.5},
+            {"label": "Sadaqa",            "target": "8,000,000",  "actual": "6,780,000",  "pct": 84.8},
+            {"label": "Waqf",              "target": "3,000,000",  "actual": "2,350,000",  "pct": 78.3},
+            {"label": "Miradi maalum",     "target": "4,000,000",  "actual": "1,235,000",  "pct": 30.9},
+        ],
+        "targets_total": {"label": "Jumla", "target": "50,000,000", "actual": "38,765,000", "pct": 77.5},
+        "actions": [
+            {"label": "Rekodi Mchango", "icon": "plus", "tint": "green"},
+            {"label": "Tafuta Mchangiaji", "icon": "search", "tint": "navy"},
+            {"label": "Tengeneza Risiti", "icon": "receipt", "tint": "purple"},
+            {"label": "Tuma Shukrani", "icon": "mail", "tint": "orange"},
+            {"label": "Ripoti za Michango", "icon": "chart-bar", "tint": "teal"},
+        ],
+    }

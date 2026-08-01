@@ -1,0 +1,221 @@
+{% extends "base/app.html" %}
+{% load i18n mwst_tags %}
+{% block title %}Usajili wa Mwanachama{% endblock %}
+
+{% block page %}
+
+  <div class="grid grid--5">
+    {% for k in kpis %}{% include "components/kpi.html" %}{% endfor %}
+  </div>
+
+  <div class="grid grid--2-1 mt">
+
+    {# ---------------- Wizard ---------------- #}
+    <section class="card">
+      <div class="sectionband">
+        <svg><use href="#i-user-plus"></use></svg>
+        <b>{% trans "Sajili Mwanachama Mpya" %}</b>
+      </div>
+      <div class="card__body" style="padding-top:16px">
+
+        <div class="stepper">
+          {% for s in steps %}
+            <div class="step {{ s.state }}">
+              <span class="step__num">{{ s.n }}</span>
+              <span class="step__label">{{ s.label|tr }}</span>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="grid grid--2" style="gap:22px">
+
+          {# --- Taarifa Binafsi --- #}
+          <div>
+            <h4 style="font-size:13.5px;font-weight:700;margin-bottom:12px">{% trans "Taarifa Binafsi" %}</h4>
+            <div class="grid grid--2" style="gap:12px">
+              <div class="field" style="grid-column:1/-1">
+                <label class="field__label" for="f-jina">{% trans "Jina Kamili" %}<em>*</em></label>
+                <input class="input" id="f-jina" placeholder="Ingiza jina kamili">
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-jinsia">{% trans "Jinsia" %}<em>*</em></label>
+                <select class="select" id="f-jinsia">
+                  <option>{% trans "Chagua Jinsia" %}</option><option>{% trans "Mwanaume" %}</option><option>{% trans "Mwanamke" %}</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-dob">{% trans "Tarehe ya Kuzaliwa" %}<em>*</em></label>
+                <input class="input" id="f-dob" type="date">
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-nida">{% trans "Namba ya Kitambulisho" %}<em>*</em></label>
+                <input class="input" id="f-nida" placeholder="Ingiza Namba ya Kitambulisho">
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-uraia">{% trans "Uraia" %}<em>*</em></label>
+                <select class="select" id="f-uraia"><option>{% trans "Chagua Uraia" %}</option><option>{% trans "Mtanzania" %}</option><option>{% trans "Mgeni" %}</option></select>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-dini">{% trans "Dini" %}<em>*</em></label>
+                <input class="input" id="f-dini" value="Kiislamu">
+              </div>
+            </div>
+
+            <div class="field" style="margin-top:14px">
+              <label class="field__label">{% trans "Picha ya Mwanachama" %}</label>
+              <div class="photobox">
+                <span class="photobox__circle"><svg width="30" height="30"><use href="#i-user"></use></svg></span>
+                <span class="photobox__label">{% trans "Pakia Picha" %}</span>
+                <span class="photobox__hint">(JPEG, PNG) Max 2MB</span>
+                <button class="btn btn--primary btn--sm" data-backend="{% trans 'Kupakia picha ya mwanachama' %}">{% trans "Chagua Picha" %}</button>
+              </div>
+            </div>
+          </div>
+
+          {# --- Taarifa za Makazi --- #}
+          <div>
+            <h4 style="font-size:13.5px;font-weight:700;margin-bottom:12px">{% trans "Taarifa za Makazi" %}</h4>
+            <div class="grid grid--2" style="gap:12px">
+              <div class="field">
+                <label class="field__label" for="f-mkoa">{% trans "Mkoa" %}<em>*</em></label>
+                <select class="select" id="f-mkoa">
+                  <option>{% trans "Chagua Mkoa" %}</option>
+                  <option>Dodoma</option><option>Dar es Salaam</option><option>Arusha</option>
+                  <option>Mwanza</option><option>Mbeya</option><option>Morogoro</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-wilaya">{% trans "Wilaya" %}<em>*</em></label>
+                <select class="select" id="f-wilaya"><option>{% trans "Chagua Wilaya" %}</option></select>
+              </div>
+              <div class="field" style="grid-column:1/-1">
+                <label class="field__label" for="f-kata">{% trans "Kata" %}<em>*</em></label>
+                <select class="select" id="f-kata"><option>{% trans "Chagua Kata" %}</option></select>
+              </div>
+              <div class="field" style="grid-column:1/-1">
+                <label class="field__label" for="f-mtaa">{% trans "Mtaa / Kijiji" %}<em>*</em></label>
+                <input class="input" id="f-mtaa" placeholder="Ingiza Mtaa / Kijiji">
+              </div>
+              <div class="field" style="grid-column:1/-1">
+                <label class="field__label" for="f-anuani">{% trans "Anuani Kamili" %}<em>*</em></label>
+                <textarea class="textarea" id="f-anuani" placeholder="Ingiza anuani kamili"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hstack" style="justify-content:flex-end;margin-top:16px">
+          <button class="btn btn--ghost" data-backend="{% trans 'Kughairi usajili' %}">{% trans "Ghairi" %}</button>
+          <button class="btn btn--primary" data-backend="{% trans 'Kuhifadhi na kuendelea hatua ya 2' %}">{% trans "Inayofuata" %}<svg><use href="#i-arrow-right"></use></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    {# ---------------- Muhtasari + Maombi ---------------- #}
+    <div class="stack">
+      <section class="card">
+        <div class="card__head"><h3 class="card__title">{% trans "Muhtasari wa Usajili" %}</h3></div>
+        <div class="card__body">
+          {% for s in summary %}
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line-soft)">
+              <span class="fund__ico tint-{{ s.tint }}" style="width:26px;height:26px"><svg width="14" height="14"><use href="#i-{{ s.icon }}"></use></svg></span>
+              <span style="flex:1;font-size:12.5px">{{ s.label|tr }}</span>
+              <b class="num" style="font-size:13px">{{ s.value }}</b>
+            </div>
+          {% endfor %}
+          <button class="btn btn--ghost btn--block" style="margin-top:12px" data-backend="{% trans 'Ripoti kamili ya usajili' %}">
+            <svg><use href="#i-file"></use></svg>{% trans "Tazama Ripoti Kamili" %}</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__head">
+          <h3 class="card__title">{% trans "Maombi ya Hivi Karibuni" %}</h3>
+          <a href="#" class="link-more" data-backend="{% trans 'Orodha kamili ya maombi' %}">{% trans "Tazama yote" %}</a>
+        </div>
+        <div class="card__body">
+          <div class="rowlist">
+            {% for r in recent %}
+              <div class="rowlist__item">
+                <span class="rowlist__avatar">{{ r.initials }}</span>
+                <span class="rowlist__body">
+                  <span class="rowlist__title">{{ r.name|tr }}</span>
+                  <span class="rowlist__sub">{{ r.place|tr }}</span>
+                </span>
+                <span style="text-align:right">
+                  <span class="badge badge--{{ r.badge }}">{{ r.status|tr }}</span>
+                  <span class="rowlist__meta" style="margin-top:3px">{{ r.time }}</span>
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  {# ---------------- Hatua | Charts ---------------- #}
+  <div class="grid grid--4 mt">
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Hatua za Usajili" %}</h3></div>
+      <div class="card__body">
+        {% for h in step_help %}
+          <div style="display:flex;gap:10px;padding:8px 0">
+            <span class="rankrow__n">{{ h.n }}</span>
+            <span style="min-width:0">
+              <b style="display:block;font-size:12.3px">{{ h.title|tr }}</b>
+              <span style="font-size:11.3px;color:var(--muted)">{{ h.text|tr }}</span>
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Maombi kwa Mwezi" %}<span>(2026)</span></h3></div>
+      <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chApps"></canvas></div></div>
+    </section>
+
+    {% with d=apps_status %}{% include "components/donut_card.html" %}{% endwith %}
+
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">{% trans "Kadi Zilizotolewa kwa Mwezi" %}<span>(2026)</span></h3>
+        <a href="#" class="link-more" data-backend="{% trans 'Ripoti ya kadi' %}">{% trans "Tazama yote" %}</a>
+      </div>
+      <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chCards"></canvas></div></div>
+    </section>
+  </div>
+
+{% endblock %}
+
+
+{% block actionbar %}
+<div class="actionbar">
+  <span class="actionbar__title">Quick Actions</span>
+  {% for a in actions %}
+    <button class="actionbar__btn" data-backend="{{ a.label|tr }}">
+      <span class="fund__ico tint-{{ a.tint }}" style="width:24px;height:24px"><svg width="13" height="13"><use href="#i-{{ a.icon }}"></use></svg></span>
+      {{ a.label|tr }}
+    </button>
+  {% endfor %}
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+  MWST.line("#chApps", {{ apps_month.labels|safe }},
+    [{ label: "Maombi", data: {{ apps_month.data|safe }}, color: MWST.css("--c1"), fill: true }]);
+
+  MWST.donut("#chAppStatus",
+    [{% for r in apps_status.rows %}"{{ r.label|tr }}",{% endfor %}],
+    [{% for r in apps_status.rows %}{{ r.value }},{% endfor %}],
+    [{% for r in apps_status.rows %}"{{ r.color }}",{% endfor %}]);
+
+  MWST.bar("#chCards", {{ cards_month.labels|safe }},
+    [{ label: "Kadi", data: {{ cards_month.data|safe }}, color: MWST.css("--c1") }]);
+</script>
+{% endblock %}

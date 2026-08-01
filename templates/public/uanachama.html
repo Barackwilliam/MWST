@@ -1,0 +1,83 @@
+{% extends "public/base.html" %}
+{% load i18n mwst_tags %}
+{% block title %}{% trans "Uanachama" %}{% endblock %}
+
+{% block body %}
+{% include "public/_pagehero.html" %}
+
+<section class="section">
+  <div class="section__head reveal">
+    <span class="section__eyebrow">{% trans "Faida" %}</span>
+    <h2 class="section__title">{% trans "Faida za Uanachama" %}</h2>
+    <p class="section__text">{% trans "Kila mwanachama anapata huduma hizi bila kujali aina ya uanachama." %}</p>
+  </div>
+  <div class="grid grid--3">
+    {% for b in benefits %}
+      <article class="feature reveal">
+        <span class="feature__ico tint-{{ b.tint }}"><svg><use href="#i-{{ b.icon }}"></use></svg></span>
+        <h4>{{ b.title|tr }}</h4><p>{{ b.text|tr }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="section__head reveal">
+    <span class="section__eyebrow">{% trans "Aina" %}</span>
+    <h2 class="section__title">{% trans "Chagua Aina ya Uanachama" %}</h2>
+  </div>
+  <div class="grid grid--4" style="align-items:stretch">
+    {% for t in tiers %}
+      <div class="tier reveal {% if t.featured %}is-featured{% endif %}">
+        {% if t.featured %}<span class="tier__flag">{% trans "Maarufu" %}</span>{% endif %}
+        <div class="tier__name">{{ t.name }}</div>
+        <div class="tier__price">{{ t.price }}</div>
+        <div class="tier__per">{{ t.per|tr }}</div>
+        <ul class="tier__list">
+          {% for i in t.items %}
+            <li><svg><use href="#i-check"></use></svg>{{ i|tr }}</li>
+          {% endfor %}
+        </ul>
+        <a href="{% url 'core:jiunge' %}" class="btn {% if t.featured %}btn--gold{% else %}btn--ghost{% endif %} btn--block">{% trans "Jiunge" %}</a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section__head reveal">
+    <span class="section__eyebrow">{% trans "Hatua" %}</span>
+    <h2 class="section__title">{% trans "Jinsi ya Kujiunga" %}</h2>
+  </div>
+  <div class="grid grid--4">
+    {% for s in steps %}
+      <article class="feature reveal" style="text-align:center">
+        <span class="feature__ico tint-green" style="margin:0 auto 14px"><svg><use href="#i-{{ s.icon }}"></use></svg></span>
+        <span class="section__eyebrow" style="margin-bottom:8px">{% trans "Hatua" %} {{ s.n }}</span>
+        <h4 style="margin-top:8px">{{ s.title|tr }}</h4><p>{{ s.text|tr }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="grid grid--2" style="align-items:center">
+    <div class="reveal">
+      <span class="section__eyebrow">{% trans "Pointi" %}</span>
+      <h2 class="section__title" style="text-align:left">{% trans "Pata Pointi kwa Kila Ushiriki" %}</h2>
+      <p class="section__text">{% trans "Kila unapolipa ada, kuchangia au kushiriki shughuli, unapata pointi zinazokupandisha ngazi ya utambulisho." %}</p>
+      <a href="{% url 'core:jiunge' %}" class="btn btn--primary" style="margin-top:18px"><svg><use href="#i-user-plus"></use></svg> {% trans "Anza Sasa" %}</a>
+    </div>
+    <div class="card reveal"><div class="card__body card__body--flush">
+      <div class="tablewrap"><table class="table">
+        <thead><tr><th>{% trans "Shughuli" %}</th><th class="t-num">{% trans "Pointi" %}</th></tr></thead>
+        <tbody>{% for r in points_rules %}
+          <tr><td>{{ r.activity|tr }}</td><td class="t-num"><b>{{ r.points|tr }}</b></td></tr>
+        {% endfor %}</tbody>
+      </table></div>
+    </div></div>
+  </div>
+</section>
+
+{% include "public/_cta.html" %}
+{% endblock %}

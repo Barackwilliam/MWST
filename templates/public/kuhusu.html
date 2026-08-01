@@ -1,0 +1,83 @@
+{% extends "public/base.html" %}
+{% load i18n mwst_tags %}
+{% block title %}{% trans "Kuhusu Sisi" %}{% endblock %}
+
+{% block body %}
+{% include "public/_pagehero.html" %}
+
+<section class="section">
+  <div class="section__head reveal">
+    <span class="section__eyebrow">{% trans "Nani Sisi" %}</span>
+    <h2 class="section__title">{% trans "Dira, Dhamira na Maadili" %}</h2>
+    <p class="section__text">{% trans "Kila tunachokifanya kinaongozwa na nguzo hizi tatu." %}</p>
+  </div>
+  <div class="grid grid--3">
+    {% for p in pillars %}
+      <article class="feature reveal">
+        <span class="feature__ico tint-{{ p.tint }}"><svg><use href="#i-{{ p.icon }}"></use></svg></span>
+        <h4>{{ p.title|tr }}</h4>
+        <p>{{ p.text|tr }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section section--dark">
+  <div class="counters">
+    {% for c in counters %}
+      <div class="reveal">
+        <div class="counter__val" data-count="{{ c.value }}">0</div>
+        <div class="counter__lbl">{{ c.label|tr }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="section__head reveal">
+    <span class="section__eyebrow">{% trans "Historia" %}</span>
+    <h2 class="section__title">{% trans "Safari Yetu" %}</h2>
+  </div>
+  <div class="grid grid--2" style="align-items:start">
+    <div class="card reveal"><div class="card__body" style="padding:22px">
+      <div class="tline">
+        {% for t in timeline %}
+          <div class="tline__item">
+            <span class="tline__dot">{{ forloop.counter }}</span>
+            <span class="tline__year">{{ t.year }}</span>
+            <h4 class="tline__title">{{ t.title|tr }}</h4>
+            <p class="tline__text">{{ t.text|tr }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div></div>
+    <div class="card reveal"><div class="card__body" style="padding:22px">
+      <h3 class="card__title" style="margin-bottom:14px">{% trans "Maswali Yanayoulizwa Sana" %}</h3>
+      {% for f in faqs %}
+        <div class="acc__item">
+          <button class="acc__btn"><svg><use href="#i-chevron-right"></use></svg>{{ f.q|tr }}</button>
+          <div class="acc__panel"><div class="acc__inner">{{ f.a|tr }}</div></div>
+        </div>
+      {% endfor %}
+    </div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section__head reveal">
+    <span class="section__eyebrow">{% trans "Uongozi" %}</span>
+    <h2 class="section__title">{% trans "Viongozi Wetu" %}</h2>
+  </div>
+  <div class="grid grid--4">
+    {% for l in leaders %}
+      <div class="person reveal">
+        <div class="person__ph">{{ l.initials }}</div>
+        <h4>{{ l.name }}</h4>
+        <span>{{ l.role|tr }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% include "public/_cta.html" %}
+{% endblock %}
