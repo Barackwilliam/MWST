@@ -8,6 +8,7 @@
 <section class="section">
   <div class="section__head reveal">
     <span class="section__eyebrow">{% trans "Nani Sisi" %}</span>
+    {% include "public/_ornament.html" %}
     <h2 class="section__title">{% trans "Dira, Dhamira na Maadili" %}</h2>
     <p class="section__text">{% trans "Kila tunachokifanya kinaongozwa na nguzo hizi tatu." %}</p>
   </div>
@@ -22,7 +23,12 @@
   </div>
 </section>
 
-<section class="section section--dark">
+<section class="section section--dark pat--gold">
+  <div class="ayah reveal" style="max-width:720px;margin:0 auto 34px;border-color:rgba(212,175,55,.35)">
+    <div class="ayah__ar">وَتَعَاوَنُوا۟ عَلَى ٱلْبِرِّ وَٱلتَّقْوَىٰ</div>
+    <div class="ayah__tr">{% trans "Na msaidiane katika heri na taqwa." %}</div>
+    <div class="ayah__ref">Al-Ma'idah: 2</div>
+  </div>
   <div class="counters">
     {% for c in counters %}
       <div class="reveal">
@@ -36,6 +42,7 @@
 <section class="section section--tint">
   <div class="section__head reveal">
     <span class="section__eyebrow">{% trans "Historia" %}</span>
+    {% include "public/_ornament.html" %}
     <h2 class="section__title">{% trans "Safari Yetu" %}</h2>
   </div>
   <div class="grid grid--2" style="align-items:start">
@@ -66,16 +73,39 @@
 <section class="section">
   <div class="section__head reveal">
     <span class="section__eyebrow">{% trans "Uongozi" %}</span>
+    {% include "public/_ornament.html" %}
     <h2 class="section__title">{% trans "Viongozi Wetu" %}</h2>
   </div>
   <div class="grid grid--4">
     {% for l in leaders %}
       <div class="person reveal">
-        <div class="person__ph">{{ l.initials }}</div>
+        <div class="person__ph pat--gold">{{ l.initials }}</div>
         <h4>{{ l.name }}</h4>
         <span>{{ l.role|tr }}</span>
       </div>
     {% endfor %}
+  </div>
+</section>
+
+<section class="section section--tint">
+  <div class="section__head reveal">
+    <span class="section__eyebrow">{% trans "Kazi Zetu" %}</span>
+    {% include "public/_ornament.html" %}
+    <h2 class="section__title">{% trans "Tunavyogusa Jamii" %}</h2>
+  </div>
+  <div class="grid grid--3">
+    <a href="{% url 'core:huduma' %}" class="arch-card reveal">
+      <span class="illus illus--tall"><span class="illus__cap">{% trans "Elimu na Mafunzo" %}</span>{% include "components/illus.html" with scene="elimu" %}</span>
+      <span class="arch-card__body"><span class="arch-card__text">{% trans "Ufadhili wa masomo na mafunzo ya ufundi kwa vijana." %}</span></span>
+    </a>
+    <a href="{% url 'core:huduma' %}" class="arch-card reveal">
+      <span class="illus illus--tall"><span class="illus__cap">{% trans "Huduma za Afya" %}</span>{% include "components/illus.html" with scene="afya" %}</span>
+      <span class="arch-card__body"><span class="arch-card__text">{% trans "Kambi za afya bure na msaada wa matibabu." %}</span></span>
+    </a>
+    <a href="{% url 'core:huduma' %}" class="arch-card reveal">
+      <span class="illus illus--tall"><span class="illus__cap">{% trans "Maji Safi na Salama" %}</span>{% include "components/illus.html" with scene="maji" %}</span>
+      <span class="arch-card__body"><span class="arch-card__text">{% trans "Uchimbaji wa visima katika maeneo yenye uhaba." %}</span></span>
+    </a>
   </div>
 </section>
 

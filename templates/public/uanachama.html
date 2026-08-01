@@ -8,6 +8,7 @@
 <section class="section">
   <div class="section__head reveal">
     <span class="section__eyebrow">{% trans "Faida" %}</span>
+    {% include "public/_ornament.html" %}
     <h2 class="section__title">{% trans "Faida za Uanachama" %}</h2>
     <p class="section__text">{% trans "Kila mwanachama anapata huduma hizi bila kujali aina ya uanachama." %}</p>
   </div>
@@ -24,6 +25,7 @@
 <section class="section section--tint">
   <div class="section__head reveal">
     <span class="section__eyebrow">{% trans "Aina" %}</span>
+    {% include "public/_ornament.html" %}
     <h2 class="section__title">{% trans "Chagua Aina ya Uanachama" %}</h2>
   </div>
   <div class="grid grid--4" style="align-items:stretch">
@@ -45,8 +47,19 @@
 </section>
 
 <section class="section">
+  <div class="grid grid--2" style="align-items:center;margin-bottom:44px">
+    <div class="reveal">
+      <span class="section__eyebrow">{% trans "Kadi Yako" %}</span>
+      <h2 class="section__title" style="text-align:left;font-size:27px">{% trans "Kadi ya Kidijitali yenye QR" %}</h2>
+      <p class="section__text">{% trans "Kila mwanachama anapata kadi yenye namba ya kipekee na QR code inayothibitisha uanachama popote — mikutanoni, ofisini au wakati wa kuomba huduma." %}</p>
+    </div>
+    <div class="reveal">
+      <span class="illus illus--arch" style="height:230px;display:block">{% include "components/illus.html" with scene="msikiti" %}</span>
+    </div>
+  </div>
   <div class="section__head reveal">
     <span class="section__eyebrow">{% trans "Hatua" %}</span>
+    {% include "public/_ornament.html" %}
     <h2 class="section__title">{% trans "Jinsi ya Kujiunga" %}</h2>
   </div>
   <div class="grid grid--4">
@@ -57,6 +70,14 @@
         <h4 style="margin-top:8px">{{ s.title|tr }}</h4><p>{{ s.text|tr }}</p>
       </article>
     {% endfor %}
+  </div>
+</section>
+
+<section class="section section--dark pat--gold">
+  <div class="ayah reveal" style="max-width:720px;margin:0 auto;border-color:rgba(212,175,55,.35)">
+    <div class="ayah__ar">مَّن ذَا ٱلَّذِى يُقْرِضُ ٱللَّهَ قَرْضًا حَسَنًا</div>
+    <div class="ayah__tr">{% trans "Ni nani atakayemkopesha Allah mkopo mzuri?" %}</div>
+    <div class="ayah__ref">Al-Baqarah: 245</div>
   </div>
 </section>
 

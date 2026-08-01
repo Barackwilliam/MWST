@@ -8,6 +8,7 @@
 <section class="section">
   <div class="section__head reveal">
     <span class="section__eyebrow">{% trans "Maeneo" %}</span>
+    {% include "public/_ornament.html" %}
     <h2 class="section__title">{% trans "Maeneo Sita ya Huduma" %}</h2>
   </div>
   <div class="tabs" data-tabs="#svc-grid">
@@ -17,10 +18,13 @@
   </div>
   <div class="grid grid--3" id="svc-grid">
     {% for s in services %}
-      <article class="feature reveal" data-cat="{{ s.cat }}">
-        <span class="feature__ico tint-{{ s.tint }}"><svg><use href="#i-{{ s.icon }}"></use></svg></span>
-        <h4>{{ s.title|tr }}</h4><p>{{ s.text|tr }}</p>
-        <span class="badge badge--ok" style="margin-top:12px">{{ s.stats|tr }}</span>
+      <article class="feature feature--illus reveal" data-cat="{{ s.cat }}">
+        <span class="illus illus--card">{% include "components/illus.html" with scene=s.scene %}</span>
+        <span class="feature__inner">
+          <span class="feature__ico feature__ico--float tint-{{ s.tint }}"><svg><use href="#i-{{ s.icon }}"></use></svg></span>
+          <h4>{{ s.title|tr }}</h4><p>{{ s.text|tr }}</p>
+          <span class="badge badge--ok" style="margin-top:12px">{{ s.stats|tr }}</span>
+        </span>
       </article>
     {% endfor %}
   </div>
@@ -40,13 +44,14 @@
 <section class="section section--tint">
   <div class="section__head reveal">
     <span class="section__eyebrow">{% trans "Miradi" %}</span>
+    {% include "public/_ornament.html" %}
     <h2 class="section__title">{% trans "Miradi Inayoendelea" %}</h2>
     <p class="section__text">{% trans "Changia mradi wowote na ufuatilie maendeleo yake." %}</p>
   </div>
   <div class="grid grid--3">
     {% for p in projects %}
       <article class="card reveal">
-        <span style="display:block;height:130px;background:linear-gradient(135deg,var(--g-400),var(--n-700));border-radius:var(--r-lg) var(--r-lg) 0 0"></span>
+        <span class="illus illus--card"><span class="illus__tag">{{ p.place|tr }}</span>{% include "components/illus.html" with scene=p.scene %}</span>
         <div class="card__body" style="padding:16px">
           <h4 style="font-size:15px;font-weight:700">{{ p.title|tr }}</h4>
           <span class="rowlist__sub" style="margin:4px 0 10px"><svg width="12" height="12" style="vertical-align:-1px"><use href="#i-map-pin"></use></svg> {{ p.place|tr }}</span>

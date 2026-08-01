@@ -131,7 +131,7 @@
     <div class="card__body">
       {% for n in news %}
         <div class="newsrow">
-          <span class="newsrow__thumb" style="background:linear-gradient(135deg,var(--g-300),var(--g-700))"></span>
+          <span class="illus illus--thumb">{% include "components/illus.html" with scene=n.scene %}</span>
           <span class="newsrow__body">
             <span class="newsrow__title">{{ n.title|tr }}</span>
             <span class="newsrow__date">{{ n.date }}</span>
@@ -152,7 +152,7 @@
       <div class="gallery">
         {% for g in gallery %}
           <a href="#" class="gallery__item" data-backend="{% trans 'Kufungua albamu' %}">
-            <span style="display:block;height:92px;border-radius:var(--r);background:linear-gradient(135deg,var(--g-400),var(--n-700))"></span>
+            <span class="illus" style="height:92px;border-radius:var(--r)">{% include "components/illus.html" with scene=g.scene %}</span>
             <span class="gallery__cap">{{ g.cap|tr }}</span>
             <span class="gallery__meta"><svg width="12" height="12"><use href="#i-image"></use></svg>{{ g.count|tr }}</span>
           </a>

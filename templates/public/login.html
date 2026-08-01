@@ -12,7 +12,10 @@
       <h2 class="section__title" style="text-align:left;font-size:30px">{% trans "Ingia Kwenye Akaunti Yako" %}</h2>
       <p class="section__text">{% trans "Fikia kadi yako ya uanachama, historia ya malipo, pointi na huduma zote za MWST." %}</p>
 
-      <div class="vstack" style="margin-top:22px">
+      <span class="illus illus--sq reveal" style="display:block;height:150px;margin:18px 0">
+        {% include "components/illus.html" with scene="jamii" %}
+      </span>
+      <div class="vstack">
         {% for r in roles %}
           <a href="{{ r.url }}" class="contact-tile" style="padding:13px 15px">
             <span class="contact-tile__ico tint-{{ r.tint }}" style="width:36px;height:36px"><svg width="17" height="17"><use href="#i-{{ r.icon }}"></use></svg></span>

@@ -20,7 +20,7 @@ def menu():
 def kuhusu():
     return {
         "hero": {
-            "eyebrow": "Kuhusu Sisi",
+            "eyebrow": "Kuhusu Sisi", "scene": "msikiti",
             "title": "Historia, Dira na Dhamira ya MWST",
             "text": "Muslim Welfare Society of Tanzania ni jumuiya ya kijamii inayolenga "
                     "kuinua hali ya maisha ya jamii kupitia elimu, afya, ustawi na miradi "
@@ -84,7 +84,7 @@ def kuhusu():
 def uanachama():
     return {
         "hero": {
-            "eyebrow": "Uanachama",
+            "eyebrow": "Uanachama", "scene": "jamii",
             "title": "Jiunge na Familia ya MWST",
             "text": "Uanachama wa MWST unakupa fursa ya kushiriki katika huduma za kijamii, "
                     "kupata msaada wa ustawi, na kujenga jamii bora kwa pamoja.",
@@ -147,28 +147,28 @@ def uanachama():
 def huduma():
     return {
         "hero": {
-            "eyebrow": "Huduma Zetu",
+            "eyebrow": "Huduma Zetu", "scene": "jamii",
             "title": "Huduma Zinazogusa Maisha",
             "text": "Tunatoa huduma katika maeneo sita makuu yanayolenga kuinua hali ya "
                     "maisha ya jamii kwa njia endelevu.",
         },
         "services": [
-            {"title": "Elimu na Mafunzo", "icon": "book", "tint": "green", "cat": "elimu",
+            {"title": "Elimu na Mafunzo", "icon": "book", "tint": "green", "cat": "elimu", "scene": "elimu",
              "text": "Ufadhili wa masomo, ujenzi wa madarasa, vifaa vya shule na mafunzo ya ufundi kwa vijana.",
              "stats": "1,240 wanafunzi wamefadhiliwa"},
-            {"title": "Huduma za Afya", "icon": "heart", "tint": "red", "cat": "afya",
+            {"title": "Huduma za Afya", "icon": "heart", "tint": "red", "cat": "afya", "scene": "afya",
              "text": "Kambi za upimaji afya bure, msaada wa matibabu, na ujenzi wa vituo vya afya vijijini.",
              "stats": "18 kambi za afya mwaka huu"},
-            {"title": "Ustawi wa Jamii", "icon": "hand-heart", "tint": "navy", "cat": "ustawi",
+            {"title": "Ustawi wa Jamii", "icon": "hand-heart", "tint": "navy", "cat": "ustawi", "scene": "yatima",
              "text": "Msaada kwa yatima, wajane, wazee na familia zilizoathirika na majanga.",
              "stats": "2,450 wanufaika kwa mwezi"},
-            {"title": "Maji Safi na Salama", "icon": "globe", "tint": "teal", "cat": "miradi",
+            {"title": "Maji Safi na Salama", "icon": "globe", "tint": "teal", "cat": "miradi", "scene": "maji",
              "text": "Uchimbaji wa visima na ujenzi wa miundombinu ya maji katika maeneo yenye uhaba.",
              "stats": "34 visima vimechimbwa"},
-            {"title": "Uwezeshaji Kiuchumi", "icon": "briefcase", "tint": "gold", "cat": "uchumi",
+            {"title": "Uwezeshaji Kiuchumi", "icon": "briefcase", "tint": "gold", "cat": "uchumi", "scene": "uchumi",
              "text": "Mikopo midogo, mafunzo ya ujasiriamali na vikundi vya akiba kwa wanawake na vijana.",
              "stats": "860 wajasiriamali wamewezeshwa"},
-            {"title": "Ujenzi wa Vituo vya Ibada", "icon": "mosque", "tint": "purple", "cat": "miradi",
+            {"title": "Ujenzi wa Vituo vya Ibada", "icon": "mosque", "tint": "purple", "cat": "miradi", "scene": "msikiti",
              "text": "Ujenzi na ukarabati wa misikiti, madrasa na vituo vya elimu ya dini.",
              "stats": "12 miradi imekamilika"},
         ],
@@ -178,11 +178,11 @@ def huduma():
             {"key": "miradi", "label": "Miradi"}, {"key": "uchumi", "label": "Uchumi"},
         ],
         "projects": [
-            {"title": "Ujenzi wa Shule ya Msingi", "place": "Dodoma", "pct": 60,
+            {"title": "Ujenzi wa Shule ya Msingi", "place": "Dodoma", "pct": 60, "scene": "ujenzi",
              "raised": tzs(120_000_000), "goal": "200,000,000"},
-            {"title": "Maji Safi kwa Jamii", "place": "Singida", "pct": 57,
+            {"title": "Maji Safi kwa Jamii", "place": "Singida", "pct": 57, "scene": "maji",
              "raised": tzs(85_500_000), "goal": "150,000,000"},
-            {"title": "Wafadhili wa Yatima", "place": "Mikoa yote", "pct": 60,
+            {"title": "Wafadhili wa Yatima", "place": "Mikoa yote", "pct": 60, "scene": "yatima",
              "raised": tzs(72_300_000), "goal": "120,000,000"},
         ],
         "impact": [
@@ -200,7 +200,7 @@ def huduma():
 def habari():
     return {
         "hero": {
-            "eyebrow": "Habari",
+            "eyebrow": "Habari", "scene": "mkutano",
             "title": "Habari na Taarifa za MWST",
             "text": "Fuatilia shughuli, miradi, matangazo na fursa mbalimbali kutoka MWST.",
         },
@@ -219,31 +219,31 @@ def habari():
         ],
         "items": [
             {"title": "Programu ya Scholarship 2026/2027", "date": "28 Julai 2026",
-             "cat": "elimu", "cat_label": "Elimu",
+             "cat": "elimu", "cat_label": "Elimu", "scene": "elimu",
              "text": "Maombi ya scholarship kwa wanafunzi wa Kidato na Vyuo yanakaribishwa hadi 31 Agosti 2026."},
             {"title": "Semina ya Uongozi na Maadili ya Kiislamu", "date": "20 Julai 2026",
-             "cat": "matangazo", "cat_label": "Matangazo",
+             "cat": "matangazo", "cat_label": "Matangazo", "scene": "mkutano",
              "text": "Semina hii inalenga kuwajengea uwezo viongozi waamini katika uongozi bora na maadili."},
             {"title": "Ujenzi wa Zahanati Dodoma waingia hatua ya mwisho", "date": "18 Julai 2026",
-             "cat": "miradi", "cat_label": "Miradi",
+             "cat": "miradi", "cat_label": "Miradi", "scene": "ujenzi",
              "text": "Ujenzi wa zahanati ya Nkuhungu umefikia asilimia 85 na unatarajiwa kukamilika Oktoba."},
             {"title": "Ugawaji wa vifaa vya elimu kwa shule 15", "date": "15 Julai 2026",
-             "cat": "elimu", "cat_label": "Elimu",
+             "cat": "elimu", "cat_label": "Elimu", "scene": "elimu",
              "text": "Vitabu, madawati na vifaa vya maabara vimekabidhiwa kwa shule 15 mkoani Mwanza."},
             {"title": "Kambi ya upimaji afya bure Nkuhungu", "date": "10 Julai 2026",
-             "cat": "misaada", "cat_label": "Misaada",
+             "cat": "misaada", "cat_label": "Misaada", "scene": "sadaka",
              "text": "Zaidi ya watu 800 walipimwa shinikizo la damu, kisukari na macho bila malipo."},
             {"title": "Mkutano wa wadau kuhusu miradi ya maji", "date": "05 Julai 2026",
-             "cat": "miradi", "cat_label": "Miradi",
+             "cat": "miradi", "cat_label": "Miradi", "scene": "ujenzi",
              "text": "Wadau kutoka mashirika manne walikutana kujadili upanuzi wa miradi ya visima."},
         ],
         "gallery": [
-            {"cap": "Misaada kwa Wenye Mahitaji", "count": "32 Picha"},
-            {"cap": "Elimu na Mafunzo", "count": "28 Picha"},
-            {"cap": "Matukio na Mikutano", "count": "45 Picha"},
-            {"cap": "Huduma za Afya", "count": "19 Picha"},
-            {"cap": "Miradi ya Maendeleo", "count": "24 Picha"},
-            {"cap": "Mazingira na Uhamasishaji", "count": "17 Picha"},
+            {"scene": "sadaka", "cap": "Misaada kwa Wenye Mahitaji", "count": "32 Picha"},
+            {"scene": "elimu", "cap": "Elimu na Mafunzo", "count": "28 Picha"},
+            {"scene": "mkutano", "cap": "Matukio na Mikutano", "count": "45 Picha"},
+            {"scene": "afya", "cap": "Huduma za Afya", "count": "19 Picha"},
+            {"scene": "ujenzi", "cap": "Miradi ya Maendeleo", "count": "24 Picha"},
+            {"scene": "maji", "cap": "Mazingira na Uhamasishaji", "count": "17 Picha"},
         ],
     }
 
@@ -254,7 +254,7 @@ def habari():
 def matukio_umma():
     return {
         "hero": {
-            "eyebrow": "Matukio",
+            "eyebrow": "Matukio", "scene": "tukio",
             "title": "Matukio na Shughuli za MWST",
             "text": "Jiunge nasi kwenye semina, mikutano, mafunzo na shughuli za kijamii "
                     "zinazofanyika nchini kote.",
@@ -262,27 +262,27 @@ def matukio_umma():
         "upcoming": [
             {"d": "15", "m": "MEI", "y": "2026", "title": "Semina ya Uongozi na Maadili ya Kiislamu",
              "venue": "Ukumbi wa MWST - Dodoma", "time": "08:00 AM - 02:00 PM",
-             "status": "Inajayo", "badge": "ok", "cat": "semina", "cat_label": "Semina",
+             "status": "Inajayo", "badge": "ok", "scene": "mkutano", "cat": "semina", "cat_label": "Semina",
              "text": "Semina ya siku moja kwa viongozi wa matawi na wanachama wanaotaka kuongoza."},
             {"d": "28", "m": "MEI", "y": "2026", "title": "Mkutano Mkuu wa MWST",
              "venue": "JNICC Hall - Dodoma", "time": "09:00 AM - 01:00 PM",
-             "status": "Umealikwa", "badge": "warn", "cat": "mkutano", "cat_label": "Mkutano",
+             "status": "Umealikwa", "badge": "warn", "scene": "mkutano", "cat": "mkutano", "cat_label": "Mkutano",
              "text": "Mkutano Mkuu wa mwaka wenye taarifa ya utendaji, ripoti ya fedha na uchaguzi."},
             {"d": "10", "m": "JUN", "y": "2026", "title": "Zoezi la Upimaji Afya Bure",
              "venue": "Kituo cha Afya - Nkuhungu", "time": "08:00 AM - 04:00 PM",
-             "status": "Inajayo", "badge": "ok", "cat": "afya", "cat_label": "Afya",
+             "status": "Inajayo", "badge": "ok", "scene": "afya", "cat": "afya", "cat_label": "Afya",
              "text": "Upimaji wa shinikizo la damu, kisukari, macho na ushauri wa lishe bila malipo."},
             {"d": "05", "m": "AGO", "y": "2026", "title": "Kongamano la Elimu ya Kiislamu",
              "venue": "Ukumbi wa AICC - Dodoma", "time": "09:00 AM - 05:00 PM",
-             "status": "Inajayo", "badge": "ok", "cat": "kongamano", "cat_label": "Kongamano",
+             "status": "Inajayo", "badge": "ok", "scene": "tukio", "cat": "kongamano", "cat_label": "Kongamano",
              "text": "Kongamano la kitaifa linalowaleta pamoja wasomi na walimu wa dini."},
             {"d": "12", "m": "AGO", "y": "2026", "title": "Mafunzo ya Uongozi kwa Vijana",
              "venue": "Ukumbi wa CCM - Arusha", "time": "09:00 AM - 04:00 PM",
-             "status": "Inajayo", "badge": "ok", "cat": "mafunzo", "cat_label": "Mafunzo",
+             "status": "Inajayo", "badge": "ok", "scene": "elimu", "cat": "mafunzo", "cat_label": "Mafunzo",
              "text": "Mafunzo ya siku mbili kwa vijana wenye umri wa miaka 18 hadi 35."},
             {"d": "18", "m": "AGO", "y": "2026", "title": "Shughuli ya Kuwasaidia Yatima",
              "venue": "Dar es Salaam", "time": "08:00 AM - 02:00 PM",
-             "status": "Inajayo", "badge": "ok", "cat": "ustawi", "cat_label": "Ustawi",
+             "status": "Inajayo", "badge": "ok", "scene": "yatima", "cat": "ustawi", "cat_label": "Ustawi",
              "text": "Ugawaji wa mahitaji ya shule na chakula kwa yatima 300."},
         ],
         "filters": [
@@ -311,7 +311,7 @@ def matukio_umma():
 def mawasiliano():
     return {
         "hero": {
-            "eyebrow": "Mawasiliano",
+            "eyebrow": "Mawasiliano", "scene": "mawasiliano",
             "title": "Wasiliana Nasi",
             "text": "Tuko tayari kukusikiliza. Tuma ujumbe, piga simu au tutembelee "
                     "ofisi zetu Dodoma.",
@@ -357,7 +357,7 @@ def mawasiliano():
 def jiunge():
     return {
         "hero": {
-            "eyebrow": "Usajili",
+            "eyebrow": "Usajili", "scene": "elimu",
             "title": "Jiunge na MWST Leo",
             "text": "Jaza fomu hii kuanza safari yako ya uanachama. Itachukua dakika chache tu.",
         },

@@ -24,6 +24,10 @@
     <div class="reveal">
       <span class="section__eyebrow">{% trans "Matawi" %}</span>
       <h2 class="section__title" style="text-align:left;font-size:24px">{% trans "Ofisi Zetu" %}</h2>
+      <span class="illus illus--sq reveal" style="display:block;margin-bottom:14px;height:180px">
+        <span class="illus__cap">{% trans "Ofisi Kuu - Dodoma" %}</span>
+        {% include "components/illus.html" with scene="mawasiliano" %}
+      </span>
       <div class="card"><div class="card__body" style="padding:14px">
         {% for b in branches %}
           <div class="rowlist__item">
@@ -62,6 +66,7 @@
 <section class="section">
   <div class="section__head reveal">
     <span class="section__eyebrow">{% trans "Msaada" %}</span>
+    {% include "public/_ornament.html" %}
     <h2 class="section__title">{% trans "Maswali Yanayoulizwa Sana" %}</h2>
   </div>
   <div style="max-width:760px;margin:0 auto">
