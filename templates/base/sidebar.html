@@ -78,12 +78,12 @@
     <div class="support-card">
       <div class="support-card__title">{% trans "MWST Support Center" %}</div>
       <div class="support-card__sub">{% trans "Tupo kwa ajili yako" %}</div>
-      <a href="#" class="support-card__link" data-backend="{% trans 'Kuwasiliana na msaada' %}">{% trans "Wasiliana Nasi" %}<svg width="15" height="15"><use href="#i-arrow-right"></use></svg>
+      <a class="support-card__link" href="/mawasiliano/">{% trans "Wasiliana Nasi" %}<svg width="15" height="15"><use href="#i-arrow-right"></use></svg>
       </a>
     </div>
     {% endif %}
 
-    <a href="/" class="nav-link" style="margin-top:4px">
+    <a href="{% url 'core:logout' %}" class="nav-link" style="margin-top:4px">
       <svg class="nav-link__icon"><use href="#i-logout"></use></svg>
       <span class="nav-link__text">{% trans "Toka (Logout)" %}</span>
     </a>

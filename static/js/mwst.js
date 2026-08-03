@@ -456,3 +456,53 @@
     })
   );
 })();
+
+/* ==========================================================================
+   FOMU — onyesha nenosiri, cascading dropdowns
+   ========================================================================== */
+(function () {
+  "use strict";
+  const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
+
+  /* Onyesha / ficha nenosiri */
+  $$("[data-toggle-pw]").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const field = btn.closest(".loginfield");
+      const input = field && field.querySelector('input[type="password"], input[type="text"]');
+      if (!input) return;
+      input.type = input.type === "password" ? "text" : "password";
+    })
+  );
+
+  /* Mkoa -> Wilaya -> Kata */
+  async function fill(select, url, placeholder) {
+    select.innerHTML = `<option value="">${placeholder}</option>`;
+    if (!url) return;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      data.results.forEach((r) => {
+        const o = document.createElement("option");
+        o.value = r.id;
+        o.textContent = r.name;
+        select.appendChild(o);
+      });
+    } catch (e) { /* kimya */ }
+  }
+
+  const region = document.querySelector("#id_region");
+  const district = document.querySelector("#id_district");
+  const ward = document.querySelector("#id_ward");
+
+  if (region && district) {
+    region.addEventListener("change", () => {
+      fill(district, region.value ? `/api/wilaya/?region=${region.value}` : "", "—");
+      if (ward) fill(ward, "", "—");
+    });
+  }
+  if (district && ward) {
+    district.addEventListener("change", () => {
+      fill(ward, district.value ? `/api/kata/?district=${district.value}` : "", "—");
+    });
+  }
+})();

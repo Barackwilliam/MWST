@@ -4,6 +4,7 @@
 {% block title %}Dashibodi Yangu{% endblock %}
 
 {% block page %}
+  {% include "base/messages.html" %}
 
   {# ---------------- Salamu ---------------- #}
   <div class="pagehead">
@@ -64,7 +65,7 @@
             </div>
           </div>
 
-          <div class="dcard__qr">
+          <a class="dcard__qr" href="{{ member.verify_url|default:'#' }}" title="{% trans 'Hakiki kadi' %}">
             {# Placeholder ya QR. Backend: qrcode -> verify URL yenye saini #}
             <svg viewBox="0 0 29 29" shape-rendering="crispEdges" aria-label="QR ya uhakiki">
               <rect width="29" height="29" fill="#fff"/>
@@ -96,14 +97,14 @@
                 <rect x="22" y="26" width="1" height="1"/>
               </g>
             </svg>
-          </div>
+          </a>
         </div>
 
         <div class="hstack" style="margin-top:12px">
-          <button class="btn btn--primary" style="flex:1" data-backend="{% trans 'Kupakua kadi ya PDF' %}">
-            <svg><use href="#i-download"></use></svg>{% trans "Pakua (PDF)" %}</button>
-          <button class="btn btn--ghost" style="flex:1" data-backend="{% trans 'Kuchapisha kadi' %}">
-            <svg><use href="#i-printer"></use></svg>{% trans "Chapisha Kadi" %}</button>
+          <a class="btn btn--primary" style="flex:1" href="{% url 'core:member_card_print' %}">
+            <svg><use href="#i-download"></use></svg>{% trans "Pakua Kadi" %}</a>
+          <a class="btn btn--ghost" style="flex:1" href="{% url 'core:member_card' %}">
+            <svg><use href="#i-id-card"></use></svg>{% trans "Kadi Yangu" %}</a>
         </div>
       </div>
     </section>
@@ -129,13 +130,14 @@
           {% endfor %}
         </div>
 
-        <button class="btn btn--primary btn--block" style="margin-top:14px" data-backend="{% trans 'Kulipa ada ya uanachama' %}">{% trans "Lipa Ada ya Uanachama" %}</button>
+        <a class="btn btn--primary btn--block" style="margin-top:14px"
+           href="{% url 'core:member_payments' %}">{% trans "Lipa Ada ya Uanachama" %}</a>
 
         <div class="hstack" style="margin-top:10px">
-          <button class="btn btn--ghost btn--sm" style="flex:1" data-backend="{% trans 'Historia ya malipo' %}">
-            <svg><use href="#i-chart-line"></use></svg>{% trans "Historia ya Malipo" %}</button>
-          <button class="btn btn--ghost btn--sm" style="flex:1" data-backend="{% trans 'Kupakua risiti' %}">
-            <svg><use href="#i-download"></use></svg>{% trans "Pakua Risiti" %}</button>
+          <a class="btn btn--ghost btn--sm" style="flex:1" href="{% url 'core:member_payments' %}">
+            <svg><use href="#i-chart-line"></use></svg>{% trans "Historia ya Malipo" %}</a>
+          <a class="btn btn--ghost btn--sm" style="flex:1" href="{% url 'core:member_contributions' %}">
+            <svg><use href="#i-hand-heart"></use></svg>{% trans "Toa Mchango" %}</a>
         </div>
       </div>
     </section>
@@ -173,7 +175,7 @@
           <div class="prog prog--gold"><i data-prog="{{ points.progress }}" style="width:0"></i></div>
         </div>
 
-        <a href="#" class="link-more" data-backend="{% trans 'Faida na tuzo zote' %}" style="display:flex;justify-content:center;margin-top:14px">{% trans "Tazama Faida na Tuzo Zote" %}<svg width="14" height="14"><use href="#i-arrow-right"></use></svg>
+        <a class="link-more" href="{% url 'core:member_points' %}" style="display:flex;justify-content:center;margin-top:14px">{% trans "Tazama Faida na Tuzo Zote" %}<svg width="14" height="14"><use href="#i-arrow-right"></use></svg>
         </a>
       </div>
     </section>
@@ -186,7 +188,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Wasifu Wangu" %}</h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Orodha kamili' %}">{% trans "Tazama Zote" %}</a>
+        <a class="link-more" href="{% url 'core:member_profile' %}">{% trans "Tazama Zote" %}</a>
       </div>
       <div class="card__body">
         <div class="hstack" style="margin-bottom:12px">
@@ -216,7 +218,7 @@
           </div>
         </div>
 
-        <button class="btn btn--primary btn--block" style="margin-top:12px" data-backend="{% trans 'Kuhariri wasifu' %}">
+        <a class="btn btn--primary btn--block" style="margin-top:12px" href="/mwanachama/wasifu/">
           <svg><use href="#i-edit"></use></svg>{% trans "Hariri Wasifu" %}</button>
       </div>
     </section>
@@ -227,8 +229,8 @@
 
     <section class="card">
       <div class="card__head">
-        <h3 class="card__title">{% trans "Miamala ya Haribuni" %}</h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Orodha kamili' %}">{% trans "Tazama Zote" %}</a>
+        <h3 class="card__title">{% trans "Miamala ya Karibuni" %}</h3>
+        <a class="link-more" href="{% url 'core:member_payments' %}">{% trans "Tazama Zote" %}</a>
       </div>
       <div class="card__body card__body--flush">
         <div class="tablewrap">
@@ -247,13 +249,13 @@
           </table>
         </div>
       </div>
-      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Historia yote ya malipo' %}">{% trans "Tazama Historia Yote ya Malipo" %}<svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
+      <div class="card__foot"><a class="link-more" href="{% url 'core:member_payments' %}">{% trans "Tazama Historia Yote ya Malipo" %}<svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
     </section>
 
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Matukio Yanayokuja" %}</h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Orodha kamili' %}">{% trans "Tazama Zote" %}</a>
+        <a class="link-more" href="{% url 'core:member_events' %}">{% trans "Tazama Zote" %}</a>
       </div>
       <div class="card__body">
         <div class="rowlist">
@@ -265,7 +267,10 @@
                 <span class="rowlist__sub">{{ e.when }}</span>
                 <span class="rowlist__sub">{{ e.venue|tr }}</span>
               </span>
-              <button class="btn btn--primary btn--sm" data-backend="{% trans 'Kujiandikisha kwenye tukio' %}">{% trans "Jiandikishe" %}</button>
+              <form method="post" action="{% url 'core:event_register' e.id %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn--primary btn--sm">{% trans "Jiandikishe" %}</button>
+              </form>
             </div>
           {% endfor %}
         </div>
@@ -275,7 +280,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Matangazo Muhimu" %}</h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Orodha kamili' %}">{% trans "Tazama Zote" %}</a>
+        <a class="link-more" href="{% url 'core:member_notices' %}">{% trans "Tazama Zote" %}</a>
       </div>
       <div class="card__body">
         <div class="rowlist">

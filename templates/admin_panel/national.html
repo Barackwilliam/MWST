@@ -1,17 +1,57 @@
 {% extends "base/app.html" %}
 {% load i18n mwst_tags %}
-{% block title %}Dashboard ya Taifa{% endblock %}
+{% block title %}{% trans "Dashboard ya Taifa" %}
+  <section class="card mt">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Mchanganuo wa Kanda" %}</h3>
+      <a href="{% url 'core:coordinator' %}" class="btn btn--ghost btn--sm">
+        <svg width="13" height="13"><use href="#i-map"></use></svg> {% trans "Fungua Kanda" %}</a>
+    </div>
+    <div class="card__body card__body--flush">
+      <div class="tablewrap">
+        <table class="table">
+          <thead><tr>
+            <th>#</th><th>{% trans "Kanda" %}</th><th>{% trans "Mratibu" %}</th>
+            <th>{% trans "Ofisi" %}</th><th>{% trans "Mikoa" %}</th>
+            <th>{% trans "Wanachama" %}</th><th>{% trans "Ada" %}</th>
+            <th>{% trans "Michango" %}</th><th>{% trans "Maombi Yanayosubiri" %}</th><th></th>
+          </tr></thead>
+          <tbody>
+            {% for z in zones %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td class="t-name">{{ z.name }}</td>
+                <td>{{ z.coordinator }}</td>
+                <td>{{ z.office }}</td>
+                <td class="t-num">{{ z.regions }}</td>
+                <td class="t-num">{{ z.members }}</td>
+                <td class="t-num">{{ z.fees }}</td>
+                <td class="t-num">{{ z.contributions }}</td>
+                <td class="t-num">{{ z.pending }}</td>
+                <td><a class="table__act" href="{% url 'core:coordinator' %}?kanda={{ z.code }}"
+                       title="{% trans 'Fungua kanda' %}">
+                  <svg width="15" height="15"><use href="#i-eye"></use></svg></a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
 
 {% block page %}
+  {% include "base/messages.html" %}
 
   <div class="pagehead" style="margin-bottom:14px">
     <div></div>
     <div class="pagehead__actions">
-      <button class="scope-pick" data-backend="{% trans 'Kubadili eneo' %}">
+      <a class="scope-pick" href="/mfumo/mikoa/">
         <span style="width:22px;height:15px;border-radius:3px;background:linear-gradient(var(--g-500) 33%,var(--gold-500) 33% 66%,#000 66%)"></span>
         {{ scope }}
         <svg width="14" height="14"><use href="#i-chevron-down"></use></svg>
-      </button>
+      </a>
     </div>
   </div>
 
@@ -25,7 +65,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Wanachama kwa Mwezi" %}<span>(2026)</span></h3>
-        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">2026 <svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+        <form method="get" style="display:inline">{% for k,v in request.GET.items %}{% if k != "year" %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endif %}{% endfor %}<select class="btn btn--ghost btn--sm" name="year" onchange="this.form.submit()" style="padding-right:26px">{% for y in year_options %}<option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></form>
       </div>
       <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chMembers"></canvas></div></div>
     </section>
@@ -33,7 +73,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Mapato kwa Mwezi" %}<span>(TZS)</span></h3>
-        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">2026 <svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+        <form method="get" style="display:inline">{% for k,v in request.GET.items %}{% if k != "year" %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endif %}{% endfor %}<select class="btn btn--ghost btn--sm" name="year" onchange="this.form.submit()" style="padding-right:26px">{% for y in year_options %}<option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></form>
       </div>
       <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chRev"></canvas></div></div>
     </section>
@@ -53,7 +93,7 @@
           {% endfor %}
         </div>
       </div>
-      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Orodha kamili ya mikoa' %}">{% trans "Tazama zote" %}</a></div>
+      <div class="card__foot"><a class="link-more" href="/taifa/">{% trans "Tazama zote" %}</a></div>
     </section>
   </div>
 
@@ -65,7 +105,7 @@
       <div class="card__body">
         {% include "components/tzmap.html" %}
       </div>
-      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Ripoti kamili ya mikoa' %}">{% trans "Tazama Ripoti Kamili" %}</a></div>
+      <div class="card__foot"><a class="link-more" href="/pakua/mikoa/">{% trans "Tazama Ripoti Kamili" %}</a></div>
     </section>
 
     <section class="card">
@@ -84,7 +124,7 @@
           {% endfor %}
         </div>
       </div>
-      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Shughuli zote' %}">{% trans "Tazama zote" %}</a></div>
+      <div class="card__foot"><a class="link-more" href="/dashibodi/">{% trans "Tazama zote" %}</a></div>
     </section>
 
     {% with qa=quick_actions %}{% include "components/quick_actions.html" %}{% endwith %}
@@ -115,8 +155,8 @@
 
     <section class="card">
       <div class="card__head">
-        <h3 class="card__title">{% trans "Muhtasari wa Kifedha" %}<span>(Mwaka 2026)</span></h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Ripoti kamili ya fedha' %}">{% trans "Tazama Ripoti Kamili" %}</a>
+        <h3 class="card__title">{% trans "Muhtasari wa Kifedha" %}<span>({% trans "Mwaka" %} {{ year }})</span></h3>
+        <a class="link-more" href="/pakua/malipo/">{% trans "Tazama Ripoti Kamili" %}</a>
       </div>
       <div class="card__body">
         <div class="fundgrid">
@@ -152,7 +192,7 @@
   <div class="grid mt">
     <section class="card">
       <div class="card__head">
-        <h3 class="card__title">Media &amp; Habari Mpya</h3>
+        <h3 class="card__title">{% trans "Media na Habari Mpya" %}</h3>
         <a href="/media/" class="link-more">{% trans "Tazama zote" %}</a>
       </div>
       <div class="card__body">

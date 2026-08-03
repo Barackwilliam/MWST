@@ -3,6 +3,7 @@
 {% block title %}{% trans "Ingia Mfumo" %}{% endblock %}
 
 {% block body %}
+<div class="section" style="padding-bottom:0">{% include "base/messages.html" %}</div>
 <section class="section" style="min-height:70vh;display:grid;place-items:center;
   background:radial-gradient(110% 120% at 20% 0%, rgba(212,175,55,.10), transparent 60%), var(--canvas)">
   <div style="width:min(940px,100%)" class="grid grid--2" >
@@ -33,22 +34,26 @@
       <h3>{% trans "Ingia Mfumo" %}</h3>
       <p>{% trans "Access your account" %}</p>
 
+      <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
       <label class="loginfield">
         <svg width="16" height="16"><use href="#i-user"></use></svg>
-        <input type="text" placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}">
+        <input type="text" name="username" required autofocus placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}">
       </label>
       <label class="loginfield">
         <svg width="16" height="16"><use href="#i-lock"></use></svg>
-        <input type="password" placeholder="{% trans 'Nenosiri' %}">
-        <button type="button" data-backend="{% trans 'Kuonyesha nenosiri' %}"><svg width="16" height="16"><use href="#i-eye"></use></svg></button>
+        <input type="password" name="password" required placeholder="{% trans 'Nenosiri' %}" id="pw">
+        <button type="button" data-toggle-pw><svg width="16" height="16"><use href="#i-eye"></use></svg></button>
       </label>
 
       <div class="loginpanel__row">
         <label><input type="checkbox" style="accent-color:var(--gold-500)"> {% trans "Kumbuka mimi" %}</label>
-        <a href="#" data-backend="{% trans 'Kurejesha nenosiri' %}">{% trans "Umesahau nywila?" %}</a>
+        <a href="/nenosiri/sahau/">{% trans "Umesahau nywila?" %}</a>
       </div>
 
-      <button class="btn btn--gold btn--block" data-backend="{% trans 'Kuingia kwenye mfumo' %}">{% trans "Ingia" %}</button>
+      <button type="submit" class="btn btn--gold btn--block">{% trans "Ingia" %}</button>
+      </form>
 
       <p class="loginpanel__sep">— {% trans "Bado huna akaunti?" %} —</p>
       <a href="{% url 'core:jiunge' %}" class="btn btn--block" style="border:1px solid rgba(255,255,255,.25);color:#fff">

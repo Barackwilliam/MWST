@@ -1,8 +1,9 @@
 {% extends "base/app.html" %}
 {% load i18n mwst_tags %}
-{% block title %}Matukio{% endblock %}
+{% block title %}{% trans "Matukio" %}{% endblock %}
 
 {% block page %}
+  {% include "base/messages.html" %}
 
   <div class="pagehead" style="margin-bottom:14px">
     <div>
@@ -10,12 +11,9 @@
       <p>{% trans "Dashboard ya Usimamizi wa Matukio" %}</p>
     </div>
     <div class="pagehead__actions">
-      <button class="btn btn--ghost" data-backend="{% trans 'Kuchagua kipindi' %}">
-        <svg><use href="#i-calendar"></use></svg> 01/07/2026 - 31/07/2026
-        <svg width="13" height="13"><use href="#i-chevron-down"></use></svg>
-      </button>
-      <button class="btn btn--primary" data-backend="{% trans 'Kuongeza tukio jipya' %}">
-        <svg><use href="#i-plus"></use></svg>{% trans "Ongeza Tukio" %}</button>
+      <form method="get" style="display:inline">{% for k,v in request.GET.items %}{% if k != "year" %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endif %}{% endfor %}<select class="btn btn--ghost" name="year" onchange="this.form.submit()" style="padding-right:26px">{% for y in year_options %}<option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></form>
+      <a class="btn btn--primary" href="/matukio/">
+        <svg><use href="#i-plus"></use></svg>{% trans "Ongeza Tukio" %}</a>
     </div>
   </div>
 
@@ -26,8 +24,8 @@
   <div class="grid grid--2-2-1 mt">
     <section class="card">
       <div class="card__head">
-        <h3 class="card__title">{% trans "Mwenendo wa Matukio" %}<span>(Mwezi 12)</span></h3>
-        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">{% trans "Mwaka 2026" %}<svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+        <h3 class="card__title">{% trans "Mwenendo wa Matukio" %}<span>({% trans "Miezi 12" %})</span></h3>
+        <form method="get" style="display:inline">{% for k,v in request.GET.items %}{% if k != "year" %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endif %}{% endfor %}<select class="btn btn--ghost btn--sm" name="year" onchange="this.form.submit()" style="padding-right:26px">{% for y in year_options %}<option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></form>
       </div>
       <div class="card__body">
         <div class="chartbox chartbox--lg"><canvas id="chEvTrend"></canvas></div>
@@ -43,7 +41,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Matukio Yanayokuja Hivi Karibuni" %}</h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Matukio yote yanayokuja' %}">{% trans "Tazama zote" %}</a>
+        <a class="link-more" href="/matukio-yetu/">{% trans "Tazama zote" %}</a>
       </div>
       <div class="card__body">
         {% for e in upcoming %}
@@ -57,11 +55,11 @@
               </span>
             </span>
             <span class="badge badge--muted">{{ e.in }}</span>
-            <button class="table__act" data-backend="{% trans 'Vitendo vya tukio' %}"><svg width="15" height="15"><use href="#i-dots"></use></svg></button>
+            <a class="table__act" href="/mfumo/matukio/"><svg width="15" height="15"><use href="#i-dots"></use></svg></a>
           </div>
         {% endfor %}
       </div>
-      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Kalenda kamili' %}">{% trans "Tazama kalenda kamili" %}<svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
+      <div class="card__foot"><a class="link-more" href="/matukio/">{% trans "Tazama kalenda kamili" %}<svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
     </section>
   </div>
 
@@ -69,7 +67,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Matukio ya Hivi Punde" %}</h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Matukio yaliyopita' %}">{% trans "Tazama zote" %}</a>
+        <a class="link-more" href="/matukio-yetu/">{% trans "Tazama zote" %}</a>
       </div>
       <div class="card__body">
         {% for e in recent %}
@@ -88,7 +86,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Washiriki kwa Mkoa" %}<span>(Top 5)</span></h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Washiriki wa mikoa yote' %}">{% trans "Tazama zote" %}</a>
+        <a class="link-more" href="/matukio/">{% trans "Tazama zote" %}</a>
       </div>
       <div class="card__body">
         <div class="barlist">
@@ -112,7 +110,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Arifa za Matukio" %}</h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Arifa zote' %}">{% trans "Tazama zote" %}</a>
+        <a class="link-more" href="/mfumo/arifa/">{% trans "Tazama zote" %}</a>
       </div>
       <div class="card__body">
         <div class="rowlist">
@@ -148,21 +146,21 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Kalenda ya Matukio" %}</h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Kalenda kamili' %}">{% trans "Tazama kalenda kamili" %}</a>
+        <a class="link-more" href="/matukio/">{% trans "Tazama kalenda kamili" %}</a>
       </div>
       <div class="card__body">
         <div class="cal__head">
-          <button class="table__act" data-backend="{% trans 'Mwezi uliopita' %}"><svg width="15" height="15" style="transform:rotate(180deg)"><use href="#i-chevron-right"></use></svg></button>
+          <a class="table__act" href="?month={{ calendar.prev }}"><svg width="15" height="15" style="transform:rotate(180deg)"><use href="#i-chevron-right"></use></svg></a>
           <span class="cal__title">{{ calendar.title|tr }}</span>
-          <button class="table__act" data-backend="{% trans 'Mwezi unaofuata' %}"><svg width="15" height="15"><use href="#i-chevron-right"></use></svg></button>
+          <a class="table__act" href="?month={{ calendar.next }}"><svg width="15" height="15"><use href="#i-chevron-right"></use></svg></a>
         </div>
         <div class="cal__grid">
-          {% for d in calendar.dow %}<span class="cal__dow">{{ d }}</span>{% endfor %}
+          {% for d in calendar.dow %}<span class="cal__dow">{{ d|tr }}</span>{% endfor %}
           {% for week in calendar.days %}
             {% for d in week %}
               {% if d %}
-                <button class="cal__day {% if calendar.marks|length %}{% for k, v in calendar.marks.items %}{% if k == d %}cal__day--{{ v }}{% endif %}{% endfor %}{% endif %}"
-                        data-backend="{% trans 'Matukio ya tarehe' %} {{ d }}">{{ d }}</button>
+                <a class="cal__day {% if calendar.marks|length %}{% for k, v in calendar.marks.items %}{% if k == d %}cal__day--{{ v }}{% endif %}{% endfor %}{% endif %}"
+                        href="/mfumo/matukio/?start_at__day={{ d }}">{{ d }}</a>
               {% else %}
                 <span class="cal__day cal__day--mute"></span>
               {% endif %}
@@ -173,7 +171,7 @@
     </section>
 
     <section class="card">
-      <div class="card__head"><h3 class="card__title">{% trans "Muhtasari wa Matukio" %}<span>(Mwezi Huu)</span></h3></div>
+      <div class="card__head"><h3 class="card__title">{% trans "Muhtasari wa Matukio" %}<span>({% trans "Mwezi Huu" %})</span></h3></div>
       <div class="card__body">
         <div class="barlist">
           {% for m in month_summary %}

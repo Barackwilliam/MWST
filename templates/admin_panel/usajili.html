@@ -1,8 +1,9 @@
 {% extends "base/app.html" %}
 {% load i18n mwst_tags %}
-{% block title %}Usajili wa Mwanachama{% endblock %}
+{% block title %}{% trans "Usajili wa Mwanachama" %}{% endblock %}
 
 {% block page %}
+  {% include "base/messages.html" %}
 
   <div class="grid grid--5">
     {% for k in kpis %}{% include "components/kpi.html" %}{% endfor %}
@@ -27,47 +28,31 @@
           {% endfor %}
         </div>
 
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
         <div class="grid grid--2" style="gap:22px">
 
           {# --- Taarifa Binafsi --- #}
           <div>
             <h4 style="font-size:13.5px;font-weight:700;margin-bottom:12px">{% trans "Taarifa Binafsi" %}</h4>
             <div class="grid grid--2" style="gap:12px">
-              <div class="field" style="grid-column:1/-1">
-                <label class="field__label" for="f-jina">{% trans "Jina Kamili" %}<em>*</em></label>
-                <input class="input" id="f-jina" placeholder="Ingiza jina kamili">
-              </div>
-              <div class="field">
-                <label class="field__label" for="f-jinsia">{% trans "Jinsia" %}<em>*</em></label>
-                <select class="select" id="f-jinsia">
-                  <option>{% trans "Chagua Jinsia" %}</option><option>{% trans "Mwanaume" %}</option><option>{% trans "Mwanamke" %}</option>
-                </select>
-              </div>
-              <div class="field">
-                <label class="field__label" for="f-dob">{% trans "Tarehe ya Kuzaliwa" %}<em>*</em></label>
-                <input class="input" id="f-dob" type="date">
-              </div>
-              <div class="field">
-                <label class="field__label" for="f-nida">{% trans "Namba ya Kitambulisho" %}<em>*</em></label>
-                <input class="input" id="f-nida" placeholder="Ingiza Namba ya Kitambulisho">
-              </div>
-              <div class="field">
-                <label class="field__label" for="f-uraia">{% trans "Uraia" %}<em>*</em></label>
-                <select class="select" id="f-uraia"><option>{% trans "Chagua Uraia" %}</option><option>{% trans "Mtanzania" %}</option><option>{% trans "Mgeni" %}</option></select>
-              </div>
-              <div class="field">
-                <label class="field__label" for="f-dini">{% trans "Dini" %}<em>*</em></label>
-                <input class="input" id="f-dini" value="Kiislamu">
-              </div>
+              {% for f in form %}
+                {% if f.name in "full_name,gender,date_of_birth,national_id,nationality,religion,phone,email,category" %}
+                  <div class="field"{% if f.name == "full_name" %} style="grid-column:1/-1"{% endif %}>
+                    <label class="field__label" for="{{ f.id_for_label }}">{{ f.label }}{% if f.field.required %}<em>*</em>{% endif %}</label>
+                    {{ f }}
+                    {% if f.errors %}<span style="font-size:11.5px;color:var(--danger)">{{ f.errors.0 }}</span>{% endif %}
+                  </div>
+                {% endif %}
+              {% endfor %}
             </div>
 
             <div class="field" style="margin-top:14px">
-              <label class="field__label">{% trans "Picha ya Mwanachama" %}</label>
+              <label class="field__label" for="{{ form.photo.id_for_label }}">{% trans "Picha ya Mwanachama" %}</label>
               <div class="photobox">
                 <span class="photobox__circle"><svg width="30" height="30"><use href="#i-user"></use></svg></span>
-                <span class="photobox__label">{% trans "Pakia Picha" %}</span>
                 <span class="photobox__hint">(JPEG, PNG) Max 2MB</span>
-                <button class="btn btn--primary btn--sm" data-backend="{% trans 'Kupakia picha ya mwanachama' %}">{% trans "Chagua Picha" %}</button>
+                {{ form.photo }}
               </div>
             </div>
           </div>
@@ -76,39 +61,24 @@
           <div>
             <h4 style="font-size:13.5px;font-weight:700;margin-bottom:12px">{% trans "Taarifa za Makazi" %}</h4>
             <div class="grid grid--2" style="gap:12px">
-              <div class="field">
-                <label class="field__label" for="f-mkoa">{% trans "Mkoa" %}<em>*</em></label>
-                <select class="select" id="f-mkoa">
-                  <option>{% trans "Chagua Mkoa" %}</option>
-                  <option>Dodoma</option><option>Dar es Salaam</option><option>Arusha</option>
-                  <option>Mwanza</option><option>Mbeya</option><option>Morogoro</option>
-                </select>
-              </div>
-              <div class="field">
-                <label class="field__label" for="f-wilaya">{% trans "Wilaya" %}<em>*</em></label>
-                <select class="select" id="f-wilaya"><option>{% trans "Chagua Wilaya" %}</option></select>
-              </div>
-              <div class="field" style="grid-column:1/-1">
-                <label class="field__label" for="f-kata">{% trans "Kata" %}<em>*</em></label>
-                <select class="select" id="f-kata"><option>{% trans "Chagua Kata" %}</option></select>
-              </div>
-              <div class="field" style="grid-column:1/-1">
-                <label class="field__label" for="f-mtaa">{% trans "Mtaa / Kijiji" %}<em>*</em></label>
-                <input class="input" id="f-mtaa" placeholder="Ingiza Mtaa / Kijiji">
-              </div>
-              <div class="field" style="grid-column:1/-1">
-                <label class="field__label" for="f-anuani">{% trans "Anuani Kamili" %}<em>*</em></label>
-                <textarea class="textarea" id="f-anuani" placeholder="Ingiza anuani kamili"></textarea>
-              </div>
+              {% for f in form %}
+                {% if f.name in "region,district,ward,street,address" %}
+                  <div class="field"{% if f.name in "ward,street,address" %} style="grid-column:1/-1"{% endif %}>
+                    <label class="field__label" for="{{ f.id_for_label }}">{{ f.label }}{% if f.field.required %}<em>*</em>{% endif %}</label>
+                    {{ f }}
+                    {% if f.errors %}<span style="font-size:11.5px;color:var(--danger)">{{ f.errors.0 }}</span>{% endif %}
+                  </div>
+                {% endif %}
+              {% endfor %}
             </div>
           </div>
         </div>
 
         <div class="hstack" style="justify-content:flex-end;margin-top:16px">
-          <button class="btn btn--ghost" data-backend="{% trans 'Kughairi usajili' %}">{% trans "Ghairi" %}</button>
-          <button class="btn btn--primary" data-backend="{% trans 'Kuhifadhi na kuendelea hatua ya 2' %}">{% trans "Inayofuata" %}<svg><use href="#i-arrow-right"></use></svg>
-          </button>
+          <a href="{% url 'core:usajili' %}" class="btn btn--ghost">{% trans "Ghairi" %}</a>
+          <button type="submit" class="btn btn--primary">{% trans "Hifadhi Ombi" %}<svg><use href="#i-check"></use></svg></button>
         </div>
+        </form>
       </div>
     </section>
 
@@ -124,15 +94,15 @@
               <b class="num" style="font-size:13px">{{ s.value }}</b>
             </div>
           {% endfor %}
-          <button class="btn btn--ghost btn--block" style="margin-top:12px" data-backend="{% trans 'Ripoti kamili ya usajili' %}">
-            <svg><use href="#i-file"></use></svg>{% trans "Tazama Ripoti Kamili" %}</button>
+          <a class="btn btn--ghost btn--block" style="margin-top:12px" href="/pakua/maombi/">
+            <svg><use href="#i-file"></use></svg>{% trans "Tazama Ripoti Kamili" %}</a>
         </div>
       </section>
 
       <section class="card">
         <div class="card__head">
           <h3 class="card__title">{% trans "Maombi ya Hivi Karibuni" %}</h3>
-          <a href="#" class="link-more" data-backend="{% trans 'Orodha kamili ya maombi' %}">{% trans "Tazama yote" %}</a>
+          <a class="link-more" href="/maombi/">{% trans "Tazama yote" %}</a>
         </div>
         <div class="card__body">
           <div class="rowlist">
@@ -183,7 +153,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Kadi Zilizotolewa kwa Mwezi" %}<span>(2026)</span></h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Ripoti ya kadi' %}">{% trans "Tazama yote" %}</a>
+        <a class="link-more" href="/pakua/wanachama/">{% trans "Tazama yote" %}</a>
       </div>
       <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chCards"></canvas></div></div>
     </section>

@@ -14,7 +14,7 @@
   {% if show_search %}
     <label class="search">
       <svg width="16" height="16"><use href="#i-search"></use></svg>
-      <input type="search" placeholder="{{ search_placeholder|default:'Tafuta hapa...' }}" aria-label="Tafuta">
+      <input type="search" placeholder="{{ search_placeholder|default:'Tafuta hapa...'|tr }}" aria-label="{% trans 'Tafuta' %}">
     </label>
   {% else %}
     <div class="topbar__spacer"></div>
@@ -46,22 +46,22 @@
     <svg width="19" height="19"><use href="#i-moon" data-theme-icon></use></svg>
   </button>
 
-  <button class="icon-btn" data-backend="{% trans 'Kuona arifa' %}" aria-label="Arifa">
+  <a class="icon-btn" href="{{ notif_url }}" aria-label="{% trans 'Arifa' %}">
     <svg width="19" height="19"><use href="#i-bell"></use></svg>
     {% if notif_count %}<span class="icon-btn__dot">{{ notif_count }}</span>{% endif %}
-  </button>
+  </a>
 
-  <button class="icon-btn" data-backend="{% trans 'Kuona ujumbe' %}" aria-label="Ujumbe">
+  <a class="icon-btn" href="{{ msg_url }}" aria-label="{% trans 'Ujumbe' %}">
     <svg width="19" height="19"><use href="#i-mail"></use></svg>
     {% if msg_count %}<span class="icon-btn__dot">{{ msg_count }}</span>{% endif %}
-  </button>
+  </a>
 
-  <button class="userchip" data-backend="{% trans 'Menyu ya akaunti' %}">
+  <a href="{% url 'core:logout' %}" class="userchip" title="{% trans 'Toka' %}">
     <span class="userchip__avatar">{{ user_initials|default:"AM" }}</span>
     <span style="text-align:left">
       <span class="userchip__name">{{ user_name|default:"Admin MWST" }}</span><br>
       <span class="userchip__role">{{ user_role|default:"Msimamizi Mkuu"|tr }}</span>
     </span>
-    <svg width="15" height="15" style="opacity:.5"><use href="#i-chevron-down"></use></svg>
-  </button>
+    <svg width="15" height="15" style="opacity:.5"><use href="#i-logout"></use></svg>
+  </a>
 </header>

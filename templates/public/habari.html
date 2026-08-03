@@ -14,9 +14,9 @@
         <h2 style="font-size:24px;font-weight:800;letter-spacing:-.02em;margin:12px 0 8px">{{ featured.title|tr }}</h2>
         <span class="rowlist__sub" style="margin-bottom:12px"><svg width="12" height="12" style="vertical-align:-1px"><use href="#i-calendar"></use></svg> {{ featured.date }}</span>
         <p style="font-size:13.5px;line-height:1.75;color:var(--muted)">{{ featured.text|tr }}</p>
-        <button class="btn btn--primary" style="margin-top:16px" data-backend="Kusoma habari kamili">
+        <a class="btn btn--primary" style="margin-top:16px" href="/habari/">
           {% trans "Soma Zaidi" %} <svg><use href="#i-arrow-right"></use></svg>
-        </button>
+        </a>
       </div>
     </div>
   </article>
@@ -42,7 +42,7 @@
           <h4 style="font-size:14.5px;font-weight:700;margin:9px 0 5px;line-height:1.45">{{ n.title|tr }}</h4>
           <span class="rowlist__sub" style="margin-bottom:8px">{{ n.date }}</span>
           <p style="font-size:12.8px;line-height:1.65;color:var(--muted)">{{ n.text|tr }}</p>
-          <a href="#" class="feature__link" data-backend="Kusoma habari kamili">{% trans "Soma Zaidi" %} <svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a>
+          <a class="feature__link" href="/habari/">{% trans "Soma Zaidi" %} <svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a>
         </div>
       </article>
     {% endfor %}
@@ -57,7 +57,7 @@
   </div>
   <div class="grid grid--3">
     {% for g in gallery %}
-      <a href="#" class="gallery__item reveal" data-backend="Kufungua albamu">
+      <a class="gallery__item reveal" href="/media/">
         <span class="illus illus--sq"><span class="illus__cap">{{ g.cap|tr }}</span>{% include "components/illus.html" with scene=g.scene %}</span>
         <span class="gallery__cap">{{ g.cap|tr }}</span>
         <span class="gallery__meta"><svg width="12" height="12"><use href="#i-image"></use></svg>{{ g.count|tr }}</span>

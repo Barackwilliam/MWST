@@ -3,7 +3,7 @@
 <section class="card">
   <div class="card__head">
     <h3 class="card__title">{{ d.title|tr }} {% if d.sub %}<span>{{ d.sub|tr }}</span>{% endif %}</h3>
-    {% if d.control %}<button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua kipindi' %}">{{ d.control }} <svg width="13" height="13"><use href="#i-chevron-down"></use></svg></button>{% endif %}
+    {% if d.control %}<form method="get" style="display:inline">{% for k,v in request.GET.items %}{% if k != "year" %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endif %}{% endfor %}<select class="btn btn--ghost btn--sm" name="year" onchange="this.form.submit()" style="padding-right:26px">{% for y in year_options %}<option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></form>{% endif %}
   </div>
   <div class="card__body">
     <div class="donutwrap">

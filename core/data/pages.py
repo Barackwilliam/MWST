@@ -3,14 +3,24 @@ from .common import tzs
 
 
 def menu():
+    """Menyu ya header na drawer."""
     return [
-        {"key": "home",        "label": "Nyumbani",     "icon": "dashboard", "url": "/"},
-        {"key": "kuhusu",      "label": "Kuhusu Sisi",  "icon": "info",      "url": "/kuhusu/"},
-        {"key": "uanachama",   "label": "Uanachama",    "icon": "id-card",   "url": "/uanachama/"},
-        {"key": "huduma",      "label": "Huduma Zetu",  "icon": "hand-heart","url": "/huduma/"},
-        {"key": "habari",      "label": "Habari",       "icon": "megaphone", "url": "/habari/"},
-        {"key": "matukio",     "label": "Matukio",      "icon": "calendar",  "url": "/matukio-yetu/"},
-        {"key": "mawasiliano", "label": "Mawasiliano",  "icon": "phone",     "url": "/mawasiliano/"},
+        {"key": "home",        "label": "Nyumbani",    "icon": "dashboard", "url": "/"},
+        {"key": "uanachama",   "label": "Uanachama",   "icon": "id-card",   "url": "/uanachama/"},
+        {"key": "mawasiliano", "label": "Mawasiliano", "icon": "phone",     "url": "/mawasiliano/"},
+    ]
+
+
+def footer_menu():
+    """Viungo vya footer - kurasa zote zinabaki zinapatikana."""
+    return [
+        {"label": "Nyumbani",    "url": "/"},
+        {"label": "Kuhusu Sisi", "url": "/kuhusu/"},
+        {"label": "Uanachama",   "url": "/uanachama/"},
+        {"label": "Huduma Zetu", "url": "/huduma/"},
+        {"label": "Habari",      "url": "/habari/"},
+        {"label": "Matukio",     "url": "/matukio-yetu/"},
+        {"label": "Mawasiliano", "url": "/mawasiliano/"},
     ]
 
 

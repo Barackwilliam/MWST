@@ -21,11 +21,7 @@
   <a href="mailto:info@muslimwelfare.or.tz"><svg width="14" height="14"><use href="#i-mail"></use></svg>info@muslimwelfare.or.tz</a>
   <span><svg width="14" height="14"><use href="#i-map-pin"></use></svg>{% trans "Nkuhungu, Dodoma, Tanzania" %}</span>
   <span class="pub-utility__social">
-    <a href="#" data-backend="Facebook"><svg width="15" height="15"><use href="#i-facebook"></use></svg></a>
-    <a href="#" data-backend="X"><svg width="14" height="14"><use href="#i-x-social"></use></svg></a>
-    <a href="#" data-backend="YouTube"><svg width="16" height="16"><use href="#i-youtube"></use></svg></a>
-    <a href="#" data-backend="Instagram"><svg width="15" height="15"><use href="#i-instagram"></use></svg></a>
-    <a href="#" data-backend="WhatsApp"><svg width="15" height="15"><use href="#i-whatsapp"></use></svg></a>
+    {% for s in social %}<a href="{{ s.url }}" target="_blank" rel="noopener" aria-label="{{ s.label }}"><svg width="15" height="15"><use href="#i-{{ s.icon }}"></use></svg></a>{% endfor %}
   </span>
 </div>
 
@@ -103,16 +99,13 @@
       <b>MWST</b>
       <p>{% trans "Tunatekeleza huduma za kijamii, kiuchumi na kiimani kwa mujibu wa maadili ya Kiislamu kwa maendeleo ya jamii na ustawi wa binadamu." %}</p>
       <div class="appfoot__social" style="margin-top:14px">
-        <a href="#" data-backend="Facebook" style="color:rgba(255,255,255,.7)"><svg width="16" height="16"><use href="#i-facebook"></use></svg></a>
-        <a href="#" data-backend="X" style="color:rgba(255,255,255,.7)"><svg width="15" height="15"><use href="#i-x-social"></use></svg></a>
-        <a href="#" data-backend="YouTube" style="color:rgba(255,255,255,.7)"><svg width="17" height="17"><use href="#i-youtube"></use></svg></a>
-        <a href="#" data-backend="Instagram" style="color:rgba(255,255,255,.7)"><svg width="16" height="16"><use href="#i-instagram"></use></svg></a>
+        {% for s in social %}<a href="{{ s.url }}" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7)" aria-label="{{ s.label }}"><svg width="16" height="16"><use href="#i-{{ s.icon }}"></use></svg></a>{% endfor %}
       </div>
     </div>
 
     <div>
       <h5>{% trans "Viungo" %}</h5>
-      {% for m in site_menu %}<a href="{{ m.url }}">{{ m.label|tr }}</a>{% endfor %}
+      {% for m in footer_menu %}<a href="{{ m.url }}">{{ m.label|tr }}</a>{% endfor %}
     </div>
 
     <div>

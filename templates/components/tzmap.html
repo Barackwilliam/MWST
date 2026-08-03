@@ -3,7 +3,7 @@
 <svg class="tzmap" viewBox="4 6 84 90" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="Ramani ya wanachama kwa mikoa">
   {% for r in map_regions %}
-    <path d="{{ r.path }}" fill="{{ r.shade }}" data-backend="{% trans 'Ramani ya mkoa' %}">
+    <path d="{{ r.path }}" fill="{{ r.shade }}" href="/taifa/">
       <title>{{ r.name|tr }} — {{ r.members }}</title>
     </path>
   {% endfor %}

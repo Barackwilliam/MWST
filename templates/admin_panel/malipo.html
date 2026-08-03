@@ -1,8 +1,9 @@
 {% extends "base/app.html" %}
 {% load i18n mwst_tags %}
-{% block title %}Malipo ya Ada{% endblock %}
+{% block title %}{% trans "Malipo ya Ada" %}{% endblock %}
 
 {% block page %}
+  {% include "base/messages.html" %}
 
   <div class="grid grid--6">
     {% for k in kpis %}{% include "components/kpi_stacked.html" %}{% endfor %}
@@ -12,7 +13,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Mapato kwa Mwezi" %}<span>(2026)</span></h3>
-        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">2026 <svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+        <form method="get" style="display:inline">{% for k,v in request.GET.items %}{% if k != "year" %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endif %}{% endfor %}<select class="btn btn--ghost btn--sm" name="year" onchange="this.form.submit()" style="padding-right:26px">{% for y in year_options %}<option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></form>
       </div>
       <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chPayRev"></canvas></div></div>
     </section>
@@ -45,9 +46,22 @@
       <div class="card__head">
         <h3 class="card__title">{% trans "Rekodi za Malipo ya Ada" %}</h3>
         <div class="hstack">
-          <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchuja malipo' %}">{% trans "Hamisha Malipo" %}<svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
-          <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kupakua ripoti' %}">{% trans "Pakua Ripoti" %}<svg width="13" height="13"><use href="#i-download"></use></svg></button>
-          <button class="btn btn--primary btn--sm" data-backend="{% trans 'Kurekodi malipo mapya' %}"><svg><use href="#i-plus"></use></svg>{% trans "Rekodi Malipo" %}</button>
+          <form method="get" class="hstack" style="gap:8px;flex-wrap:wrap">
+            <input class="input" name="q" value="{{ filters.q }}" placeholder="{% trans 'Jina au namba' %}" style="height:32px;font-size:12.5px;width:170px">
+            <select class="select" name="status" style="height:32px;font-size:12.5px;width:150px">
+              <option value="">{% trans "Hali zote" %}</option>
+              {% for v, label in statuses %}<option value="{{ v }}" {% if filters.status == v %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+            <select class="select" name="method" style="height:32px;font-size:12.5px;width:140px">
+              <option value="">{% trans "Njia zote" %}</option>
+              {% for v, label in methods %}<option value="{{ v }}" {% if filters.method == v %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+            <input class="input" type="date" name="from" value="{{ filters.from }}" style="height:32px;font-size:12.5px;width:140px">
+            <input class="input" type="date" name="to" value="{{ filters.to }}" style="height:32px;font-size:12.5px;width:140px">
+            <button class="btn btn--primary btn--sm"><svg width="13" height="13"><use href="#i-search"></use></svg> {% trans "Chuja" %}</button>
+            <a href="{% url 'core:malipo' %}" class="btn btn--ghost btn--sm">{% trans "Futa" %}</a>
+          </form>
+          <a class="btn btn--primary btn--sm" href="/malipo/"><svg><use href="#i-plus"></use></svg>{% trans "Rekodi Malipo" %}</a>
         </div>
       </div>
       <div class="card__body card__body--flush">
@@ -70,12 +84,23 @@
                   <td class="t-mono">{{ r.date }}</td>
                   <td>{{ r.method }}</td>
                   <td><span class="badge badge--{{ r.badge }}">{{ r.status|tr }}</span></td>
-                  <td><button class="table__act" data-backend="{% trans 'Kuona risiti' %}"><svg width="15" height="15"><use href="#i-receipt"></use></svg></button></td>
+                  <td><a class="t-mono" href="{% url 'core:receipt' 'malipo' r.id %}"
+                          title="{% trans 'Fungua risiti' %}" style="white-space:nowrap">
+                    <svg width="13" height="13" style="vertical-align:-2px"><use href="#i-receipt"></use></svg>
+                    {{ r.receipt }}</a></td>
                   <td>
                     <span class="table__actions">
-                      <button class="table__act" data-backend="{% trans 'Kuona maelezo ya malipo' %}"><svg width="15" height="15"><use href="#i-eye"></use></svg></button>
-                      <button class="table__act" data-backend="{% trans 'Kupakua risiti' %}"><svg width="15" height="15"><use href="#i-download"></use></svg></button>
-                      <button class="table__act" data-backend="{% trans 'Vitendo zaidi' %}"><svg width="15" height="15"><use href="#i-dots"></use></svg></button>
+                      <a class="table__act" href="{% url 'core:member_detail' r.member_id %}" title="{% trans 'Maelezo ya mwanachama' %}"><svg width="15" height="15"><use href="#i-eye"></use></svg></a>
+                      {% if r.pending %}
+                        <form method="post" action="{% url 'core:payment_action' r.id 'confirm' %}" style="display:inline">
+                          {% csrf_token %}
+                          <button class="table__act" title="{% trans 'Thibitisha' %}"><svg width="15" height="15"><use href="#i-check-circle"></use></svg></button>
+                        </form>
+                        <form method="post" action="{% url 'core:payment_action' r.id 'cancel' %}" style="display:inline">
+                          {% csrf_token %}
+                          <button class="table__act table__act--danger" title="{% trans 'Ghairi' %}"><svg width="15" height="15"><use href="#i-x-circle"></use></svg></button>
+                        </form>
+                      {% endif %}
                     </span>
                   </td>
                 </tr>
@@ -83,19 +108,7 @@
             </tbody>
           </table>
         </div>
-        <div class="pager">
-          <span class="pager__info">Inaonyesha 1 hadi 10 ya 342 rekodi</span>
-          <span class="pager__nav">
-            <button class="pager__btn" data-backend="{% trans 'Ukurasa wa kwanza' %}">{% trans "Kwanza" %}</button>
-            <button class="pager__btn" data-backend="{% trans 'Ukurasa uliopita' %}">&lsaquo; Nyuma</button>
-            <button class="pager__btn is-active">1</button>
-            <button class="pager__btn">2</button><button class="pager__btn">3</button>
-            <button class="pager__btn">4</button><button class="pager__btn">5</button>
-            <button class="pager__btn" disabled>...</button><button class="pager__btn">35</button>
-            <button class="pager__btn" data-backend="{% trans 'Ukurasa unaofuata' %}">Mbele &rsaquo;</button>
-            <button class="pager__btn" data-backend="{% trans 'Ukurasa wa mwisho' %}">{% trans "Mwisho" %}</button>
-          </span>
-        </div>
+        {% include "components/pager.html" %}
       </div>
     </section>
 

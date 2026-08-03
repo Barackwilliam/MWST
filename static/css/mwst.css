@@ -67,6 +67,8 @@
   --cat-platinum-bg:#f0eaff;
   --cat-founder:  #0d5433;
   --cat-founder-bg:#e0f2e8;
+  --cat-tanzanite:    #2f4f9e;
+  --cat-tanzanite-bg: #e8edfa;
 
   /* Chart palette — derived from brand, ordered for legibility */
   --c1: #12864a;  --c2: #1b3b6f;  --c3: #d4af37;  --c4: #6d28d9;
@@ -101,6 +103,7 @@
   --ok-bg:#0f2e1f; --warn-bg:#33240d; --danger-bg:#331616; --info-bg:#132540;
   --cat-bronze-bg:#33240d; --cat-silver-bg:#1b2733; --cat-gold-bg:#332a0d;
   --cat-platinum-bg:#221436; --cat-founder-bg:#0d2a1c;
+  --cat-tanzanite: #9db4ec; --cat-tanzanite-bg:#16203d;
   --sh-2: 0 1px 3px rgba(0,0,0,.4);
   --sh-3: 0 4px 16px rgba(0,0,0,.45);
 }
@@ -525,6 +528,13 @@ table { border-collapse: collapse; width: 100%; }
 .badge--gold     { background: var(--cat-gold-bg);     color: var(--cat-gold); }
 .badge--platinum { background: var(--cat-platinum-bg); color: var(--cat-platinum); }
 .badge--founder  { background: var(--cat-founder-bg);  color: var(--cat-founder); }
+/* Tanzanite — daraja la heshima. Rangi ya jiwe la Tanzanite (bluu-zambarau). */
+.badge--tanzanite { background: var(--cat-tanzanite-bg); color: var(--cat-tanzanite); }
+.tier--special    { position: relative; }
+.tier--special::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  pointer-events: none; box-shadow: inset 0 0 0 1px rgba(27,59,111,.12);
+}
 
 /* --------------------------------------------------------------------------
    11. BUTTONS
@@ -1723,3 +1733,144 @@ a:hover > .illus .illus__svg,
   .illus--wide { min-height: 190px; }
   .ayah__ar { font-size: 21px; }
 }
+
+/* ==========================================================================
+   KADI YA UANACHAMA
+   Ukubwa wa CR80 (85.6 × 54 mm) — uwiano ule ule wa kadi ya benki.
+   ========================================================================== */
+.idcard { width: 100%; max-width: 420px; margin-inline: auto; }
+.idcard__face {
+  position: relative; aspect-ratio: 1.586 / 1; border-radius: 16px; overflow: hidden;
+  padding: 15px 17px; display: flex; flex-direction: column; color: #fff;
+  background:
+    radial-gradient(120% 130% at 100% 0%, rgba(212,175,55,.20) 0%, transparent 52%),
+    linear-gradient(140deg, var(--tier, #12864a) 0%, #0b2a1c 62%, #05170f 100%);
+  box-shadow: 0 18px 40px -14px rgba(4,35,24,.55), 0 2px 6px rgba(4,35,24,.22);
+  container-type: inline-size;
+}
+.idcard__glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.09) 47%, transparent 56%);
+}
+.idcard__pattern { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .55; }
+
+.idcard__head {
+  position: relative; z-index: 2; display: flex; align-items: flex-start; gap: 9px;
+  padding-bottom: 9px; border-bottom: 1px solid rgba(212,175,55,.32);
+}
+.idcard__crest { flex: none; display: grid; place-items: center; }
+.idcard__org { flex: 1; min-width: 0; line-height: 1.25; }
+.idcard__org b { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .01em; }
+.idcard__org span {
+  display: block; font-size: 7.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,.62); margin-top: 2px;
+}
+.idcard__tier {
+  flex: none; align-self: center; background: linear-gradient(135deg, #f0d675, #c9a227);
+  color: #2b2000; font-size: 8.5px; font-weight: 900; letter-spacing: .1em;
+  text-transform: uppercase; padding: 4px 9px; border-radius: 99px; white-space: nowrap;
+}
+
+.idcard__body {
+  position: relative; z-index: 2; flex: 1; display: flex; align-items: center;
+  gap: 12px; padding-top: 11px;
+}
+.idcard__photo {
+  flex: none; width: 62px; height: 72px; border-radius: 9px; overflow: hidden;
+  background: rgba(255,255,255,.13); border: 1px solid rgba(212,175,55,.42);
+  display: grid; place-items: center; font-size: 20px; font-weight: 800;
+  letter-spacing: .04em;
+}
+.idcard__photo img { width: 100%; height: 100%; object-fit: cover; }
+
+.idcard__fields { flex: 1; min-width: 0; }
+.idcard__name {
+  display: block; font-size: 14.5px; font-weight: 800; letter-spacing: -.01em;
+  line-height: 1.2; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+}
+.idcard__no {
+  display: block; font-family: ui-monospace, "SFMono-Regular", monospace;
+  font-size: 10.5px; letter-spacing: .04em; color: #f0d675; margin-top: 3px;
+}
+.idcard__grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; margin-top: 9px;
+}
+.idcard__grid i {
+  display: block; font-style: normal; font-size: 6.5px; letter-spacing: .11em;
+  text-transform: uppercase; color: rgba(255,255,255,.55);
+}
+.idcard__grid b {
+  display: block; font-size: 9.5px; font-weight: 700; margin-top: 1px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.idcard__qr {
+  flex: none; background: #fff; padding: 4px; border-radius: 7px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2); align-self: center;
+}
+
+.idcard__foot {
+  position: relative; z-index: 2; display: flex; justify-content: space-between;
+  align-items: center; gap: 10px; padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,.12);
+}
+.idcard__serial {
+  font-family: ui-monospace, monospace; font-size: 8px; letter-spacing: .07em;
+  color: rgba(255,255,255,.72);
+}
+.idcard__motto {
+  font-size: 7.5px; letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(212,175,55,.85);
+}
+
+/* Skrini ndogo: punguza maandishi bila kuvunja uwiano */
+@container (max-width: 330px) {
+  .idcard__name { font-size: 12.5px; }
+  .idcard__photo { width: 52px; height: 62px; }
+  .idcard__qr svg { width: 50px; height: 50px; }
+  .idcard__grid { gap: 4px 8px; }
+}
+
+/* ==========================================================================
+   UKURASA WA UHAKIKI WA KADI
+   ========================================================================== */
+.verify { min-height: 72vh; display: grid; place-items: center; }
+.verify__wrap { width: min(470px, 100%); display: grid; gap: 16px; }
+
+.verify__stamp {
+  display: flex; align-items: center; gap: 13px; padding: 15px 18px;
+  border-radius: var(--r); border: 1px solid; background: #fff;
+}
+.verify__stamp b { display: block; font-size: 15.5px; font-weight: 800; }
+.verify__stamp span span { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.verify__ico { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; }
+.verify__stamp--ok  { border-color: rgba(18,134,74,.28); }
+.verify__stamp--ok  .verify__ico { background: var(--ok-bg, #e0f2e8); color: var(--ok, #12864a); }
+.verify__stamp--bad { border-color: rgba(220,38,38,.26); }
+.verify__stamp--bad .verify__ico { background: #fdeaea; color: var(--danger, #dc2626); }
+
+.verify__facts {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  background: var(--line-soft); border: 1px solid var(--line-soft);
+  border-radius: var(--r); overflow: hidden;
+}
+.verify__facts > div { background: var(--surface, #fff); padding: 11px 14px; }
+.verify__facts i {
+  display: block; font-style: normal; font-size: 9.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+}
+.verify__facts b { display: block; font-size: 13px; font-weight: 700; margin-top: 4px; }
+.verify__facts .mono { font-family: ui-monospace, monospace; font-size: 11.5px; }
+
+.verify__warn {
+  display: flex; align-items: center; gap: 8px; font-size: 12.5px;
+  color: var(--warn, #b45309); background: #fff8ec; border: 1px solid rgba(180,83,9,.2);
+  border-radius: var(--r); padding: 11px 14px; margin: 0;
+}
+.verify__note {
+  display: flex; align-items: flex-start; gap: 8px; font-size: 11.5px;
+  color: var(--muted); line-height: 1.7; margin: 0;
+}
+.verify__note svg { flex: none; margin-top: 2px; opacity: .6; }
+
+@media (max-width: 460px) { .verify__facts { grid-template-columns: 1fr; } }

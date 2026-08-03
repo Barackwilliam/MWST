@@ -1,8 +1,9 @@
 {% extends "base/app.html" %}
 {% load i18n mwst_tags %}
-{% block title %}Wadau na Wahisani{% endblock %}
+{% block title %}{% trans "Wadau na Wahisani" %}{% endblock %}
 
 {% block page %}
+  {% include "base/messages.html" %}
 
   <div class="pagehead" style="margin-bottom:14px">
     <div>
@@ -12,8 +13,8 @@
     <div class="pagehead__actions">
       <div class="datepill">
         <svg width="16" height="16"><use href="#i-calendar"></use></svg>
-        <span><span class="datepill__day">Alhamisi, 31 Julai 2026</span><br>
-        <span class="datepill__time">Mwaka 1448 H</span></span>
+        <span><span class="datepill__day">{{ today }}</span><br>
+        <span class="datepill__time">{{ hijri }}</span></span>
       </div>
     </div>
   </div>
@@ -25,8 +26,8 @@
   <div class="grid grid--2-2-1 mt">
     <section class="card">
       <div class="card__head">
-        <h3 class="card__title">{% trans "Mwenendo wa Michango" %}<span>(Mwezi 12)</span></h3>
-        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">{% trans "Mwaka 2026" %}<svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+        <h3 class="card__title">{% trans "Mwenendo wa Michango" %}<span>({% trans "Miezi 12" %})</span></h3>
+        <form method="get" style="display:inline">{% for k,v in request.GET.items %}{% if k != "year" %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endif %}{% endfor %}<select class="btn btn--ghost btn--sm" name="year" onchange="this.form.submit()" style="padding-right:26px">{% for y in year_options %}<option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></form>
       </div>
       <div class="card__body"><div class="chartbox chartbox--lg"><canvas id="chDonTrend"></canvas></div></div>
     </section>
@@ -36,7 +37,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Kampeni Zinazoendelea" %}</h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Kampeni zote' %}">{% trans "Tazama zote" %}</a>
+        <a class="link-more" href="/wadau/">{% trans "Tazama zote" %}</a>
       </div>
       <div class="card__body">
         {% for c in campaigns %}
@@ -59,7 +60,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Wahisani Wakubwa" %}<span>(Top 5)</span></h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Wahisani wote' %}">{% trans "Tazama zote" %}</a>
+        <a class="link-more" href="/wadau/">{% trans "Tazama zote" %}</a>
       </div>
       <div class="card__body">
         <div class="ranklist">
@@ -117,7 +118,7 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Arifa Muhimu" %}</h3>
-        <a href="#" class="link-more" data-backend="{% trans 'Arifa zote' %}">{% trans "Tazama zote" %}</a>
+        <a class="link-more" href="/mfumo/arifa/">{% trans "Tazama zote" %}</a>
       </div>
       <div class="card__body">
         <div class="rowlist">
@@ -153,8 +154,8 @@
     <section class="card" style="background:linear-gradient(140deg,var(--g-800),var(--g-950));border:0;color:#fff">
       <div class="card__head">
         <h3 class="card__title" style="color:#fff">{% trans "Jumla kwa Mwaka 2026" %}</h3>
-        <button class="btn btn--sm" style="color:#fff;border:1px solid rgba(255,255,255,.25)" data-backend="{% trans 'Ripoti ya mwaka' %}">{% trans "Tazama Ripoti" %}<svg width="12" height="12"><use href="#i-chevron-down"></use></svg>
-        </button>
+        <a class="btn btn--sm" style="color:#fff;border:1px solid rgba(255,255,255,.25)" href="/pakua/wahisani/">{% trans "Tazama Ripoti" %}<svg width="12" height="12"><use href="#i-chevron-down"></use></svg>
+        </a>
       </div>
       <div class="card__body">
         <div style="display:flex;gap:20px;flex-wrap:wrap">

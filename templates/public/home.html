@@ -33,7 +33,7 @@
         <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-user-plus"></use></svg></span>
         <span><b>{% trans "Jiunge Sasa" %}</b><small>{% trans "Usajili wa Uanachama" %}</small></span>
       </a>
-      <a href="#" class="hero-btn" data-backend="{% trans 'Video ya utangulizi' %}">
+      <a class="hero-btn" href="/media/">
         <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-video"></use></svg></span>
         <span><b>{% trans "Tazama Video" %}</b><small>{% trans "Jifunze Zaidi Kuhusu MWST" %}</small></span>
       </a>
@@ -44,24 +44,27 @@
     <h3>{% trans "Ingia Mfumo" %}</h3>
     <p>{% trans "Access your account" %}</p>
 
+    <form method="post" action="{% url 'core:login' %}">
+    {% csrf_token %}
     <label class="loginfield">
       <svg width="16" height="16"><use href="#i-user"></use></svg>
-      <input type="text" placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}" aria-label="{% trans 'Namba ya Uanachama / Barua pepe' %}">
+      <input type="text" name="username" required placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}">
     </label>
     <label class="loginfield">
       <svg width="16" height="16"><use href="#i-lock"></use></svg>
-      <input type="password" placeholder="{% trans 'Nenosiri' %}" aria-label="{% trans 'Nenosiri' %}">
-      <button type="button" data-backend="{% trans 'Kuonyesha nenosiri' %}" aria-label="{% trans 'Kuonyesha nenosiri' %}">
+      <input type="password" name="password" required placeholder="{% trans 'Nenosiri' %}">
+      <button type="button" data-toggle-pw aria-label="{% trans 'Kuonyesha nenosiri' %}">
         <svg width="16" height="16"><use href="#i-eye"></use></svg>
       </button>
     </label>
 
     <div class="loginpanel__row">
       <label><input type="checkbox" style="accent-color:var(--gold-500)"> {% trans "Kumbuka mimi" %}</label>
-      <a href="#" data-backend="{% trans 'Kurejesha nenosiri' %}">{% trans "Umesahau nywila?" %}</a>
+      <a href="/nenosiri/sahau/">{% trans "Umesahau nywila?" %}</a>
     </div>
 
-    <button class="btn btn--gold btn--block" data-backend="{% trans 'Kuingia kwenye mfumo' %}">{% trans "Ingia" %}</button>
+    <button type="submit" class="btn btn--gold btn--block">{% trans "Ingia" %}</button>
+    </form>
 
     <p class="loginpanel__sep">— {% trans "Au ingia kama" %} —</p>
     <div class="rolegrid">
@@ -74,20 +77,6 @@
     </div>
   </div>
 </section>
-
-{# ---------------- Takwimu ---------------- #}
-<div class="statstrip">
-  {% for s in stats %}
-    <div class="statstrip__item reveal">
-      <svg class="statstrip__ico"><use href="#i-{{ s.icon }}"></use></svg>
-      <span>
-        <span class="statstrip__val num">{{ s.value }}</span>
-        <span class="statstrip__lbl">{{ s.label|tr }}</span>
-        <span class="statstrip__delta">{{ s.delta|tr }}</span>
-      </span>
-    </div>
-  {% endfor %}
-</div>
 
 {# ---------------- Huduma ---------------- #}
 <div class="servicebar reveal">
@@ -151,7 +140,7 @@
     <div class="card__body">
       <div class="gallery">
         {% for g in gallery %}
-          <a href="#" class="gallery__item" data-backend="{% trans 'Kufungua albamu' %}">
+          <a class="gallery__item" href="/media/">
             <span class="illus" style="height:92px;border-radius:var(--r)">{% include "components/illus.html" with scene=g.scene %}</span>
             <span class="gallery__cap">{{ g.cap|tr }}</span>
             <span class="gallery__meta"><svg width="12" height="12"><use href="#i-image"></use></svg>{{ g.count|tr }}</span>

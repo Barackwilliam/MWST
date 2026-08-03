@@ -1,8 +1,9 @@
 {% extends "base/app.html" %}
 {% load i18n mwst_tags %}
-{% block title %}Picha na Video{% endblock %}
+{% block title %}{% trans "Picha na Video" %}{% endblock %}
 
 {% block page %}
+  {% include "base/messages.html" %}
 
   <div class="pagehead" style="margin-bottom:14px">
     <div>
@@ -10,12 +11,9 @@
       <p>{% trans "Dashibodi ya Usimamizi wa Picha na Video" %}</p>
     </div>
     <div class="pagehead__actions">
-      <button class="btn btn--ghost" data-backend="{% trans 'Kuchagua kipindi' %}">
-        <svg><use href="#i-calendar"></use></svg> 01/07/2026 - 31/07/2026
-        <svg width="13" height="13"><use href="#i-chevron-down"></use></svg>
-      </button>
-      <button class="btn btn--primary" data-backend="{% trans 'Kupakia faili mpya' %}">
-        <svg><use href="#i-plus"></use></svg>{% trans "Pakia Mpya" %}</button>
+      <form method="get" style="display:inline">{% for k,v in request.GET.items %}{% if k != "year" %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endif %}{% endfor %}<select class="btn btn--ghost" name="year" onchange="this.form.submit()" style="padding-right:26px">{% for y in year_options %}<option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></form>
+      <a class="btn btn--primary" href="/media/pakia/">
+        <svg><use href="#i-plus"></use></svg>{% trans "Pakia Mpya" %}</a>
     </div>
   </div>
 
@@ -27,13 +25,13 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Mwenendo wa Upakiaji" %}</h3>
-        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">{% trans "Mwaka 2026" %}<svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+        <form method="get" style="display:inline">{% for k,v in request.GET.items %}{% if k != "year" %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endif %}{% endfor %}<select class="btn btn--ghost btn--sm" name="year" onchange="this.form.submit()" style="padding-right:26px">{% for y in year_options %}<option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></form>
       </div>
       <div class="card__body">
         <div class="chartbox chartbox--md"><canvas id="chUpload"></canvas></div>
         <div class="hstack" style="justify-content:center;gap:20px;margin-top:8px;font-size:11.5px">
-          <span class="legend-row" style="gap:6px"><span class="legend-row__dot" style="background:var(--c1)"></span>Picha</span>
-          <span class="legend-row" style="gap:6px"><span class="legend-row__dot" style="background:#2563eb"></span>Video</span>
+          <span class="legend-row" style="gap:6px"><span class="legend-row__dot" style="background:var(--c1)"></span>{% trans "Picha" %}</span>
+          <span class="legend-row" style="gap:6px"><span class="legend-row__dot" style="background:#2563eb"></span>{% trans "Video" %}</span>
         </div>
       </div>
     </section>
@@ -65,7 +63,7 @@
           {% endfor %}
         </div>
       </div>
-      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Maelezo ya hifadhi' %}">{% trans "Tazama maelezo kamili" %}<svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
+      <div class="card__foot"><a class="link-more" href="/mfumo/media/">{% trans "Tazama maelezo kamili" %}<svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
     </section>
   </div>
 
@@ -75,12 +73,12 @@
       <section class="card">
         <div class="card__head">
           <h3 class="card__title">{% trans "Picha za Hivi Karibuni" %}</h3>
-          <a href="#" class="link-more" data-backend="{% trans 'Picha zote' %}">{% trans "Tazama zote" %}</a>
+          <a class="link-more" href="/media/">{% trans "Tazama zote" %}</a>
         </div>
         <div class="card__body">
           <div class="mediastrip">
             {% for p in photos %}
-              <a href="#" class="mediacard" data-backend="{% trans 'Kufungua picha' %}">
+              <a href="{{ p.url|default:'/mfumo/media/' }}" class="mediacard"{% if p.url %} target="_blank"{% endif %}>
                 <span class="mediacard__frame">
                   <span style="display:block;height:108px;background:linear-gradient(135deg,var(--g-400),var(--n-700))"></span>
                 </span>
@@ -99,12 +97,12 @@
       <section class="card">
         <div class="card__head">
           <h3 class="card__title">{% trans "Video za Hivi Karibuni" %}</h3>
-          <a href="#" class="link-more" data-backend="{% trans 'Video zote' %}">{% trans "Tazama zote" %}</a>
+          <a class="link-more" href="/media/">{% trans "Tazama zote" %}</a>
         </div>
         <div class="card__body">
           <div class="mediastrip">
             {% for v in videos %}
-              <a href="#" class="mediacard" data-backend="{% trans 'Kucheza video' %}">
+              <a href="{{ v.url|default:'/mfumo/media/' }}" class="mediacard"{% if v.url %} target="_blank"{% endif %}>
                 <span class="mediacard__frame">
                   <span style="display:block;height:108px;background:linear-gradient(135deg,var(--n-700),var(--g-800))"></span>
                   <span class="mediacard__play"><i><svg width="16" height="16"><use href="#i-video"></use></svg></i></span>
@@ -135,7 +133,7 @@
       <section class="card">
         <div class="card__head">
           <h3 class="card__title">{% trans "Upakiaji wa Hivi Karibuni" %}</h3>
-          <a href="#" class="link-more" data-backend="{% trans 'Upakiaji wote' %}">{% trans "Tazama zote" %}</a>
+          <a class="link-more" href="/media/">{% trans "Tazama zote" %}</a>
         </div>
         <div class="card__body">
           <div class="rowlist">
@@ -160,7 +158,7 @@
     <span style="flex:1;font-size:12.5px;color:var(--ink-2)">
       Kidokezo: Unaweza kupanga, kuhariri na kushiriki picha na video katika albamu au miradi husika.
     </span>
-    <button class="btn btn--primary btn--sm" data-backend="{% trans 'Mafunzo ya usimamizi wa media' %}">{% trans "Jifunze Zaidi" %}</button>
+    <a class="btn btn--primary btn--sm" href="/mfumo/media/">{% trans "Jifunze Zaidi" %}</a>
   </div>
 
 {% endblock %}

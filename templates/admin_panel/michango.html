@@ -1,8 +1,9 @@
 {% extends "base/app.html" %}
 {% load i18n mwst_tags %}
-{% block title %}Michango{% endblock %}
+{% block title %}{% trans "Michango" %}{% endblock %}
 
 {% block page %}
+  {% include "base/messages.html" %}
 
   <div class="grid grid--6">
     {% for k in kpis %}{% include "components/kpi_note.html" %}{% endfor %}
@@ -11,14 +12,14 @@
   <div class="grid grid--4 mt">
     <section class="card">
       <div class="card__head">
-        <h3 class="card__title">{% trans "Michango kwa Mwezi" %}<span>(Mwaka 2026)</span></h3>
-        <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchagua mwaka' %}">2026 <svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
+        <h3 class="card__title">{% trans "Michango kwa Mwezi" %}<span>({% trans "Mwaka" %} {{ year }})</span></h3>
+        <form method="get" style="display:inline">{% for k,v in request.GET.items %}{% if k != "year" %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endif %}{% endfor %}<select class="btn btn--ghost btn--sm" name="year" onchange="this.form.submit()" style="padding-right:26px">{% for y in year_options %}<option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>{% endfor %}</select></form>
       </div>
       <div class="card__body"><div class="chartbox chartbox--md"><canvas id="chDonMonth"></canvas></div></div>
     </section>
 
     <section class="card">
-      <div class="card__head"><h3 class="card__title">{% trans "Michango kwa Aina" %}<span>(Mwaka 2026)</span></h3></div>
+      <div class="card__head"><h3 class="card__title">{% trans "Michango kwa Aina" %}<span>({% trans "Mwaka" %} {{ year }})</span></h3></div>
       <div class="card__body">
         <div class="donutwrap">
           <div class="donutwrap__chart"><canvas id="chDonType"></canvas></div>
@@ -50,7 +51,7 @@
           {% endfor %}
         </div>
       </div>
-      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Michango ya mikoa yote' %}">{% trans "Tazama yote" %}</a></div>
+      <div class="card__foot"><a class="link-more" href="/michango/">{% trans "Tazama yote" %}</a></div>
     </section>
 
     <section class="card">
@@ -66,7 +67,7 @@
           {% endfor %}
         </div>
       </div>
-      <div class="card__foot"><a href="#" class="link-more" data-backend="{% trans 'Orodha ya miradi' %}">{% trans "Tazama miradi yote" %}</a></div>
+      <div class="card__foot"><a class="link-more" href="/huduma/">{% trans "Tazama miradi yote" %}</a></div>
     </section>
   </div>
 
@@ -76,9 +77,22 @@
       <div class="card__head">
         <h3 class="card__title">{% trans "Rekodi za Michango za Hivi Karibuni" %}</h3>
         <div class="hstack">
-          <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchuja kwa aina' %}">{% trans "Chagua Aina" %}<svg width="12" height="12"><use href="#i-chevron-down"></use></svg></button>
-          <button class="btn btn--ghost btn--sm" data-backend="{% trans 'Kuchuja kwa tarehe' %}"><svg width="13" height="13"><use href="#i-calendar"></use></svg>{% trans "Tarehe" %}</button>
-          <button class="btn btn--primary btn--sm" data-backend="{% trans 'Kurekodi mchango mpya' %}"><svg><use href="#i-plus"></use></svg>{% trans "Rekodi Mchango" %}</button>
+          <form method="get" class="hstack" style="gap:8px;flex-wrap:wrap">
+            <input class="input" name="q" value="{{ filters.q }}" placeholder="{% trans 'Jina au risiti' %}" style="height:32px;font-size:12.5px;width:170px">
+            <select class="select" name="fund" style="height:32px;font-size:12.5px;width:150px">
+              <option value="">{% trans "Aina zote" %}</option>
+              {% for f in funds_list %}<option value="{{ f.pk }}" {% if filters.fund == f.pk|stringformat:"s" %}selected{% endif %}>{{ f.name }}</option>{% endfor %}
+            </select>
+            <select class="select" name="status" style="height:32px;font-size:12.5px;width:150px">
+              <option value="">{% trans "Hali zote" %}</option>
+              {% for v, label in statuses %}<option value="{{ v }}" {% if filters.status == v %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+            <input class="input" type="date" name="from" value="{{ filters.from }}" style="height:32px;font-size:12.5px;width:140px">
+            <input class="input" type="date" name="to" value="{{ filters.to }}" style="height:32px;font-size:12.5px;width:140px">
+            <button class="btn btn--primary btn--sm"><svg width="13" height="13"><use href="#i-search"></use></svg> {% trans "Chuja" %}</button>
+            <a href="{% url 'core:michango' %}" class="btn btn--ghost btn--sm">{% trans "Futa" %}</a>
+          </form>
+          <a class="btn btn--primary btn--sm" href="/michango/"><svg><use href="#i-plus"></use></svg>{% trans "Rekodi Mchango" %}</a>
         </div>
       </div>
       <div class="card__body card__body--flush">
@@ -105,8 +119,17 @@
                   <td><span class="badge badge--ok">{% trans "Imethibitisha" %}</span></td>
                   <td>
                     <span class="table__actions">
-                      <button class="table__act" data-backend="{% trans 'Kuona maelezo ya mchango' %}"><svg width="15" height="15"><use href="#i-eye"></use></svg></button>
-                      <button class="table__act" data-backend="{% trans 'Kupakua risiti' %}"><svg width="15" height="15"><use href="#i-download"></use></svg></button>
+                      <a class="table__act" href="{% url 'core:receipt' 'mchango' r.id %}" title="{{ r.receipt }}"><svg width="15" height="15"><use href="#i-receipt"></use></svg></a>
+                      {% if r.pending %}
+                        <form method="post" action="{% url 'core:contribution_action' r.id 'confirm' %}" style="display:inline">
+                          {% csrf_token %}
+                          <button class="table__act" title="{% trans 'Thibitisha' %}"><svg width="15" height="15"><use href="#i-check-circle"></use></svg></button>
+                        </form>
+                        <form method="post" action="{% url 'core:contribution_action' r.id 'cancel' %}" style="display:inline">
+                          {% csrf_token %}
+                          <button class="table__act table__act--danger" title="{% trans 'Ghairi' %}"><svg width="15" height="15"><use href="#i-x-circle"></use></svg></button>
+                        </form>
+                      {% endif %}
                     </span>
                   </td>
                 </tr>
@@ -114,25 +137,13 @@
             </tbody>
           </table>
         </div>
-        <div class="pager">
-          <span class="pager__info">Inaonyesha 1 hadi 10 ya 342 rekodi</span>
-          <span class="pager__nav">
-            <button class="pager__btn" data-backend="{% trans 'Ukurasa wa kwanza' %}">{% trans "Kwanza" %}</button>
-            <button class="pager__btn" data-backend="{% trans 'Ukurasa uliopita' %}">&lsaquo; Nyuma</button>
-            <button class="pager__btn is-active">1</button>
-            <button class="pager__btn">2</button><button class="pager__btn">3</button>
-            <button class="pager__btn">4</button><button class="pager__btn">5</button>
-            <button class="pager__btn" disabled>...</button><button class="pager__btn">35</button>
-            <button class="pager__btn" data-backend="{% trans 'Ukurasa unaofuata' %}">Mbele &rsaquo;</button>
-            <button class="pager__btn" data-backend="{% trans 'Ukurasa wa mwisho' %}">{% trans "Mwisho" %}</button>
-          </span>
-        </div>
+        {% include "components/pager.html" %}
       </div>
     </section>
 
     <div class="stack">
       <section class="card">
-        <div class="card__head"><h3 class="card__title">{% trans "Michango na Malengo" %}<span>(Mwaka 2026)</span></h3></div>
+        <div class="card__head"><h3 class="card__title">{% trans "Michango na Malengo" %}<span>({% trans "Mwaka" %} {{ year }})</span></h3></div>
         <div class="card__body card__body--flush">
           <div class="tablewrap">
             <table class="table">

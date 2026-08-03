@@ -5,6 +5,8 @@
 {% block body %}
 {% include "public/_pagehero.html" %}
 
+<div class="section" style="padding-bottom:0">{% include "base/messages.html" %}</div>
+
 <section class="section">
   <div class="grid grid--4">
     {% for c in channels %}
@@ -45,20 +47,21 @@
     <div class="card reveal"><div class="card__body" style="padding:22px">
       <h3 class="card__title" style="font-size:17px;margin-bottom:4px">{% trans "Tuma Ujumbe" %}</h3>
       <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px">{% trans "Tutakujibu ndani ya saa 24 za kazi." %}</p>
-      <div class="grid grid--2" style="gap:12px">
-        <div class="field"><label class="field__label">{% trans "Jina Kamili" %} <em>*</em></label><input class="input" placeholder="{% trans 'Ingiza jina kamili' %}"></div>
-        <div class="field"><label class="field__label">{% trans "Namba ya Simu" %} <em>*</em></label><input class="input" placeholder="0769 000 000"></div>
-        <div class="field"><label class="field__label">{% trans "Barua Pepe" %} <em>*</em></label><input class="input" type="email" placeholder="jina@mfano.com"></div>
-        <div class="field"><label class="field__label">{% trans "Mada" %} <em>*</em></label>
-          <select class="select">{% for s in subjects %}<option>{{ s|tr }}</option>{% endfor %}</select>
+      <form method="post">
+        {% csrf_token %}
+        <div class="grid grid--2" style="gap:12px">
+          {% for field in form %}
+            <div class="field" {% if field.name == 'body' %}style="grid-column:1/-1"{% endif %}>
+              <label class="field__label" for="{{ field.id_for_label }}">{{ field.label }} <em>*</em></label>
+              {{ field }}
+              {% if field.errors %}<span style="font-size:11.5px;color:var(--danger)">{{ field.errors.0 }}</span>{% endif %}
+            </div>
+          {% endfor %}
         </div>
-        <div class="field" style="grid-column:1/-1"><label class="field__label">{% trans "Ujumbe" %} <em>*</em></label>
-          <textarea class="textarea" style="min-height:120px" placeholder="{% trans 'Andika ujumbe wako hapa...' %}"></textarea>
-        </div>
-      </div>
-      <button class="btn btn--primary btn--block" style="margin-top:16px" data-backend="Kutuma ujumbe">
+      <button type="submit" class="btn btn--primary btn--block" style="margin-top:16px">
         <svg><use href="#i-mail"></use></svg> {% trans "Tuma Ujumbe" %}
       </button>
+      </form>
     </div></div>
   </div>
 </section>
