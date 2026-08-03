@@ -31,8 +31,6 @@ Fungua <http://127.0.0.1:8000/>
 | `mratibu` | `mwst2026` | Mratibu wa Mkoa | `/taifa/` |
 | `mwanachama` | `mwst2026` | Mwanachama | `/mwanachama/` |
 
-
-username MWST/S/000035/2026, temporary password hfgbbchhde.
 ### Usimamizi wote uko ndani ya mfumo
 
 `/mfumo/` ina **model 39** zinazosimamiwa kwa design ya MWST yenyewe: orodha,
@@ -261,6 +259,19 @@ ya 3,900. Ongeza zilizobaki kupitia `/usimamizi/geo/ward/` au import ya CSV.
 
 Halmashauri zenye jina moja lakini aina tofauti (mfano **Kibaha TC** na
 **Kibaha DC** mkoani Pwani) ni rekodi mbili tofauti — hiyo ndiyo hali halisi.
+
+---
+
+## Picha
+
+`static/img/hero-mosque.jpg` (1280px, 187 KB) ndiyo picha ya hero ya ukurasa
+wa mbele, na `hero-mosque-sm.jpg` (900px, 102 KB) inatumika kwenye simu.
+Kubadilisha, weka picha yako kwa majina hayo hayo — hakuna code inayohitaji
+kubadilishwa.
+
+**Onyo la template**: Django `{# ... #}` inafanya kazi **mstari mmoja tu**.
+Comment ya mistari mingi haichujwi — inachapishwa kwenye ukurasa kama
+maandishi. Kwa maelezo marefu tumia `{% templatetag openblock %} comment {% templatetag closeblock %}`.
 
 ---
 

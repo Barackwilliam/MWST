@@ -3,18 +3,21 @@
 {% block title %}{% trans "Nyumbani" %}{% endblock %}
 
 {% block head %}
+<link rel="preload" as="image" href="{% static 'img/hero-mosque.jpg' %}">
 <style>
+  /* Picha halisi ya kituo cha elimu ya Kiislamu.
+     Gradient inaiweka giza upande wa kushoto ili maandishi meupe yasomeke. */
   .hero--home {
     background:
-      linear-gradient(100deg, rgba(4,35,24,.94) 0%, rgba(6,48,31,.80) 40%,
-                      rgba(10,64,40,.34) 70%, rgba(10,64,40,.14) 100%),
-      url("{% static 'img/hero-mosque.svg' %}") center/cover no-repeat;
+      linear-gradient(100deg, rgba(4,35,24,.93) 0%, rgba(6,48,31,.78) 42%,
+                      rgba(10,64,40,.30) 72%, rgba(10,64,40,.10) 100%),
+      url("{% static 'img/hero-mosque.jpg' %}") center 62% / cover no-repeat;
   }
   @media (max-width: 1024px) {
     .hero--home {
       background:
-        linear-gradient(180deg, rgba(4,35,24,.90) 0%, rgba(6,48,31,.88) 100%),
-        url("{% static 'img/hero-mosque.svg' %}") center/cover no-repeat;
+        linear-gradient(180deg, rgba(4,35,24,.88) 0%, rgba(6,48,31,.90) 100%),
+        url("{% static 'img/hero-mosque-sm.jpg' %}") center 55% / cover no-repeat;
     }
   }
 </style>

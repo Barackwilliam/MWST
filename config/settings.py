@@ -70,18 +70,35 @@ TEMPLATES = [{
 
 # --- Database ---------------------------------------------------------------
 # Ndani: SQLite.  Render/Supabase: weka DATABASE_URL kwenye env.
-DATABASE_URL = os.environ.get("DATABASE_URL", "")
-if DATABASE_URL:
-    import dj_database_url
-    DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600,
-                                                  ssl_require=True)}
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
+# DATABASE_URL = os.environ.get("DATABASE_URL", "")
+# if DATABASE_URL:
+#     import dj_database_url
+#     DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600,
+#                                                   ssl_require=True)}
+# else:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": BASE_DIR / "db.sqlite3",
+#         }
+#     }
+
+
+#Database e.madventure29@gmail.com
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres', 
+        'USER': 'postgres.vgosiffobeoohticeuro',  
+        'PASSWORD': 'Nyumbachap@123', 
+        'HOST': 'aws-0-eu-west-3.pooler.supabase.com', 
+        'PORT': '5432',
+        'OPTIONS': {'sslmode': 'require'},  # hii inaruhusu SSL
+
+
     }
+}
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

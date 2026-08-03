@@ -1,5 +1,12 @@
 {% load i18n %}
+{% comment %}
+Kadi ya uanachama — muundo wa kimataifa (ukubwa wa CR80: 85.6 x 54 mm).
+Inatumika kwenye: uhakiki wa QR, ukurasa wa kadi, na faili la kupakua.
+Vigezo: m (mwanachama), card, settings_obj, verify_url.
 
+ONYO: `{# ... #}` inafanya kazi mstari mmoja tu. Ikivuka mistari
+inachapishwa kama maandishi. Kwa maelezo marefu tumia `{% templatetag openblock %} comment {% templatetag closeblock %}`.
+{% endcomment %}
 <div class="idcard" style="--tier:{{ m.category.colour|default:'#12864a' }}">
   <div class="idcard__face idcard__face--front">
     <div class="idcard__glow"></div>
