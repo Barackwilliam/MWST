@@ -49,7 +49,13 @@
       <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px">{% trans "Tutakujibu ndani ya saa 24 za kazi." %}</p>
       <form method="post">
         {% csrf_token %}
-        <div class="grid grid--2" style="gap:12px">
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+                <div class="grid grid--2" style="gap:12px">
           {% for field in form %}
             <div class="field" {% if field.name == 'body' %}style="grid-column:1/-1"{% endif %}>
               <label class="field__label" for="{{ field.id_for_label }}">{{ field.label }} <em>*</em></label>

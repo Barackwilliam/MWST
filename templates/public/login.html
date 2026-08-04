@@ -36,14 +36,22 @@
 
       <form method="post">
       {% csrf_token %}
-      <input type="hidden" name="next" value="{{ next }}">
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+              <input type="hidden" name="next" value="{{ next }}">
       <label class="loginfield">
         <svg width="16" height="16"><use href="#i-user"></use></svg>
-        <input type="text" name="username" required autofocus placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}">
+        <input type="text" name="username" required autofocus
+               autocapitalize="none" autocorrect="off" spellcheck="false"
+               autocomplete="username" placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}">
       </label>
       <label class="loginfield">
         <svg width="16" height="16"><use href="#i-lock"></use></svg>
-        <input type="password" name="password" required placeholder="{% trans 'Nenosiri' %}" id="pw">
+        <input type="password" name="password" required autocomplete="current-password" placeholder="{% trans 'Nenosiri' %}" id="pw">
         <button type="button" data-toggle-pw><svg width="16" height="16"><use href="#i-eye"></use></svg></button>
       </label>
 

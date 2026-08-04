@@ -20,6 +20,7 @@ def footer_menu():
         {"label": "Huduma Zetu", "url": "/huduma/"},
         {"label": "Habari",      "url": "/habari/"},
         {"label": "Matukio",     "url": "/matukio-yetu/"},
+        {"label": "Picha na Video", "url": "/picha/"},
         {"label": "Mawasiliano", "url": "/mawasiliano/"},
     ]
 

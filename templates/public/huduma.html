@@ -55,13 +55,23 @@
         <div class="card__body" style="padding:16px">
           <h4 style="font-size:15px;font-weight:700">{{ p.title|tr }}</h4>
           <span class="rowlist__sub" style="margin:4px 0 10px"><svg width="12" height="12" style="vertical-align:-1px"><use href="#i-map-pin"></use></svg> {{ p.place|tr }}</span>
-          <div class="prog"><i data-prog="{{ p.pct }}" style="width:0"></i></div>
+          <div class="prog"><i data-prog="{{ p.bar }}" style="width:0"></i></div>
           <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-top:7px">
-            <b class="num">{{ p.raised }}</b><span style="color:var(--muted)">/ {{ p.goal }}</span>
+            <b class="num">{{ p.raised }}</b>
+            <span style="color:var(--muted)">/ {{ p.goal }} ·
+              <b style="color:var(--{% if p.over %}ok{% else %}g-500{% endif %})">{{ p.pct }}%</b></span>
           </div>
-          <a class="btn btn--primary btn--block" style="margin-top:12px" href="/michango/">
-            <svg><use href="#i-heart"></use></svg> {% trans "Changia Mradi Huu" %}
-          </a>
+          {% if user.is_authenticated and user.role == "member" %}
+            <a class="btn btn--primary btn--block" style="margin-top:12px"
+               href="{% url 'core:member_contributions' %}">
+              <svg><use href="#i-heart"></use></svg> {% trans "Changia Mradi Huu" %}
+            </a>
+          {% else %}
+            <a class="btn btn--primary btn--block" style="margin-top:12px"
+               href="{% url 'core:mawasiliano' %}?mada=Michango+na+Malipo&mradi={{ p.title|urlencode }}">
+              <svg><use href="#i-heart"></use></svg> {% trans "Changia Mradi Huu" %}
+            </a>
+          {% endif %}
         </div>
       </article>
     {% endfor %}

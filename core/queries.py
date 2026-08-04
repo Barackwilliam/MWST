@@ -756,6 +756,7 @@ def wadau(year=None):
                     "center_label": "", "rows": type_rows},
         "campaigns": [{"title": c.tx("title"), "raised": tzs(c.raised()),
                        "goal": num(c.target_amount), "pct": c.progress(),
+                       "bar": c.progress_bar(),
                        "days": _("Siku %(n)d") % {"n": c.days_left()}, "scene": c.scene}
                       for c in campaigns[:4]],
         "top_donors": [{"n": i, "name": d_.name, "value": tzs(d_.given or 0)}
@@ -1331,12 +1332,14 @@ def public_huduma():
                       "scene": s.scene, "cat": s.category} for s in svc],
         "filters": filters,
         "projects": [{"title": p.tx("title"), "place": p.region.name if p.region else "—",
-                      "pct": p.progress(), "raised": tzs(p.raised()),
-                      "goal": num(p.target_amount), "scene": p.scene}
+                      "pct": p.progress(), "bar": p.progress_bar(),
+                      "raised": tzs(p.raised()), "goal": num(p.target_amount),
+                      "scene": p.scene, "over": p.progress() > 100}
                      for p in Project.objects.filter(status="ongoing")[:3]],
         "impact": [
             {"value": EventRegistration.objects.count(), "label": "Wanufaika kwa Mwezi"},
-            {"value": Project.objects.count(), "label": "Miradi Inayoendelea"},
+            {"value": Project.objects.filter(status="ongoing").count(),
+             "label": "Miradi Inayoendelea"},
             {"value": Member.objects.count(), "label": "Wanachama"},
             {"value": Donor.objects.count(), "label": "Wahisani na Wadau"},
         ],
@@ -2028,4 +2031,37 @@ def broadcast_page(region_ids=None):
             "by": l.sent_by.get_full_name() if l.sent_by else "—",
             "date": l.created_at.strftime("%d/%m/%Y %I:%M %p"),
         } for l in logs],
+    }
+
+
+def public_gallery(album_slug=None, page=1, per_page=24):
+    """Maktaba ya picha na video kwa umma."""
+    albums = Album.objects.filter(is_public=True)
+    items = MediaItem.objects.filter(album__is_public=True).select_related("album")
+    active = None
+    if album_slug:
+        active = albums.filter(pk=album_slug).first() if str(album_slug).isdigit() else None
+        if active:
+            items = items.filter(album=active)
+
+    total = items.count()
+    pages = max((total + per_page - 1) // per_page, 1)
+    page = min(max(page, 1), pages)
+    rows = items.order_by("-uploaded_on", "-id")[(page - 1) * per_page: page * per_page]
+
+    return {
+        "hero": {"eyebrow": "Picha na Video", "scene": "sadaka",
+                 "title": "Maktaba ya Picha na Video",
+                 "text": "Shughuli, miradi na matukio ya MWST katika picha."},
+        "albums": [{"id": a.pk, "name": a.tx("name"), "count": a.item_count(),
+                    "scene": a.scene, "active": bool(active and active.pk == a.pk)}
+                   for a in albums],
+        "active_album": {"id": active.pk, "name": active.tx("name")} if active else None,
+        "items": [{"title": m.tx("title"), "kind": m.kind, "scene": m.scene,
+                   "album": m.album.tx("name") if m.album else "",
+                   "date": m.uploaded_on.strftime("%d %B %Y"),
+                   "duration": m.duration, "url": m.file.url if m.file else ""}
+                  for m in rows],
+        "total": total, "page": page, "pages": pages,
+        **page_meta(page, pages, per_page, total),
     }

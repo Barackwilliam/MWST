@@ -11,6 +11,7 @@ urlpatterns = [
     path("huduma/", views.huduma, name="huduma"),
     path("habari/", views.habari, name="habari"),
     path("matukio-yetu/", views.matukio_umma, name="matukio_umma"),
+    path("picha/", views.picha, name="picha"),
     path("mawasiliano/", views.mawasiliano, name="mawasiliano"),
     path("jiunge/", views.jiunge, name="jiunge"),
     path("hakiki/<str:serial>/", views.card_verify, name="card_verify"),

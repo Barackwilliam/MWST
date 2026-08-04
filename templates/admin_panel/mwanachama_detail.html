@@ -10,7 +10,13 @@
     <div class="pagehead__actions">
       {% if can_grant_special %}
         <form method="post" style="display:inline">{% csrf_token %}
-          <input type="hidden" name="action" value="grant_special">
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+                  <input type="hidden" name="action" value="grant_special">
           <button class="btn btn--gold"><svg><use href="#i-star"></use></svg>
             {% trans "Toa Daraja la Tanzanite" %}</button>
         </form>

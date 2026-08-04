@@ -4,6 +4,24 @@ from django.utils import timezone
 from django.utils.translation import get_language
 
 
+def normalize_phone(raw):
+    """
+    Muundo mmoja wa namba za simu: 0712345678.
+
+    Inakubali 0712 345 678, +255712345678, 255-712-345-678 na kuzigeuza
+    zote kuwa muundo mmoja. Bila hii, kutafuta au kulinganisha namba
+    kunashindwa kwa sababu ya nafasi na vistari.
+    """
+    if not raw:
+        return ""
+    digits = "".join(ch for ch in str(raw) if ch.isdigit())
+    if digits.startswith("255"):
+        digits = "0" + digits[3:]
+    elif digits.startswith("7") or digits.startswith("6"):
+        digits = "0" + digits
+    return digits
+
+
 class Bilingual(models.Model):
     """
     Model yenye maudhui ya Kiswahili na Kiingereza.

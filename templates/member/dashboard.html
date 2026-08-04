@@ -269,7 +269,13 @@
               </span>
               <form method="post" action="{% url 'core:event_register' e.id %}" style="display:inline">
                 {% csrf_token %}
-                <button type="submit" class="btn btn--primary btn--sm">{% trans "Jiandikishe" %}</button>
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+                        <button type="submit" class="btn btn--primary btn--sm">{% trans "Jiandikishe" %}</button>
               </form>
             </div>
           {% endfor %}

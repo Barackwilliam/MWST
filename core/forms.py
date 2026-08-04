@@ -63,6 +63,17 @@ class ApplicationForm(BootstrapMixin, forms.ModelForm):
         self.fields["category"].queryset = Category.objects.filter(is_selectable=True)
         self.fields["category"].empty_label = _("Chagua Aina ya Uanachama")
 
+        # Vinavyohitajika ili ombi lishughulikiwe. Vingine ni vya hiari —
+        # mwombaji asizuiliwe kwa kukosa kitambulisho au barua pepe.
+        for name in ("gender", "date_of_birth", "region", "district"):
+            self.fields[name].required = True
+
+        self.fields["national_id"].help_text = _(
+            "Si lazima sasa, lakini itahitajika kabla ya kupewa kadi")
+        self.fields["email"].help_text = _(
+            "Si lazima. Ikiwepo, utapokea risiti na taarifa kwa barua pepe")
+        self.fields["photo"].help_text = _("JPEG au PNG, chini ya MB 2")
+
         data = self.data or {}
         region_id = data.get("region") or getattr(self.instance, "region_id", None)
         if region_id:
@@ -71,6 +82,72 @@ class ApplicationForm(BootstrapMixin, forms.ModelForm):
         if district_id:
             self.fields["ward"].queryset = Ward.objects.filter(district_id=district_id)
         self._style()
+
+    def clean_phone(self):
+        """Namba ya simu ya Tanzania: 07XXXXXXXX au +2557XXXXXXXX."""
+        from core.mixins import normalize_phone
+        digits = normalize_phone(self.cleaned_data["phone"])
+        if not (len(digits) == 10 and digits.startswith("0")):
+            raise forms.ValidationError(
+                _("Weka namba sahihi ya simu, mfano 0712 345 678."))
+        return digits
+
+    def clean_date_of_birth(self):
+        """Umri wa chini ni miaka 18."""
+        from django.utils import timezone
+        dob = self.cleaned_data["date_of_birth"]
+        today = timezone.localdate()
+        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        if age < 18:
+            raise forms.ValidationError(
+                _("Mwombaji lazima awe na umri wa miaka 18 au zaidi."))
+        if age > 120:
+            raise forms.ValidationError(_("Hakikisha tarehe ya kuzaliwa ni sahihi."))
+        return dob
+
+    def clean(self):
+        """
+        Zuia maombi yanayorudiwa.
+
+        Mtu akibonyeza "Tuma" mara mbili, au akirudia fomu, hatuzalishi
+        maombi mengi. Pia tunamzuia aliyekwisha kuwa mwanachama.
+        """
+        cleaned = super().clean()
+        phone = cleaned.get("phone")
+        nid = (cleaned.get("national_id") or "").strip()
+        if not phone or self.instance.pk:
+            return cleaned
+
+        from members.models import Application, ApplicationStatus, Member
+
+        if Member.objects.filter(phone=phone).exists() or (
+                nid and Member.objects.filter(national_id=nid).exists()):
+            raise forms.ValidationError(_(
+                "Namba hii tayari ni ya mwanachama. Kama umesahau namba yako "
+                "ya uanachama, wasiliana nasi."))
+
+        pending = Application.objects.filter(
+            phone=phone,
+            status__in=[ApplicationStatus.PENDING, ApplicationStatus.REVIEW],
+        ).first()
+        if pending:
+            raise forms.ValidationError(_(
+                "Tayari una ombi linalosubiri, namba %(ref)s. Tutawasiliana "
+                "nawe hivi karibuni."
+            ) % {"ref": pending.reference})
+        return cleaned
+
+    def clean_national_id(self):
+        """Kitambulisho kisirudiwe."""
+        nid = (self.cleaned_data.get("national_id") or "").strip()
+        if not nid:
+            return nid
+        from members.models import Member
+        clash = Member.objects.filter(national_id=nid)
+        if clash.exists():
+            raise forms.ValidationError(
+                _("Namba hii ya kitambulisho tayari imesajiliwa."))
+        return nid
 
 
 class ContactForm(BootstrapMixin, forms.ModelForm):

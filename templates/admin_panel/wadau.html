@@ -46,7 +46,7 @@
             <span class="campaign__body">
               <span class="campaign__title">{{ c.title|tr }}</span>
               <span class="campaign__nums">{{ c.raised }} / {{ c.goal }}</span>
-              <span class="prog"><i data-prog="{{ c.pct }}" style="width:0"></i></span>
+              <span class="prog"><i data-prog="{{ c.bar }}" style="width:0"></i></span>
               <span style="font-size:10.5px;color:var(--muted);margin-top:3px;display:block">{{ c.pct }}%</span>
             </span>
             <span class="campaign__side"><b>{{ c.days }}</b>{% trans "Zilizobaki" %}</span>

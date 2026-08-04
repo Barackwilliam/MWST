@@ -50,7 +50,13 @@
           <span class="rowlist__sub"><svg width="12" height="12" style="vertical-align:-1px"><use href="#i-clock"></use></svg> {{ e.time }}</span>
           <form method="post" action="{% url 'core:event_register' e.id %}" style="margin-top:12px">
             {% csrf_token %}
-            <input type="hidden" name="full_name" value="{{ user.get_full_name }}">
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+                    <input type="hidden" name="full_name" value="{{ user.get_full_name }}">
             <input type="hidden" name="phone" value="{{ user.phone }}">
           <button type="submit" class="btn btn--primary btn--block">
             <svg><use href="#i-calendar-check"></use></svg> {% trans "Jiandikishe" %}

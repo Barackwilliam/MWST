@@ -86,6 +86,7 @@ class Command(BaseCommand):
         # Ruhusa za /usimamizi/ kwa kila jukumu
         from django.core.management import call_command
         call_command("ruhusa", verbosity=0)
+        call_command("safisha_simu", verbosity=0)
         self.stdout.write("  ruhusa za makundi")
         self.stdout.write(self.style.SUCCESS("\nData za mfano zimekamilika."))
         self.stdout.write("Watumiaji: admin/mwst2026, usajili/mwst2026, malipo/mwst2026, "
@@ -444,16 +445,20 @@ class Command(BaseCommand):
         self.stdout.write("  maudhui ya tovuti")
 
     def projects_campaigns(self):
+        # Malengo yanayolingana na bei halisi za ujenzi Tanzania
         data = [
             ("Ujenzi wa Shule ya Sekondari", "Secondary School Construction", "Dodoma",
-             "ongoing", 12000000, "ujenzi"),
+             "ongoing", 450_000_000, "ujenzi"),
             ("Ujenzi wa Kituo cha Afya", "Health Centre Construction", "Singida",
-             "ongoing", 9000000, "afya"),
+             "ongoing", 280_000_000, "afya"),
             ("Msaada wa Wajane na Yatima", "Widows and Orphans Support", "Dar es Salaam",
-             "ongoing", 8000000, "yatima"),
-            ("Visima vya Maji Safi", "Clean Water Boreholes", "Dodoma", "ongoing", 6500000, "maji"),
+             "ongoing", 120_000_000, "yatima"),
+            ("Visima vya Maji Safi", "Clean Water Boreholes", "Dodoma",
+             "ongoing", 85_000_000, "maji"),
+            ("Ukarabati wa Madrasa", "Madrasa Renovation", "Mwanza",
+             "ongoing", 60_000_000, "elimu"),
             ("Masjid na Vituo vya Ibada", "Mosques and Prayer Centres", "Morogoro",
-             "completed", 5000000, "msikiti"),
+             "completed", 210_000_000, "msikiti"),
         ]
         for t, ten, rg, st, target, scene in data[:LIMIT]:
             Project.objects.get_or_create(title=t, defaults={
@@ -461,10 +466,10 @@ class Command(BaseCommand):
                 "status": st, "target_amount": target, "scene": scene})
         today = timezone.localdate()
         camps = [
-            ("Ujenzi wa Shule ya Msingi", "Primary School Construction", 200000000, 45, "ujenzi"),
-            ("Maji Safi kwa Jamii", "Clean Water for the Community", 150000000, 30, "maji"),
-            ("Wafadhili wa Yatima", "Orphan Sponsorship", 120000000, 52, "yatima"),
-            ("Msaada wa Dharura", "Emergency Relief", 80000000, 20, "sadaka"),
+            ("Ujenzi wa Shule ya Msingi", "Primary School Construction", 320_000_000, 45, "ujenzi"),
+            ("Maji Safi kwa Jamii", "Clean Water for the Community", 150_000_000, 30, "maji"),
+            ("Wafadhili wa Yatima", "Orphan Sponsorship", 96_000_000, 52, "yatima"),
+            ("Msaada wa Dharura", "Emergency Relief", 75_000_000, 20, "sadaka"),
         ]
         for t, ten, target, days, scene in camps[:LIMIT]:
             Campaign.objects.get_or_create(title=t, defaults={

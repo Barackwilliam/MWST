@@ -57,7 +57,7 @@
   </div>
   <div class="grid grid--3">
     {% for g in gallery %}
-      <a class="gallery__item reveal" href="/media/">
+      <a class="gallery__item reveal" href="{% url 'core:picha' %}">
         <span class="illus illus--sq"><span class="illus__cap">{{ g.cap|tr }}</span>{% include "components/illus.html" with scene=g.scene %}</span>
         <span class="gallery__cap">{{ g.cap|tr }}</span>
         <span class="gallery__meta"><svg width="12" height="12"><use href="#i-image"></use></svg>{{ g.count|tr }}</span>

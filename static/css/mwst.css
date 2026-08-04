@@ -1614,9 +1614,10 @@ table { border-collapse: collapse; width: 100%; }
    36. MICHORO NA MAPAMBO YA KIISLAMU
    ========================================================================== */
 
-/* Frame ya mchoro */
+/* Frame ya mchoro / picha */
 .illus { position: relative; overflow: hidden; display: block; background: var(--g-900); }
-.illus__svg { display: block; width: 100%; height: 100%; }
+.illus__svg { display: block; width: 100%; height: 100%; position: absolute; inset: 0; }
+.illus__img { display: block; width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; z-index: 1; }
 .illus--card   { height: 150px; border-radius: var(--r-lg) var(--r-lg) 0 0; }
 .illus--tall   { height: 210px; border-radius: var(--r-lg) var(--r-lg) 0 0; }
 .illus--sq     { height: 170px; border-radius: var(--r-lg); }
@@ -1635,10 +1636,10 @@ table { border-collapse: collapse; width: 100%; }
 }
 .illus--plain::after { display: none; }
 
-a:hover > .illus .illus__svg,
-.card:hover .illus .illus__svg,
-.feature:hover .illus .illus__svg { transform: scale(1.05); }
-.illus__svg { transition: transform .5s cubic-bezier(.2,.8,.3,1); }
+a:hover > .illus .illus__svg, a:hover > .illus .illus__img,
+.card:hover .illus .illus__svg, .card:hover .illus .illus__img,
+.feature:hover .illus .illus__svg, .feature:hover .illus .illus__img { transform: scale(1.05); }
+.illus__svg, .illus__img { transition: transform .5s cubic-bezier(.2,.8,.3,1); }
 
 /* Beji juu ya mchoro */
 .illus__tag {
@@ -1874,3 +1875,45 @@ a:hover > .illus .illus__svg,
 .verify__note svg { flex: none; margin-top: 2px; opacity: .6; }
 
 @media (max-width: 460px) { .verify__facts { grid-template-columns: 1fr; } }
+
+/* ==========================================================================
+   ORODHA YA MAHITAJI YA KUJISAJILI
+   ========================================================================== */
+.reqbox {
+  background: var(--canvas); border: 1px solid var(--line-soft);
+  border-radius: var(--r); padding: 15px 17px; margin-bottom: 18px;
+}
+.reqbox > b { display: block; font-size: 13.5px; font-weight: 800; margin-bottom: 10px; }
+.reqbox__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 16px; }
+.reqbox__grid span {
+  display: flex; align-items: flex-start; gap: 7px; font-size: 12.5px; line-height: 1.55;
+}
+.reqbox__grid svg { flex: none; margin-top: 2px; color: var(--g-500); }
+.reqbox__opt { grid-column: 1 / -1; color: var(--muted); }
+.reqbox__opt svg { color: var(--muted); }
+.reqbox__note {
+  display: block; margin-top: 11px; padding-top: 10px;
+  border-top: 1px dashed var(--line-soft);
+  font-size: 12px; color: var(--muted); line-height: 1.7;
+}
+@media (max-width: 640px) { .reqbox__grid { grid-template-columns: 1fr; } }
+
+/* Ujumbe wa makosa yasiyohusu field moja (mfano ombi linalorudiwa) */
+.formerr {
+  display: flex; align-items: flex-start; gap: 9px; margin-bottom: 14px;
+  padding: 11px 14px; border-radius: var(--r);
+  background: #fdeaea; border: 1px solid rgba(220,38,38,.22);
+  color: var(--danger, #dc2626); font-size: 12.5px; line-height: 1.65;
+}
+.formerr svg { flex: none; margin-top: 2px; }
+
+/* Maktaba ya picha ya umma */
+.gallery--wide { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+.gallery__play {
+  position: absolute; inset: 0; display: grid; place-items: center; gap: 4px;
+  background: rgba(4,35,24,.30); color: #fff; border-radius: inherit;
+}
+.gallery__play i {
+  font-style: normal; font-size: 10.5px; font-family: ui-monospace, monospace;
+  background: rgba(0,0,0,.45); padding: 1px 6px; border-radius: 99px;
+}

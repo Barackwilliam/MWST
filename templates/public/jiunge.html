@@ -19,9 +19,36 @@
           <div class="step"><span class="step__num">4</span><span class="step__label">{% trans "Malipo" %}</span></div>
         </div>
 
+        <div class="reqbox">
+          <b>{% trans "Utahitaji vitu hivi" %}</b>
+          <div class="reqbox__grid">
+            <span><svg width="13" height="13"><use href="#i-check-circle"></use></svg>
+              {% trans "Jina lako kamili" %}</span>
+            <span><svg width="13" height="13"><use href="#i-check-circle"></use></svg>
+              {% trans "Jinsia na tarehe ya kuzaliwa" %}</span>
+            <span><svg width="13" height="13"><use href="#i-check-circle"></use></svg>
+              {% trans "Namba ya simu inayotumika" %}</span>
+            <span><svg width="13" height="13"><use href="#i-check-circle"></use></svg>
+              {% trans "Mkoa na halmashauri unapoishi" %}</span>
+            <span><svg width="13" height="13"><use href="#i-check-circle"></use></svg>
+              {% trans "Aina ya uanachama unayotaka" %}</span>
+            <span class="reqbox__opt"><svg width="13" height="13"><use href="#i-info"></use></svg>
+              {% trans "Kitambulisho (NIDA), barua pepe na picha — si lazima sasa" %}</span>
+          </div>
+          <span class="reqbox__note">
+            {% trans "Lazima uwe na umri wa miaka 18 au zaidi. Malipo ya ada yatafanyika baada ya ombi lako kuidhinishwa — usilipe chochote sasa." %}
+          </span>
+        </div>
+
         <form method="post" enctype="multipart/form-data" id="joinForm">
         {% csrf_token %}
-        <div class="grid grid--2" style="gap:12px">
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+                <div class="grid grid--2" style="gap:12px">
           {% for field in form %}
             {% if field.name not in "address,photo,category" %}
               <div class="field">

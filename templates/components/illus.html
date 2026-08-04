@@ -1,9 +1,16 @@
+{% load static %}
 {% comment %}
-Michoro ya matukio (scenes) yenye mtindo wa Kiislamu.
+Michoro ya matukio (scenes) yenye mtindo wa Kiislamu — sasa yenye PICHA HALISI.
 Matumizi:  {% include "components/illus.html" with scene="elimu" %}
 Scenes: msikiti, elimu, afya, maji, jamii, yatima, ujenzi, uchumi,
         tukio, mawasiliano, mkutano, sadaka
+
+Picha halisi zinatakiwa ziwe kwenye:  static/img/scenes/<scene>.jpg
+Mfano:  static/img/scenes/elimu.jpg, static/img/scenes/afya.jpg n.k.
+Kama picha haipo bado, mchoro (SVG) wa chini unaonekana badala yake —
+mara ukishaweka faili husika, picha halisi itaonekana kiotomatiki.
 {% endcomment %}
+{% with imgpath="img/scenes/"|add:scene|add:".jpg" %}
 <svg class="illus__svg" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
   <defs>
     <linearGradient id="sk-{{ scene }}" x1="0" y1="0" x2="0" y2="1">
@@ -160,3 +167,5 @@ Scenes: msikiti, elimu, afya, maji, jamii, yatima, ujenzi, uchumi,
   <!-- Ukingo wa dhahabu -->
   <rect x="4" y="4" width="392" height="252" rx="6" fill="none" stroke="url(#gd-{{ scene }})" stroke-width="1.4" opacity=".45"/>
 </svg>
+<img class="illus__img" src="{% static imgpath %}" alt="" loading="lazy" onerror="this.remove()">
+{% endwith %}

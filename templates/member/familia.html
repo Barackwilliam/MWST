@@ -24,7 +24,13 @@
                   <td class="t-mono">{{ f.phone|default:"—" }}</td>
                   <td>
                     <form method="post" style="display:inline">{% csrf_token %}
-                      <input type="hidden" name="kind" value="delete_family">
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+                              <input type="hidden" name="kind" value="delete_family">
                       <input type="hidden" name="pk" value="{{ f.pk }}">
                       <button class="table__act table__act--danger" title="{% trans 'Ondoa' %}">
                         <svg width="15" height="15"><use href="#i-x-circle"></use></svg></button>

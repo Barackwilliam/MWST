@@ -357,6 +357,21 @@ Kwenye admin unajaza zote mbili. `title_en` ikiwa tupu, Kiswahili kinatumika.
 - Django admin kwa kila model
 - Audit log ya kila kitendo muhimu
 
+## Usalama wa kuingia
+
+| Kinga | Jinsi inavyofanya kazi |
+|---|---|
+| Kuzuia kubahatisha nenosiri | Majaribio 8 kwa IP kwa dakika 15 |
+| Open redirect | `?next=` inakubaliwa tu ikiwa ni ya tovuti hii |
+| Herufi kubwa/ndogo | `ADMIN`, `admin`, `AdMiN` zote zinakubalika |
+| Njia tatu za kuingia | Jina la mtumiaji, namba ya uanachama, au barua pepe |
+| Kumbukumbu | Kila jaribio lililoshindwa linaingia kwenye audit log |
+
+Kuzuia kunatumia cache ya Django. Kwenye seva moja `LocMemCache` inatosha;
+kwa seva nyingi tumia Redis ili hesabu ishirikiwe.
+
+---
+
 ## Kuingia kunagoma?
 
 ```bat
@@ -390,6 +405,7 @@ upya kila mara, kwa hiyo huwezi kubaki na akaunti iliyoharibika.
 ```bat
 python manage.py ruhusa                    # makundi ya ruhusa kwa kila jukumu
 python manage.py akaunti                   # kagua akaunti za kuingia
+python manage.py safisha_simu              # weka namba za simu muundo mmoja
 python manage.py expire_members            # weka 'expired' kwa muda ulioisha
 python manage.py expire_members --dry-run  # onyesha tu
 python tools/build_mo.py                   # kusanya tafsiri

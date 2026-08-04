@@ -10,7 +10,13 @@
       <a href="{% url 'core:maombi' %}" class="btn btn--ghost">{% trans "Ghairi" %}</a>
       <form method="post" action="{% url 'core:maombi_action' app.pk 'approve' %}" style="display:inline">
         {% csrf_token %}
-        <button class="btn btn--primary"><svg><use href="#i-check-circle"></use></svg>
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+                <button class="btn btn--primary"><svg><use href="#i-check-circle"></use></svg>
           {% trans "Idhinisha" %}</button>
       </form>
     </div>

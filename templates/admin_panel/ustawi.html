@@ -68,7 +68,13 @@
                   {% if r.pending %}
                     <form method="post" style="display:flex;gap:5px;align-items:center">
                       {% csrf_token %}
-                      <input type="hidden" name="pk" value="{{ r.id }}">
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+                              <input type="hidden" name="pk" value="{{ r.id }}">
                       <input class="input" name="amount" value="{{ r.requested_raw }}"
                              style="width:96px;height:30px;font-size:12px">
                       <button name="action" value="approve" class="table__act" title="{% trans 'Idhinisha' %}">

@@ -217,9 +217,14 @@ class Project(Bilingual, TimeStamped):
                    .aggregate(s=Sum("amount"))["s"] or Decimal("0")
 
     def progress(self):
+        """Asilimia halisi — inaweza kuvuka 100 kama mradi umepokea zaidi ya lengo."""
         if not self.target_amount:
             return 0
-        return min(round(float(self.raised()) / float(self.target_amount) * 100), 100)
+        return round(float(self.raised()) / float(self.target_amount) * 100)
+
+    def progress_bar(self):
+        """Upana wa bar, umebanwa 100% ili usivuke kisanduku."""
+        return min(self.progress(), 100)
 
 
 class Donor(TimeStamped):
@@ -280,7 +285,10 @@ class Campaign(Bilingual, TimeStamped):
     def progress(self):
         if not self.target_amount:
             return 0
-        return min(round(float(self.raised()) / float(self.target_amount) * 100), 100)
+        return round(float(self.raised()) / float(self.target_amount) * 100)
+
+    def progress_bar(self):
+        return min(self.progress(), 100)
 
     def days_left(self):
         return max((self.end_date - timezone.localdate()).days, 0)

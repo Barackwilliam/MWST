@@ -165,27 +165,93 @@ def staff_required(view):
 # ===========================================================================
 #  UTHIBITISHO
 # ===========================================================================
+#: Majaribio ya juu ya kuingia kwa dakika 15 kutoka IP moja
+LOGIN_MAX_ATTEMPTS = 8
+LOGIN_LOCKOUT_SECONDS = 15 * 60
+
+
+def _client_ip(request):
+    forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    return (forwarded.split(",")[0].strip() if forwarded
+            else request.META.get("REMOTE_ADDR", "")) or "?"
+
+
+def _safe_next(request, fallback):
+    """
+    Zuia open redirect. `?next=https://tovuti-mbaya.com` ingemtoa mtumiaji
+    nje ya tovuti baada ya kuingia — njia rahisi ya ulaghai.
+    """
+    from django.utils.http import url_has_allowed_host_and_scheme
+    nxt = request.POST.get("next") or request.GET.get("next") or ""
+    if nxt and url_has_allowed_host_and_scheme(
+            nxt, allowed_hosts={request.get_host()},
+            require_https=request.is_secure()):
+        return nxt
+    return fallback
+
+
+def _find_user(identifier, password, request):
+    """
+    Tafuta mtumiaji kwa jina, namba ya uanachama au barua pepe.
+    Zote hazijali herufi kubwa au ndogo.
+    """
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    user = authenticate(request, username=identifier, password=password)
+    if user is not None:
+        return user
+
+    # Jina la mtumiaji bila kujali herufi kubwa/ndogo
+    match = User.objects.filter(username__iexact=identifier).first()
+    if match:
+        user = authenticate(request, username=match.username, password=password)
+        if user is not None:
+            return user
+
+    # Namba ya uanachama au barua pepe
+    member = Member.objects.filter(
+        Q(membership_no__iexact=identifier) | Q(email__iexact=identifier)
+    ).select_related("user").first()
+    if member and member.user:
+        return authenticate(request, username=member.user.username, password=password)
+    return None
+
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect(request.user.home_url_name())
 
+    from django.core.cache import cache
+    cache_key = f"login-fail:{_client_ip(request)}"
+
     if request.method == "POST":
+        attempts = cache.get(cache_key, 0)
+        if attempts >= LOGIN_MAX_ATTEMPTS:
+            messages.error(request, _(
+                "Umejaribu mara nyingi mno. Subiri dakika 15 kisha ujaribu tena, "
+                "au tumia \"Umesahau nenosiri?\"."))
+            return render(request, "public/login.html",
+                          _pub(request, "", {"next": request.GET.get("next", "")}))
+
         identifier = (request.POST.get("username") or "").strip()
         password = request.POST.get("password") or ""
-        user = authenticate(request, username=identifier, password=password)
-        if user is None and identifier:
-            member = Member.objects.filter(
-                Q(membership_no__iexact=identifier) | Q(email__iexact=identifier)
-            ).select_related("user").first()
-            if member and member.user:
-                user = authenticate(request, username=member.user.username, password=password)
+        user = _find_user(identifier, password, request) if identifier else None
+
         if user is not None:
+            cache.delete(cache_key)
             auth_login(request, user)
             AuditLog.record(request, "login")
             messages.success(request, _("Karibu, %(name)s!") % {
                 "name": user.get_full_name() or user.username})
-            nxt = request.POST.get("next") or request.GET.get("next")
-            return redirect(nxt or reverse(user.home_url_name()))
+            return redirect(_safe_next(request, reverse(user.home_url_name())))
+
+        cache.set(cache_key, attempts + 1, LOGIN_LOCKOUT_SECONDS)
+        AuditLog.record(request, "login_failed", detail=identifier[:60])
+        remaining = LOGIN_MAX_ATTEMPTS - attempts - 1
+        if 0 < remaining <= 3:
+            messages.warning(request, _(
+                "Umebakiwa na majaribio %(n)d kabla ya kuzuiliwa.") % {"n": remaining})
         # Wakati wa maendeleo, database ikiwa tupu ni chanzo cha kawaida cha
         # "nenosiri si sahihi". Onyesha dokezo — lakini DEBUG pekee.
         from django.conf import settings as _s
@@ -237,6 +303,12 @@ def matukio_umma(request):
     return render(request, "public/matukio.html", _pub(request, "matukio", q.public_matukio()))
 
 
+def picha(request):
+    """Maktaba ya picha na video kwa umma."""
+    ctx = q.public_gallery(album_slug=request.GET.get("albamu"), page=_page(request))
+    return render(request, "public/picha.html", _pub(request, "picha", ctx))
+
+
 def mawasiliano(request):
     ctx = q.public_mawasiliano()
     if request.method == "POST":
@@ -249,7 +321,16 @@ def mawasiliano(request):
             return redirect("core:mawasiliano")
         messages.error(request, _("Tafadhali sahihisha makosa hapa chini."))
     else:
-        form = ContactForm()
+        # Mgeni akitoka kwenye ukurasa wa mradi, tumjazie mada na mradi
+        initial = {}
+        subject = request.GET.get("mada")
+        if subject in ContactForm.SUBJECTS:
+            initial["subject"] = subject
+        project = request.GET.get("mradi")
+        if project:
+            initial["body"] = _("Nataka kuchangia mradi wa %(p)s. Tafadhali "
+                                "nielekeze jinsi ya kulipa.") % {"p": project[:120]}
+        form = ContactForm(initial=initial)
     ctx["form"] = form
     return render(request, "public/mawasiliano.html", _pub(request, "mawasiliano", ctx))
 

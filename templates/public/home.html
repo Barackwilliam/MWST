@@ -36,7 +36,7 @@
         <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-user-plus"></use></svg></span>
         <span><b>{% trans "Jiunge Sasa" %}</b><small>{% trans "Usajili wa Uanachama" %}</small></span>
       </a>
-      <a class="hero-btn" href="/media/">
+      <a class="hero-btn" href="{% url 'core:picha' %}">
         <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-video"></use></svg></span>
         <span><b>{% trans "Tazama Video" %}</b><small>{% trans "Jifunze Zaidi Kuhusu MWST" %}</small></span>
       </a>
@@ -49,13 +49,20 @@
 
     <form method="post" action="{% url 'core:login' %}">
     {% csrf_token %}
-    <label class="loginfield">
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+            <label class="loginfield">
       <svg width="16" height="16"><use href="#i-user"></use></svg>
-      <input type="text" name="username" required placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}">
+      <input type="text" name="username" required autocapitalize="none"
+           autocorrect="off" spellcheck="false" autocomplete="username" placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}">
     </label>
     <label class="loginfield">
       <svg width="16" height="16"><use href="#i-lock"></use></svg>
-      <input type="password" name="password" required placeholder="{% trans 'Nenosiri' %}">
+      <input type="password" name="password" required autocomplete="current-password" placeholder="{% trans 'Nenosiri' %}">
       <button type="button" data-toggle-pw aria-label="{% trans 'Kuonyesha nenosiri' %}">
         <svg width="16" height="16"><use href="#i-eye"></use></svg>
       </button>
@@ -143,7 +150,7 @@
     <div class="card__body">
       <div class="gallery">
         {% for g in gallery %}
-          <a class="gallery__item" href="/media/">
+          <a class="gallery__item" href="{% url 'core:picha' %}">
             <span class="illus" style="height:92px;border-radius:var(--r)">{% include "components/illus.html" with scene=g.scene %}</span>
             <span class="gallery__cap">{{ g.cap|tr }}</span>
             <span class="gallery__meta"><svg width="12" height="12"><use href="#i-image"></use></svg>{{ g.count|tr }}</span>

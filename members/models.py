@@ -5,7 +5,7 @@ from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from core.mixins import Bilingual, Sequence, TimeStamped
+from core.mixins import Bilingual, Sequence, TimeStamped, normalize_phone
 
 
 class Category(Bilingual):
@@ -161,6 +161,7 @@ class Member(TimeStamped):
         return password
 
     def save(self, *args, **kwargs):
+        self.phone = normalize_phone(self.phone)
         if not self.membership_no or not self.account_no:
             with transaction.atomic():
                 year = self.joined_on.year if self.joined_on else timezone.localdate().year
@@ -186,21 +187,26 @@ class Application(TimeStamped):
     """Ombi la uanachama kabla halijaidhinishwa."""
     reference = models.CharField(_("Namba ya Maombi"), max_length=32, unique=True, blank=True)
     full_name = models.CharField(_("Jina Kamili"), max_length=140)
-    gender = models.CharField(max_length=10, blank=True,
+    gender = models.CharField(_("Jinsia"), max_length=10, blank=True,
                               choices=[("male", _("Mwanaume")), ("female", _("Mwanamke"))])
-    date_of_birth = models.DateField(null=True, blank=True)
-    national_id = models.CharField(max_length=32, blank=True)
-    nationality = models.CharField(max_length=60, blank=True, default="Mtanzania")
-    religion = models.CharField(max_length=40, blank=True, default="Kiislamu")
-    phone = models.CharField(_("Simu"), max_length=24)
-    email = models.EmailField(blank=True)
-    region = models.ForeignKey("geo.Region", null=True, blank=True, on_delete=models.SET_NULL)
-    district = models.ForeignKey("geo.District", null=True, blank=True, on_delete=models.SET_NULL)
-    ward = models.ForeignKey("geo.Ward", null=True, blank=True, on_delete=models.SET_NULL)
-    street = models.CharField(max_length=120, blank=True)
-    address = models.TextField(blank=True)
-    photo = models.ImageField(upload_to="applications/", blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="applications")
+    date_of_birth = models.DateField(_("Tarehe ya Kuzaliwa"), null=True, blank=True)
+    national_id = models.CharField(_("Namba ya Kitambulisho (NIDA)"), max_length=32, blank=True)
+    nationality = models.CharField(_("Uraia"), max_length=60, blank=True, default="Mtanzania")
+    religion = models.CharField(_("Dini"), max_length=40, blank=True, default="Kiislamu")
+    phone = models.CharField(_("Namba ya Simu"), max_length=24)
+    email = models.EmailField(_("Barua Pepe"), blank=True)
+    region = models.ForeignKey("geo.Region", verbose_name=_("Mkoa"), null=True, blank=True,
+                               on_delete=models.SET_NULL)
+    district = models.ForeignKey("geo.District", verbose_name=_("Halmashauri"), null=True,
+                                 blank=True, on_delete=models.SET_NULL)
+    ward = models.ForeignKey("geo.Ward", verbose_name=_("Kata"), null=True, blank=True,
+                             on_delete=models.SET_NULL)
+    street = models.CharField(_("Mtaa / Kijiji"), max_length=120, blank=True)
+    address = models.TextField(_("Anuani ya Posta"), blank=True)
+    photo = models.ImageField(_("Picha ya Pasipoti"), upload_to="applications/",
+                              blank=True, null=True)
+    category = models.ForeignKey(Category, verbose_name=_("Aina ya Uanachama"),
+                                 on_delete=models.PROTECT, related_name="applications")
     status = models.CharField(max_length=12, choices=ApplicationStatus.choices,
                               default=ApplicationStatus.PENDING)
     note = models.TextField(_("Maelezo"), blank=True)
@@ -219,6 +225,7 @@ class Application(TimeStamped):
         return f"{self.reference} — {self.full_name}"
 
     def save(self, *args, **kwargs):
+        self.phone = normalize_phone(self.phone)
         if not self.reference:
             with transaction.atomic():
                 year = timezone.localdate().year

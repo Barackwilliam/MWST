@@ -98,7 +98,13 @@
                           <svg width="15" height="15"><use href="#i-settings"></use></svg></a>
                         <form method="post" action="{% url 'core:maombi_action' r.id 'approve' %}" style="display:inline">
                           {% csrf_token %}
-                          <button class="table__act" title="{% trans 'Idhinisha' %}"><svg width="15" height="15"><use href="#i-check-circle"></use></svg></button>
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+                                  <button class="table__act" title="{% trans 'Idhinisha' %}"><svg width="15" height="15"><use href="#i-check-circle"></use></svg></button>
                         </form>
                         <form method="post" action="{% url 'core:maombi_action' r.id 'reject' %}" style="display:inline">
                           {% csrf_token %}
