@@ -20,8 +20,8 @@ Fungua <http://127.0.0.1:8000/>
 
 ### Watumiaji wa mfano
 
-| Mtumiaji | Nenosiri | Jukumu | Anakoenda |
-|---|---|---|---|
+| Mtumiaji | Password | Jukumu | Anakoenda |
+|---|--|---|---|
 | `admin` | `mwst2026` | Msimamizi Mkuu | `/taifa/` |
 | `usimamizi` | `mwst2026` | Afisa wa Usimamizi | `/taifa/` |
 | `usajili` | `mwst2026` | Afisa Usajili | `/usajili/` |
