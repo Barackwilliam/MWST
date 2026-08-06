@@ -46,7 +46,17 @@ def social_links():
 def brand(request):
     now = timezone.localtime()
     lang = (get_language() or "sw").lower()
+
+    # Hali ya kuingia — inatumika kwenye header, drawer na kila CTA ya "Jiunge".
+    user = getattr(request, "user", None)
+    authed = bool(user is not None and user.is_authenticated)
+    role = getattr(user, "role", "") if authed else ""
+
     return {
+        "is_authed": authed,
+        # Mhisani bado anaweza kujiunga kama mwanachama; wengine tayari wamo.
+        "can_join": (not authed) or role == "donor",
+        "is_donor": role == "donor",
         "year": now.year,
         "today": format_date(now, lang),
         "hijri": gettext("Mwaka %(y)d H") % {"y": hijri_year(now)},

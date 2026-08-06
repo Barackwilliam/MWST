@@ -474,3 +474,89 @@ class MemberEditForm(BootstrapMixin, forms.ModelForm):
         self.fields["ward"].queryset = (Ward.objects.filter(district_id=district_id)
                                         if district_id else Ward.objects.none())
         self._style()
+
+
+# ===========================================================================
+#  MICHANGO YA UMMA NA AKAUNTI YA MHISANI
+# ===========================================================================
+class PublicDonationForm(BootstrapMixin, forms.ModelForm):
+    """
+    Fomu ya kuchangia bila kuwa na akaunti.
+
+    Mchango unahifadhiwa kama `pending` — afisa wa michango ndiye
+    anayethibitisha baada ya kuona pesa imeingia. Hakuna kitu kinachoingia
+    kwenye leja mpaka hapo.
+    """
+    full_name = forms.CharField(label=_("Jina lako kamili"), max_length=160)
+    phone = forms.CharField(label=_("Namba ya simu"), max_length=24)
+    email = forms.EmailField(label=_("Barua pepe"), required=False)
+    anonymous = forms.BooleanField(
+        label=_("Nataka kuchangia bila jina langu kuonekana hadharani"),
+        required=False)
+
+    class Meta:
+        model = Contribution
+        fields = ["fund", "amount", "method", "reference", "note"]
+        widgets = {"note": forms.Textarea(attrs={"rows": 3})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["fund"] = BilingualChoiceField(
+            label=_("Mfuko"), queryset=Fund.objects.exclude(code="ada").order_by("order"),
+            empty_label=None)
+        self.fields["amount"].label = _("Kiasi (TSh)")
+        self.fields["method"].label = _("Njia ya malipo")
+        self.fields["reference"].label = _("Namba ya muamala")
+        self.fields["reference"].help_text = _(
+            "Ukiwa tayari umelipa, weka namba ya risiti ya M-Pesa, Airtel, "
+            "Tigo Pesa, HaloPesa au benki. Inaharakisha uthibitisho.")
+        self.fields["reference"].required = False
+        self.fields["note"].label = _("Ujumbe (hiari)")
+        self.fields["note"].required = False
+        self._style()
+
+    def clean_amount(self):
+        amount = self.cleaned_data["amount"]
+        if amount <= 0:
+            raise forms.ValidationError(_("Kiasi lazima kiwe zaidi ya sifuri."))
+        return amount
+
+    def clean_phone(self):
+        phone = "".join(ch for ch in self.cleaned_data["phone"] if ch.isdigit() or ch == "+")
+        if len(phone.lstrip("+")) < 9:
+            raise forms.ValidationError(_("Weka namba kamili ya simu."))
+        return phone
+
+
+class DonorSignupForm(BootstrapMixin, forms.Form):
+    """
+    Akaunti ya mhisani — huundwa BAADA ya kuchangia, si kabla.
+
+    Lengo lake ni moja tu: kutunza kumbukumbu za michango ya mtu mmoja
+    mahali pamoja. Haitoi ufikiaji wowote wa dashibodi za watumishi.
+    """
+    full_name = forms.CharField(label=_("Jina kamili"), max_length=160)
+    email = forms.EmailField(label=_("Barua pepe"))
+    phone = forms.CharField(label=_("Namba ya simu"), max_length=24)
+    password1 = forms.CharField(label=_("Nenosiri"), widget=forms.PasswordInput,
+                                min_length=8)
+    password2 = forms.CharField(label=_("Rudia nenosiri"), widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["password1"].help_text = _("Angalau herufi 8.")
+        self._style()
+
+    def clean_email(self):
+        from django.contrib.auth import get_user_model
+        email = self.cleaned_data["email"].strip().lower()
+        if get_user_model().objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                _("Barua pepe hii tayari ina akaunti. Tumia \"Ingia\" badala yake."))
+        return email
+
+    def clean(self):
+        data = super().clean()
+        if data.get("password1") and data.get("password1") != data.get("password2"):
+            self.add_error("password2", _("Nenosiri hazifanani."))
+        return data

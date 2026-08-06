@@ -17,6 +17,7 @@ class Role(models.TextChoices):
     OUTREACH = "outreach", _("Afisa Wadau na Wahisani")
     COORDINATOR = "coordinator", _("Mratibu wa Mkoa")
     MEMBER = "member", _("Mwanachama")
+    DONOR = "donor", _("Mhisani")
 
 
 #: Ukurasa wa kwanza baada ya kuingia, kwa kila jukumu
@@ -31,9 +32,13 @@ ROLE_HOME = {
     Role.OUTREACH: "core:wadau",
     Role.COORDINATOR: "core:coordinator",
     Role.MEMBER: "core:member_dashboard",
+    Role.DONOR: "core:donor_dashboard",
 }
 
-STAFF_ROLES = [r for r in Role if r != Role.MEMBER]
+#: Majukumu ya nje ya ofisi — hawana ufikiaji wa dashibodi za watumishi.
+PUBLIC_ROLES = [Role.MEMBER, Role.DONOR]
+
+STAFF_ROLES = [r for r in Role if r not in PUBLIC_ROLES]
 
 
 class User(AbstractUser):

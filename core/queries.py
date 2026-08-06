@@ -12,7 +12,7 @@ from decimal import Decimal
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext, gettext as _
 
 # ONYO: usitumie `_` kama variable ya kutupa hapa — inafunika gettext.
 #       Tumia `_unused` badala yake.
@@ -2065,3 +2065,97 @@ def public_gallery(album_slug=None, page=1, per_page=24):
         "total": total, "page": page, "pages": pages,
         **page_meta(page, pages, per_page, total),
     }
+
+
+# ===========================================================================
+#  VIFURUSHI VYA UANACHAMA
+# ===========================================================================
+def public_vifurushi():
+    """
+    Mpangilio rasmi wa vifurushi. Data yote inatoka `members.Category`
+    ili bango na tovuti visitofautiane.
+    """
+    from members.models import Category
+
+    tiers = list(Category.objects.filter(is_special=False, annual_fee__gt=0)
+                 .order_by("order", "annual_fee"))
+
+    #: Kila safu ya jedwali. `kind` inaamua jinsi seli inavyochorwa.
+    rows = [
+        {"label": "Kadi ya Uanachama", "icon": "id-card", "kind": "bool", "attr": "has_card"},
+        {"label": "Ada ya Usajili (Mara moja)", "icon": "coins", "kind": "money",
+         "attr": "registration_fee"},
+        {"label": "Ada ya Mwaka (TSh)", "icon": "wallet", "kind": "money", "attr": "annual_fee"},
+        {"label": "Muda wa Uanachama", "icon": "calendar", "kind": "years",
+         "attr": "duration_years"},
+        {"label": "Matukio na Mafunzo", "icon": "users", "kind": "bool", "attr": "has_events"},
+        {"label": "Ripoti na Taarifa", "icon": "file", "kind": "bool", "attr": "has_reports"},
+        {"label": "Huduma za Kipaumbele", "icon": "headset", "kind": "bool",
+         "attr": "has_priority"},
+        {"label": "Cheti cha Shukrani", "icon": "receipt", "kind": "bool",
+         "attr": "has_certificate"},
+        {"label": "Fursa za Uongozi", "icon": "user-check", "kind": "bool",
+         "attr": "has_leadership"},
+        {"label": "Alama za Utambuzi / Poini", "icon": "star", "kind": "points",
+         "attr": "recognition_points"},
+    ]
+
+    table = []
+    for row in rows:
+        cells = []
+        for tier in tiers:
+            value = getattr(tier, row["attr"])
+            if row["kind"] == "bool":
+                cells.append({"bool": bool(value)})
+            elif row["kind"] == "money":
+                cells.append({"text": f"{value:,.0f}"})
+            elif row["kind"] == "years":
+                cells.append({"text": gettext("Mwaka %(n)d") % {"n": value}
+                              if value == 1 else gettext("Miaka %(n)d") % {"n": value}})
+            else:  # points
+                cells.append({"text": f"{value:,.0f}" + ("+" if tier.points_plus else "")})
+        table.append({"label": row["label"], "icon": row["icon"], "cells": cells})
+
+    return {
+        "hero": {"eyebrow": "Vifurushi na Ada", "scene": "sadaka",
+                 "title": "Mpangilio wa Kifurushi cha Malipo ya Mwanachama",
+                 "text": "Chagua kifurushi kinachokufaa. Ada ya usajili hulipwa "
+                         "mara moja tu; ada ya mwaka hulipwa kila mwaka."},
+        "tiers": [{"obj": t, "name": t.tx("name"), "colour": t.colour,
+                   "featured": t.is_featured, "benefits": t.benefit_list()}
+                  for t in tiers],
+        "table": table,
+        "benefits": [
+            {"icon": "users", "text": "Kushiriki katika miradi ya kijamii"},
+            {"icon": "mail", "text": "Kupata taarifa za kila mwezi"},
+            {"icon": "target", "text": "Kipaumbele katika huduma na programu"},
+            {"icon": "hand-heart", "text": "Kuchangia maendeleo ya jamii"},
+            {"icon": "user-check", "text": "Kujenga uhusiano na wanachama wengine"},
+        ],
+        "notes": [
+            "Ada ya usajili hulipwa mara moja tu.",
+            "Ada ya mwaka hulipwa kila mwaka.",
+            "Mwanachama ana haki zote kulingana na kifurushi alichochagua.",
+            "Malipo yote ni kwa shilingi za Kitanzania (TSh).",
+        ],
+        "methods": [
+            {"icon": "building", "label": "Benki"},
+            {"icon": "phone", "label": "M-Pesa"},
+            {"icon": "phone", "label": "Airtel Money"},
+            {"icon": "phone", "label": "Tigo Pesa"},
+            {"icon": "phone", "label": "HaloPesa"},
+        ],
+        "special": [{"name": c.tx("name"), "colour": c.colour,
+                     "benefits": c.benefit_list()}
+                    for c in Category.objects.filter(is_special=True)],
+    }
+
+
+#: Hero ya ukurasa wa kuchangia — hakuna data ya database inayohitajika.
+CHANGIA_HERO = {
+    "eyebrow": "Changia",
+    "scene": "sadaka",
+    "title": "Changia Sasa — Bila Hata Kufungua Akaunti",
+    "text": "Mchango wako unaenda moja kwa moja kwenye elimu, afya, maji "
+            "safi na msaada wa dharura. Jaza fomu hii kwa dakika moja.",
+}

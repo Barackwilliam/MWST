@@ -241,6 +241,11 @@ class Donor(TimeStamped):
     email = models.EmailField(blank=True)
     is_partner = models.BooleanField(_("Ni mdau"), default=False)
     is_active = models.BooleanField(default=True)
+    #: Mhisani anaweza kufungua akaunti ili kufuatilia michango yake mwenyewe.
+    #: Michango mingi haina akaunti — ndiyo maana ni hiari.
+    user = models.OneToOneField("accounts.User", null=True, blank=True,
+                                on_delete=models.SET_NULL, related_name="donor_profile",
+                                verbose_name=_("Akaunti"))
 
     class Meta:
         ordering = ["name"]

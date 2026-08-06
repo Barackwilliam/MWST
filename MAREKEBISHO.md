@@ -167,3 +167,94 @@ thumbnails ndogo (74×56, 44×38) ambapo maandishi hayasomeki.
 
 Folda hii **haina** `staticfiles/` — inazalishwa na
 `python manage.py collectstatic` (tayari iko kwenye `buildCommand` ya `render.yaml`).
+
+
+---
+
+# Awamu ya pili — 06 Agosti 2026
+
+## 1. Signin/Register kuonekana ukiwa umeingia
+
+`core/context_processors.py` sasa inatoa `is_authed`, `can_join` na `is_donor`
+kwenye kila ukurasa. Zimetumika kwenye:
+
+| Faili | Kilichobadilika |
+|---|---|
+| `templates/public/base.html` | Header: Dashibodi + Toka badala ya "Ingia / Login". Drawer: jina, jukumu na kitufe cha kutoka. |
+| `templates/public/home.html` | Paneli ya kuingia kwenye hero inakuwa "Karibu tena, [jina]". |
+| `_pagehero.html`, `_cta.html`, `uanachama.html` | "Jiunge Sasa" inabadilika kuwa "Dashibodi Yangu" au "Changia Sasa". |
+
+Sheria ya `can_join`: mhisani bado anaonyeshwa "Jiunge Sasa" (anaweza kuwa
+mwanachama); wengine wote tayari wamo.
+
+Pia "Kumbuka Mimi" sasa inafanya kazi kweli — bila hiyo,
+`session.set_expiry(0)` inafanya kipindi kiishe kivinjari kikifungwa.
+
+## 2. Ukurasa wa Vifurushi
+
+- Sehemu 11 mpya kwenye `members.Category` (ada ya usajili, ada ya mwaka,
+  muda, alama, na bendera sita za faida).
+- `members/migrations/0005_package_pricing.py` inaweka thamani zote za bango
+  na kuunda **Diamond** kama haipo. Haiguswi `name` wala `benefits` za
+  kategoria zilizopo — hizo ni maudhui ya mteja.
+- Jedwali linatoka database, si maandishi ya kuandikwa kwenye kiolezo — bango
+  na tovuti havitatofautiana ukibadilisha ada.
+- Menyu ya header sasa: Nyumbani, Uanachama, **Vifurushi**, **Changia**, Mawasiliano.
+
+Kubadilisha ada baadaye: Dashibodi -> Mfumo -> Kategoria za Uanachama.
+Hakuna haja ya kugusa code.
+
+## 3. Mhisani na kuchangia bila akaunti
+
+| Njia | Kinachofanyika |
+|---|---|
+| `/changia/` | Fomu ya wazi. Hakuna akaunti inayohitajika. |
+| `/changia/asante/<risiti>/` | Shukrani + mwaliko wa kufungua akaunti. |
+| `/mhisani/jisajili/` | Akaunti ya mhisani; mchango wa mwisho unaunganishwa. |
+| `/mhisani/` | Historia ya michango, jumla, na mgawanyo kwa mfuko. |
+
+- Jukumu jipya `Role.DONOR` na `Donor.user` (OneToOne, hiari).
+- Mchango unaingia kama **`pending`** — afisa wa michango ndiye anayethibitisha.
+  Hakuna kinachoingia kwenye leja mpaka hapo.
+- Mwaliko wa akaunti unaonekana **baada tu ya kuchangia**, si kabla, na
+  unaeleza faida nne mahususi. Hakuna kulazimisha.
+- `Donor` hatafutwi mara mbili: tunatafuta kwa simu/barua pepe kwanza.
+
+## 4. Ukurasa mpya wa kuingia
+
+Umejengwa kwa mujibu wa picha: nembo, "Karibu Tena!", hatua 1 (vigae vya
+majukumu vyenye tiki), hatua 2 (fomu), Kumbuka Mimi, kigawanyo cha AU,
+chaguo la OTP, na ujumbe wa usalama.
+
+**MUHIMU — usalama:** jukumu unalochagua ni **mwongozo wa maonyesho tu**.
+Ruhusa halisi zinatoka kwenye `user.role` ya akaunti. Nimejaribu: kuchagua
+"Msimamizi" kisha kuingia kwa akaunti ya mwanachama kunampeleka
+`/mwanachama/`, na `/taifa/` inamrudisha. Usibadilishe hili — kama jukumu
+lililochaguliwa lingeamua ruhusa, mtu yeyote angeweza kuwa msimamizi.
+
+## 5. Tafsiri
+
+Katalogi ya Kiingereza: **1282 -> 1420 entries, zote zimetafsiriwa.**
+Nimefuata njia ile ile salama (msingi ni katalogi kamili, si matokeo ya
+`makemessages`). Nimejaribu `/vifurushi/`, `/changia/` na `/ingia/` kwa
+Kiingereza — hakuna neno la Kiswahili lililobaki.
+
+Kumbuka onyo la awali: **usiendeshe `makemessages --no-obsolete`.**
+
+## 6. Vitu viwili vya kuamua
+
+**Kigae cha "Kujitolea".** Picha yako ina majukumu sita; mfumo una matano —
+hakuna jukumu la volunteer kwenye `Role`. Nimeweka kigae hicho na dokezo
+linalosema wajitoleaji hutumia akaunti ya mwanachama. Ukitaka jukumu halisi
+lenye dashibodi yake, ni kazi ya ziada.
+
+**OTP.** Picha ina "Login with Phone Number (OTP)" lakini mfumo hauna huduma
+ya SMS. Kwa sasa kitufe kinaelekeza kwenye ukurasa wa mawasiliano badala ya
+kuahidi kitu kisichofanya kazi. OTP halisi inahitaji Beem au Africa's
+Talking — awamu tofauti.
+
+## 7. Bado halijafanyika
+
+Usalama wa `config/settings.py` (nywila ya Supabase ndani ya code) — angalia
+sehemu ya 5.1 hapo juu. Halijabadilika.
+

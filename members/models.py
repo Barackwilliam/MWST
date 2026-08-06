@@ -15,6 +15,24 @@ class Category(Bilingual):
     code = models.CharField(_("Herufi"), max_length=1, unique=True,
                             help_text="B, S, G, P, F — inatumika kwenye namba ya uanachama")
     monthly_fee = models.DecimalField(_("Ada ya mwezi"), max_digits=12, decimal_places=2, default=0)
+    # --- Mpangilio wa kifurushi (unaonyeshwa kwenye ukurasa wa Vifurushi) ---
+    registration_fee = models.DecimalField(
+        _("Ada ya usajili"), max_digits=12, decimal_places=2, default=0,
+        help_text=_("Hulipwa mara moja tu wakati wa kujiunga."))
+    annual_fee = models.DecimalField(
+        _("Ada ya mwaka"), max_digits=12, decimal_places=2, default=0,
+        help_text=_("Hulipwa kila mwaka."))
+    duration_years = models.PositiveSmallIntegerField(_("Muda wa uanachama (miaka)"), default=1)
+    recognition_points = models.PositiveIntegerField(_("Alama za utambuzi"), default=0)
+    points_plus = models.BooleanField(
+        _("Alama ni za chini kabisa"), default=False,
+        help_text=_("Ikiwashwa, alama zitaonyeshwa kama \"2,000+\"."))
+    has_card = models.BooleanField(_("Kadi ya uanachama"), default=True)
+    has_events = models.BooleanField(_("Matukio na mafunzo"), default=True)
+    has_reports = models.BooleanField(_("Ripoti na taarifa"), default=True)
+    has_priority = models.BooleanField(_("Huduma za kipaumbele"), default=False)
+    has_certificate = models.BooleanField(_("Cheti cha shukrani"), default=True)
+    has_leadership = models.BooleanField(_("Fursa za uongozi"), default=False)
     points_per_payment = models.PositiveIntegerField(_("Pointi kwa malipo"), default=10)
     colour = models.CharField(max_length=20, default="#12864a")
     benefits = models.TextField(_("Faida"), blank=True, help_text="Mstari mmoja kwa kila faida")

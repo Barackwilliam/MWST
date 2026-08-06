@@ -13,7 +13,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import get_language, gettext as _
+from django.utils.translation import get_language, gettext, gettext as _
 from django.views.decorators.http import require_POST
 
 from accounts.models import AuditLog, Role
@@ -30,13 +30,14 @@ from .data import legal, navs, pages as pg, tz_map
 from .forms import (ApplicationForm, AssistanceForm, BeneficiaryForm,
                     BootstrapMixin, BroadcastForm,
                     ContactForm,
-                    ContributionForm, EventRegistrationForm, FamilyMemberForm,
+                    ContributionForm, DonorSignupForm, EventRegistrationForm,
+                    FamilyMemberForm,
                     MediaUploadForm, MemberContributionForm, MemberEditForm,
                     MemberPaymentForm,
-                    PaymentForm,
-                    ProfileForm)
+                    PaymentForm, ProfileForm,
+                    PublicDonationForm)
 
-STAFF_ONLY = [r.value for r in Role if r != Role.MEMBER]
+STAFF_ONLY = [r.value for r in Role if r not in (Role.MEMBER, Role.DONOR)]
 
 MAP_LEGEND = [
     {"label": "Zaidi ya 10,000", "color": "#0d5433"},
@@ -218,6 +219,47 @@ def _find_user(identifier, password, request):
     return None
 
 
+LOGIN_ROLES = [
+    {"key": "donor", "label": "Mhisani", "icon": "hand-heart", "tint": "green",
+     "hint": "Ingia ili kuona kumbukumbu za michango yako yote."},
+    {"key": "volunteer", "label": "Kujitolea", "icon": "users", "tint": "green",
+     "hint": "Wajitoleaji hutumia akaunti ile ile ya mwanachama."},
+    {"key": "member", "label": "Mwanachama", "icon": "user", "tint": "green",
+     "hint": "Kadi yako, malipo, pointi na maombi yako."},
+    {"key": "officer", "label": "Afisa", "icon": "briefcase", "tint": "gold",
+     "hint": "Usajili, malipo, michango na ustawi."},
+    {"key": "coordinator", "label": "Mratibu", "icon": "map", "tint": "navy",
+     "hint": "Mikoa, wadau na kampeni za kanda yako."},
+    {"key": "admin", "label": "Msimamizi", "icon": "shield", "tint": "purple",
+     "hint": "Mfumo mzima na mikoa yote."},
+]
+
+
+def _login_ctx(request, extra=None):
+    """
+    Muktadha wa ukurasa wa kuingia.
+
+    ONYO: jukumu lililochaguliwa ni MWONGOZO wa maonyesho tu. Jukumu halisi
+    linatoka kwenye akaunti yenyewe (`user.role`) — mtu hawezi kupata ruhusa
+    za msimamizi kwa kubofya kitufe cha "Msimamizi".
+    """
+    picked = (request.POST.get("as") or request.GET.get("as") or "member").lower()
+    keys = [r["key"] for r in LOGIN_ROLES]
+    if picked not in keys:
+        picked = "member"
+    hint = next(r["hint"] for r in LOGIN_ROLES if r["key"] == picked)
+    ctx = {
+        "login_roles": LOGIN_ROLES,
+        "active_role": picked,
+        "role_hint": gettext(hint),
+        "username_value": (request.POST.get("username") or "").strip(),
+        "next": request.GET.get("next", "") or request.POST.get("next", ""),
+    }
+    if extra:
+        ctx.update(extra)
+    return _pub(request, "", ctx)
+
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect(request.user.home_url_name())
@@ -231,8 +273,7 @@ def login_view(request):
             messages.error(request, _(
                 "Umejaribu mara nyingi mno. Subiri dakika 15 kisha ujaribu tena, "
                 "au tumia \"Umesahau nenosiri?\"."))
-            return render(request, "public/login.html",
-                          _pub(request, "", {"next": request.GET.get("next", "")}))
+            return render(request, "public/login.html", _login_ctx(request))
 
         identifier = (request.POST.get("username") or "").strip()
         password = request.POST.get("password") or ""
@@ -241,6 +282,9 @@ def login_view(request):
         if user is not None:
             cache.delete(cache_key)
             auth_login(request, user)
+            # "Kumbuka mimi": bila hiyo, kipindi kinaisha kivinjari kikifungwa.
+            if not request.POST.get("remember"):
+                request.session.set_expiry(0)
             AuditLog.record(request, "login")
             messages.success(request, _("Karibu, %(name)s!") % {
                 "name": user.get_full_name() or user.username})
@@ -263,8 +307,7 @@ def login_view(request):
         else:
             messages.error(request, _("Jina la mtumiaji au nenosiri si sahihi."))
 
-    return render(request, "public/login.html",
-                  _pub(request, "", {"next": request.GET.get("next", "")}))
+    return render(request, "public/login.html", _login_ctx(request))
 
 
 def logout_view(request):
@@ -307,6 +350,187 @@ def picha(request):
     """Maktaba ya picha na video kwa umma."""
     ctx = q.public_gallery(album_slug=request.GET.get("albamu"), page=_page(request))
     return render(request, "public/picha.html", _pub(request, "picha", ctx))
+
+
+def vifurushi(request):
+    """Mpangilio wa vifurushi vya uanachama — bango la MWST kwa mtandao."""
+    return render(request, "public/vifurushi.html",
+                  _pub(request, "vifurushi", q.public_vifurushi()))
+
+
+# ===========================================================================
+#  KUCHANGIA BILA AKAUNTI + AKAUNTI YA MHISANI
+# ===========================================================================
+def changia(request):
+    """
+    Mtu yeyote anaweza kuchangia bila kuwa na akaunti.
+
+    Mchango unaingia kama `pending`; afisa wa michango ndiye anayethibitisha.
+    Baada ya kutuma, tunampeleka kwenye ukurasa wa shukrani ambako
+    anaalikwa kufungua akaunti ya mhisani ili kutunza kumbukumbu zake.
+    """
+    from finance.models import Donor, Fund, PaymentStatus
+
+    if request.method == "POST":
+        form = PublicDonationForm(request.POST)
+        if form.is_valid():
+            contribution = form.save(commit=False)
+            contribution.status = PaymentStatus.PENDING
+            contribution.donor_name = (
+                _("Mchangiaji asiyetajwa") if form.cleaned_data["anonymous"]
+                else form.cleaned_data["full_name"])
+
+            # Mhisani aliyeingia tayari — unganisha mchango na akaunti yake.
+            donor = None
+            if request.user.is_authenticated:
+                donor = Donor.objects.filter(user=request.user).first()
+            if donor is None:
+                # Tafuta kwa simu/barua pepe ili tusitengeneze nakala.
+                lookup = Q()
+                if form.cleaned_data.get("email"):
+                    lookup |= Q(email__iexact=form.cleaned_data["email"])
+                if form.cleaned_data.get("phone"):
+                    lookup |= Q(phone=form.cleaned_data["phone"])
+                if lookup:
+                    donor = Donor.objects.filter(lookup).first()
+            if donor is None:
+                donor = Donor.objects.create(
+                    name=form.cleaned_data["full_name"],
+                    phone=form.cleaned_data["phone"],
+                    email=form.cleaned_data.get("email", ""),
+                    donor_type="individual")
+            contribution.donor = donor
+            contribution.save()
+
+            AuditLog.record(request, "public_donation", contribution)
+            request.session["mwst_last_gift"] = contribution.receipt_no
+            return redirect("core:changia_asante", receipt=contribution.receipt_no)
+        messages.error(request, _("Tafadhali sahihisha makosa hapa chini."))
+    else:
+        initial = {}
+        fund_code = request.GET.get("mfuko")
+        if fund_code:
+            fund = Fund.objects.filter(code=fund_code).first()
+            if fund:
+                initial["fund"] = fund
+        if request.user.is_authenticated:
+            donor = Donor.objects.filter(user=request.user).first()
+            initial.update({
+                "full_name": donor.name if donor else request.user.get_full_name(),
+                "email": donor.email if donor else request.user.email,
+                "phone": donor.phone if donor else "",
+            })
+        form = PublicDonationForm(initial=initial)
+
+    return render(request, "public/changia.html",
+                  _pub(request, "changia", {"form": form, "hero": q.CHANGIA_HERO}))
+
+
+def changia_asante(request, receipt):
+    """Ukurasa wa shukrani + mwaliko wa kufungua akaunti ya mhisani."""
+    from finance.models import Contribution
+
+    gift = get_object_or_404(Contribution, receipt_no=receipt)
+    # Risiti si siri kubwa, lakini haipaswi kuvinjariwa na mtu yeyote.
+    # Tunaonyesha tu kama ndiyo mchango uliotolewa kwenye kipindi hiki.
+    if request.session.get("mwst_last_gift") != receipt and not request.user.is_authenticated:
+        raise Http404
+
+    has_account = bool(gift.donor and gift.donor.user_id)
+    return render(request, "public/changia_asante.html",
+                  _pub(request, "changia", {
+                      "gift": gift,
+                      "has_account": has_account,
+                      "show_invite": not has_account and not request.user.is_authenticated,
+                  }))
+
+
+def donor_register(request):
+    """
+    Kufungua akaunti ya mhisani. Inafanywa baada ya kuchangia ili
+    michango iliyopita iunganishwe na akaunti mpya.
+    """
+    from django.contrib.auth import get_user_model
+    from finance.models import Contribution, Donor
+
+    if request.user.is_authenticated:
+        return redirect(request.user.home_url_name())
+
+    receipt = request.GET.get("risiti") or request.POST.get("receipt") or ""
+    gift = Contribution.objects.filter(receipt_no=receipt).first() if receipt else None
+
+    if request.method == "POST":
+        form = DonorSignupForm(request.POST)
+        if form.is_valid():
+            User = get_user_model()
+            data = form.cleaned_data
+            user = User.objects.create_user(
+                username=data["email"], email=data["email"],
+                password=data["password1"], role=Role.DONOR)
+            parts = data["full_name"].split(None, 1)
+            user.first_name = parts[0]
+            user.last_name = parts[1] if len(parts) > 1 else ""
+            user.save(update_fields=["first_name", "last_name"])
+
+            donor = (gift.donor if gift and gift.donor else None) or \
+                Donor.objects.filter(Q(email__iexact=data["email"]) |
+                                     Q(phone=data["phone"])).first()
+            if donor is None:
+                donor = Donor.objects.create(name=data["full_name"],
+                                             donor_type="individual")
+            donor.user = user
+            donor.name = data["full_name"]
+            donor.email = data["email"]
+            donor.phone = data["phone"]
+            donor.save()
+
+            # Unganisha michango ya nyuma iliyotolewa kwa simu/barua pepe hiyo.
+            Contribution.objects.filter(donor__isnull=True).filter(
+                Q(donor_name__iexact=data["full_name"])).update(donor=donor)
+
+            auth_login(request, user)
+            AuditLog.record(request, "donor_signup", donor)
+            messages.success(request, _(
+                "Akaunti yako ya mhisani iko tayari. Michango yako yote "
+                "itaonekana hapa."))
+            return redirect("core:donor_dashboard")
+        messages.error(request, _("Tafadhali sahihisha makosa hapa chini."))
+    else:
+        initial = {}
+        if gift:
+            initial = {"full_name": gift.donor.name if gift.donor else gift.donor_name,
+                       "email": gift.donor.email if gift.donor else "",
+                       "phone": gift.donor.phone if gift.donor else ""}
+        form = DonorSignupForm(initial=initial)
+
+    return render(request, "public/donor_register.html",
+                  _pub(request, "changia", {"form": form, "gift": gift,
+                                            "receipt": receipt}))
+
+
+@login_required
+def donor_dashboard(request):
+    """Kumbukumbu za michango ya mhisani mmoja."""
+    from django.db.models import Sum
+    from finance.models import Contribution, Donor, PaymentStatus
+
+    donor = Donor.objects.filter(user=request.user).first()
+    gifts = (Contribution.objects.filter(donor=donor).select_related("fund", "project")
+             if donor else Contribution.objects.none())
+
+    confirmed = gifts.filter(status=PaymentStatus.CONFIRMED)
+    by_fund = (confirmed.values("fund__name", "fund__colour")
+               .annotate(total=Sum("amount")).order_by("-total"))
+
+    return render(request, "public/donor_dashboard.html",
+                  _pub(request, "changia", {
+                      "donor": donor,
+                      "gifts": gifts[:50],
+                      "total": confirmed.aggregate(s=Sum("amount"))["s"] or 0,
+                      "count": confirmed.count(),
+                      "pending": gifts.filter(status=PaymentStatus.PENDING).count(),
+                      "by_fund": by_fund,
+                  }))
 
 
 def faragha(request):

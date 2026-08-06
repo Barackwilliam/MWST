@@ -562,3 +562,27 @@
     }
   });
 })();
+
+/* ==========================================================================
+   UKURASA WA KUINGIA — dokezo la jukumu
+   Jukumu ni mwongozo wa maonyesho tu; ruhusa halisi zinatoka kwenye akaunti.
+   ========================================================================== */
+(function () {
+  "use strict";
+  var pick = document.querySelector(".rolepick");
+  var hint = document.querySelector("[data-role-hint]");
+  if (!pick) return;
+
+  pick.addEventListener("change", function (e) {
+    var input = e.target.closest("input[name='as']");
+    if (!input) return;
+    Array.prototype.forEach.call(pick.querySelectorAll(".rolepick__item"), function (el) {
+      el.classList.toggle("is-on", el.contains(input));
+    });
+    if (hint) {
+      var label = input.closest(".rolepick__item");
+      var text = label && label.getAttribute("data-hint");
+      if (text) hint.textContent = text;
+    }
+  });
+})();

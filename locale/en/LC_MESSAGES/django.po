@@ -3860,3 +3860,417 @@ msgstr "You have requested a password change for your MWST account. Click the li
 msgid "Kama hukuomba hili, puuza barua pepe hii — nenosiri lako halitabadilika."
 msgstr "If you did not request this, please ignore this email — your password will not be changed."
 
+msgid "Vifurushi"
+msgstr "Packages"
+
+msgid "Changia"
+msgstr "Donate"
+
+msgid "Vifurushi na Ada"
+msgstr "Packages & Fees"
+
+msgid "Dashibodi Yangu"
+msgstr "My Dashboard"
+
+msgid "Endelea Ulipoishia"
+msgstr "Pick up where you left off"
+
+msgid "Si wewe?"
+msgstr "Not you?"
+
+msgid "Karibu tena"
+msgstr "Welcome back"
+
+msgid "Nenda Kwenye Dashibodi"
+msgstr "Go to Dashboard"
+
+msgid "Jiunge Kama Mwanachama"
+msgstr "Join as a Member"
+
+msgid "Changia Sasa"
+msgstr "Donate Now"
+
+msgid "Tazama Mpangilio"
+msgstr "View the Plan"
+
+msgid "Mpangilio"
+msgstr "The Plan"
+
+msgid "Mpangilio wa Kifurushi cha Malipo ya Mwanachama"
+msgstr "Membership Payment Package Plan"
+
+msgid "Linganisha vifurushi vyote kwa mtazamo mmoja."
+msgstr "Compare every package at a glance."
+
+msgid "Chagua kifurushi kinachokufaa. Ada ya usajili hulipwa mara moja tu; ada ya mwaka hulipwa kila mwaka."
+msgstr "Choose the package that suits you. The registration fee is paid once only; the annual fee is paid every year."
+
+msgid "Kifurushi cha Mwanachama"
+msgstr "Membership Package"
+
+msgid "Ada ya Usajili (Mara moja)"
+msgstr "Registration Fee (One-off)"
+
+msgid "Ada ya Mwaka (TSh)"
+msgstr "Annual Fee (TSh)"
+
+msgid "Ripoti na Taarifa"
+msgstr "Reports and Updates"
+
+msgid "Huduma za Kipaumbele"
+msgstr "Priority Services"
+
+msgid "Cheti cha Shukrani"
+msgstr "Certificate of Appreciation"
+
+msgid "Fursa za Uongozi"
+msgstr "Leadership Opportunities"
+
+msgid "Alama za Utambuzi / Poini"
+msgstr "Recognition Marks / Points"
+
+msgid "Rangi ya Kadi"
+msgstr "Card Colour"
+
+msgid "Mwaka %(n)d"
+msgstr "%(n)d Year"
+
+msgid "Miaka %(n)d"
+msgstr "%(n)d Years"
+
+msgid "Uliza Zaidi"
+msgstr "Ask a Question"
+
+msgid "Kushiriki katika miradi ya kijamii"
+msgstr "Taking part in community projects"
+
+msgid "Kupata taarifa za kila mwezi"
+msgstr "Receiving monthly updates"
+
+msgid "Kipaumbele katika huduma na programu"
+msgstr "Priority in services and programmes"
+
+msgid "Kuchangia maendeleo ya jamii"
+msgstr "Contributing to community development"
+
+msgid "Kujenga uhusiano na wanachama wengine"
+msgstr "Building ties with fellow members"
+
+msgid "Maelezo Muhimu"
+msgstr "Important Notes"
+
+msgid "Ada ya usajili hulipwa mara moja tu."
+msgstr "The registration fee is paid once only."
+
+msgid "Ada ya mwaka hulipwa kila mwaka."
+msgstr "The annual fee is paid every year."
+
+msgid "Mwanachama ana haki zote kulingana na kifurushi alichochagua."
+msgstr "A member holds every right that comes with the package they chose."
+
+msgid "Malipo yote ni kwa shilingi za Kitanzania (TSh)."
+msgstr "All payments are in Tanzanian shillings (TSh)."
+
+msgid "Njia za Malipo"
+msgstr "Payment Methods"
+
+msgid "Baada ya kulipa, tuma namba ya muamala ili malipo yako yathibitishwe haraka."
+msgstr "After paying, send us the transaction reference so your payment is confirmed quickly."
+
+msgid "Kwa Mawasiliano"
+msgstr "Get in Touch"
+
+msgid "Madaraja ya Heshima"
+msgstr "Honorary Tiers"
+
+msgid "Haya hayaombwi. Msimamizi ndiye humpandisha mwanachama kwenye daraja hili."
+msgstr "These cannot be applied for. An administrator moves a member into this tier."
+
+msgid "Changia Sasa — Bila Hata Kufungua Akaunti"
+msgstr "Donate Now — No Account Needed"
+
+msgid "Mchango wako unaenda moja kwa moja kwenye elimu, afya, maji safi na msaada wa dharura. Jaza fomu hii kwa dakika moja."
+msgstr "Your gift goes straight to education, health, clean water and emergency relief. This form takes a minute."
+
+msgid "Jaza Taarifa za Mchango"
+msgstr "Your Donation Details"
+
+msgid "Hakuna akaunti inayohitajika"
+msgstr "No account needed"
+
+msgid "Namba ya simu"
+msgstr "Phone number"
+
+msgid "Barua pepe"
+msgstr "Email address"
+
+msgid "Kiasi (TSh)"
+msgstr "Amount (TSh)"
+
+msgid "Njia ya malipo"
+msgstr "Payment method"
+
+msgid "Namba ya muamala"
+msgstr "Transaction reference"
+
+msgid "Ujumbe (hiari)"
+msgstr "Message (optional)"
+
+msgid "Nataka kuchangia bila jina langu kuonekana hadharani"
+msgstr "Give without my name being shown publicly"
+
+msgid "Ukiwa tayari umelipa, weka namba ya risiti ya M-Pesa, Airtel, Tigo Pesa, HaloPesa au benki. Inaharakisha uthibitisho."
+msgstr "If you have already paid, enter the M-Pesa, Airtel, Tigo Pesa, HaloPesa or bank reference. It speeds up confirmation."
+
+msgid "Weka namba kamili ya simu."
+msgstr "Enter a complete phone number."
+
+msgid "Tuma Mchango"
+msgstr "Send Donation"
+
+msgid "Kwa kutuma, unakubali"
+msgstr "By sending this, you accept our"
+
+msgid "Jinsi Inavyofanya Kazi"
+msgstr "How It Works"
+
+msgid "Jaza fomu na uchague mfuko unaotaka kuchangia."
+msgstr "Fill in the form and choose the fund you want to support."
+
+msgid "Lipa kwa simu au benki kwa namba zilizo hapa chini."
+msgstr "Pay by mobile money or bank using the details below."
+
+msgid "Afisa wa michango anathibitisha, kisha unapata risiti."
+msgstr "A contributions officer confirms it, then your receipt is issued."
+
+msgid "Namba za Malipo"
+msgstr "Payment Channels"
+
+msgid "Tayari ni mhisani?"
+msgstr "Already a donor?"
+
+msgid "Ingia ili michango yako iunganishwe moja kwa moja na akaunti yako."
+msgstr "Sign in so your gifts are linked to your account automatically."
+
+msgid "Mchangiaji asiyetajwa"
+msgstr "Anonymous donor"
+
+msgid "Asante kwa Mchango Wako"
+msgstr "Thank You for Your Gift"
+
+msgid "Hongera, na asante sana!"
+msgstr "Well done, and thank you!"
+
+msgid "Mchango wako umepokelewa, %(name)s. Allah akubariki kwa moyo wako wa kutoa."
+msgstr "Your gift has been received, %(name)s. May Allah bless you for your generosity."
+
+msgid "Namba ya risiti"
+msgstr "Receipt number"
+
+msgid "Mchango wako unasubiri uthibitisho wa afisa wa michango. Utapokea risiti rasmi mara baada ya kuthibitishwa. Hifadhi namba ya risiti hapo juu."
+msgstr "Your gift is awaiting confirmation by a contributions officer. You will receive an official receipt once it is confirmed. Please keep the receipt number above."
+
+msgid "Fungua akaunti ya mhisani — ni bure"
+msgstr "Open a donor account — it's free"
+
+msgid "Hutahitaji akaunti ili kuchangia, na hatutakulazimisha kamwe. Lakini ukifungua akaunti, kila mchango wako utahifadhiwa mahali pamoja."
+msgstr "You never need an account to give, and we will never require one. But with an account, every gift you make is kept in one place."
+
+msgid "Kumbukumbu kamili ya michango yako yote, mwaka hadi mwaka."
+msgstr "A complete record of all your giving, year by year."
+
+msgid "Risiti zote mahali pamoja — rahisi wakati wa hesabu au zaka."
+msgstr "All your receipts together — handy at accounting or zakat time."
+
+msgid "Kuona jinsi mchango wako ulivyotumika kwenye miradi."
+msgstr "See how your gift was put to work on projects."
+
+msgid "Kuchangia tena bila kujaza taarifa zako upya."
+msgstr "Give again without re-entering your details."
+
+msgid "Fungua Akaunti ya Mhisani"
+msgstr "Open a Donor Account"
+
+msgid "Baadaye"
+msgstr "Maybe later"
+
+msgid "Mchango huu utaunganishwa moja kwa moja na akaunti yako mpya."
+msgstr "This gift will be linked to your new account automatically."
+
+msgid "Tazama Michango Yangu"
+msgstr "View My Giving"
+
+msgid "Changia Tena"
+msgstr "Give Again"
+
+msgid "Akaunti ya Mhisani"
+msgstr "Donor Account"
+
+msgid "Ili kutunza kumbukumbu za michango yako mahali pamoja."
+msgstr "So your giving records live in one place."
+
+msgid "Mchango %(r)s utaunganishwa na akaunti hii."
+msgstr "Gift %(r)s will be linked to this account."
+
+msgid "Jina kamili"
+msgstr "Full name"
+
+msgid "Rudia nenosiri"
+msgstr "Repeat password"
+
+msgid "Angalau herufi 8."
+msgstr "At least 8 characters."
+
+msgid "Barua pepe hii tayari ina akaunti. Tumia \"Ingia\" badala yake."
+msgstr "This email already has an account. Use \"Sign in\" instead."
+
+msgid "Nenosiri hazifanani."
+msgstr "The passwords do not match."
+
+msgid "Fungua Akaunti"
+msgstr "Create Account"
+
+msgid "Tayari una akaunti?"
+msgstr "Already have an account?"
+
+msgid "Ingia hapa"
+msgstr "Sign in here"
+
+msgid "Taarifa zako zinalindwa kwa mujibu wa"
+msgstr "Your information is protected under our"
+
+msgid "Akaunti yako ya mhisani iko tayari. Michango yako yote itaonekana hapa."
+msgstr "Your donor account is ready. All your giving will appear here."
+
+msgid "Mhisani"
+msgstr "Donor"
+
+msgid "Karibu, %(name)s"
+msgstr "Welcome, %(name)s"
+
+msgid "Hapa ni kumbukumbu ya michango yako yote kwa MWST."
+msgstr "This is the record of everything you have given to MWST."
+
+msgid "Jumla Uliyochangia"
+msgstr "Total Given"
+
+msgid "Michango Iliyothibitishwa"
+msgstr "Confirmed Gifts"
+
+msgid "Bado hujafanya mchango wowote kupitia akaunti hii."
+msgstr "You have not given anything through this account yet."
+
+msgid "Mgawanyo kwa Mfuko"
+msgstr "Split by Fund"
+
+msgid "Karibu Tena!"
+msgstr "Welcome Back!"
+
+msgid "Ingia ili kufikia akaunti yako ya MWST"
+msgstr "Sign in to access your MWST account"
+
+msgid "Chagua Jukumu Lako"
+msgstr "Select Your Role"
+
+msgid "Kujitolea"
+msgstr "Volunteer"
+
+msgid "Ingia ili kuona kumbukumbu za michango yako yote."
+msgstr "Sign in to see the record of all your giving."
+
+msgid "Wajitoleaji hutumia akaunti ile ile ya mwanachama."
+msgstr "Volunteers sign in with the same member account."
+
+msgid "Kadi yako, malipo, pointi na maombi yako."
+msgstr "Your card, payments, points and requests."
+
+msgid "Usajili, malipo, michango na ustawi."
+msgstr "Registration, payments, contributions and welfare."
+
+msgid "Mikoa, wadau na kampeni za kanda yako."
+msgstr "Regions, partners and campaigns in your zone."
+
+msgid "Mfumo mzima na mikoa yote."
+msgstr "The whole system, every region."
+
+msgid "Barua Pepe / Namba ya Uanachama"
+msgstr "Email Address / Membership Number"
+
+msgid "Weka barua pepe au namba ya uanachama"
+msgstr "Enter your email address or membership number"
+
+msgid "Weka nenosiri lako"
+msgstr "Enter your password"
+
+msgid "Onyesha nenosiri"
+msgstr "Show password"
+
+msgid "Kumbuka Mimi"
+msgstr "Remember Me"
+
+msgid "INGIA"
+msgstr "SIGN IN"
+
+msgid "AU"
+msgstr "OR"
+
+msgid "Ingia kwa Namba ya Simu (OTP)"
+msgstr "Sign in with Phone Number (OTP)"
+
+msgid "Taarifa zako ziko salama nasi. Tunaheshimu faragha yako na kulinda taarifa zako."
+msgstr "Your data is safe with us. We respect your privacy and protect your information."
+
+msgid "Jiunge kama mwanachama"
+msgstr "join as a member"
+
+msgid "au"
+msgstr "or"
+
+msgid "fungua akaunti ya mhisani"
+msgstr "open a donor account"
+
+msgid "Ada ya usajili"
+msgstr "Registration fee"
+
+msgid "Hulipwa mara moja tu wakati wa kujiunga."
+msgstr "Paid once, when joining."
+
+msgid "Ada ya mwaka"
+msgstr "Annual fee"
+
+msgid "Hulipwa kila mwaka."
+msgstr "Paid every year."
+
+msgid "Muda wa uanachama (miaka)"
+msgstr "Membership duration (years)"
+
+msgid "Alama za utambuzi"
+msgstr "Recognition marks"
+
+msgid "Alama ni za chini kabisa"
+msgstr "Marks are a floor"
+
+msgid "Ikiwashwa, alama zitaonyeshwa kama \"2,000+\"."
+msgstr "When enabled, marks are shown as \"2,000+\"."
+
+msgid "Kadi ya uanachama"
+msgstr "Membership card"
+
+msgid "Matukio na mafunzo"
+msgstr "Events and training"
+
+msgid "Ripoti na taarifa"
+msgstr "Reports and updates"
+
+msgid "Huduma za kipaumbele"
+msgstr "Priority services"
+
+msgid "Cheti cha shukrani"
+msgstr "Certificate of appreciation"
+
+msgid "Fursa za uongozi"
+msgstr "Leadership opportunities"
+
+msgid "Akaunti"
+msgstr "Account"
+

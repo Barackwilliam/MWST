@@ -49,10 +49,17 @@
     <h1>{{ hero.title|tr|safe }}</h1>
     <p>{{ hero.text|tr }}</p>
     <div class="hero__cta">
-      <a href="{% url 'core:jiunge' %}" class="hero-btn">
-        <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-user-plus"></use></svg></span>
-        <span><b>{% trans "Jiunge Sasa" %}</b><small>{% trans "Usajili wa Uanachama" %}</small></span>
-      </a>
+      {% if can_join %}
+        <a href="{% url 'core:jiunge' %}" class="hero-btn">
+          <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-user-plus"></use></svg></span>
+          <span><b>{% trans "Jiunge Sasa" %}</b><small>{% trans "Usajili wa Uanachama" %}</small></span>
+        </a>
+      {% else %}
+        <a href="{% url user.home_url_name %}" class="hero-btn">
+          <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-dashboard"></use></svg></span>
+          <span><b>{% trans "Dashibodi Yangu" %}</b><small>{% trans "Endelea Ulipoishia" %}</small></span>
+        </a>
+      {% endif %}
       <a class="hero-btn" href="{% url 'core:picha' %}">
         <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-video"></use></svg></span>
         <span><b>{% trans "Tazama Video" %}</b><small>{% trans "Jifunze Zaidi Kuhusu MWST" %}</small></span>
@@ -60,6 +67,27 @@
     </div>
   </div>
 
+  {% if is_authed %}
+  <div class="loginpanel loginpanel--welcome reveal">
+    <span class="welcome__avatar">{{ user.initials }}</span>
+    <h3>{% trans "Karibu tena" %}, {{ user.first_name|default:user.username }}!</h3>
+    <p>{{ user.get_role_display }}</p>
+    <a href="{% url user.home_url_name %}" class="btn btn--gold btn--block" style="margin-top:18px">
+      <svg><use href="#i-dashboard"></use></svg> {% trans "Nenda Kwenye Dashibodi" %}
+    </a>
+    {% if can_join %}
+      <a href="{% url 'core:jiunge' %}" class="btn btn--block"
+         style="margin-top:10px;border:1px solid rgba(255,255,255,.25);color:#fff">
+        <svg><use href="#i-user-plus"></use></svg> {% trans "Jiunge Kama Mwanachama" %}
+      </a>
+    {% endif %}
+    <p class="loginpanel__sep">— {% trans "Si wewe?" %} —</p>
+    <a href="{% url 'core:logout' %}" class="btn btn--block"
+       style="border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8)">
+      <svg><use href="#i-logout"></use></svg> {% trans "Toka" %}
+    </a>
+  </div>
+  {% else %}
   <div class="loginpanel reveal">
     <h3>{% trans "Ingia Mfumo" %}</h3>
     <p>{% trans "Access your account" %}</p>
@@ -103,6 +131,7 @@
       {% endfor %}
     </div>
   </div>
+  {% endif %}
 </section>
 
 {# ---------------- Huduma ---------------- #}

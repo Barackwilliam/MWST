@@ -7,6 +7,8 @@ def menu():
     return [
         {"key": "home",        "label": "Nyumbani",    "icon": "dashboard", "url": "/"},
         {"key": "uanachama",   "label": "Uanachama",   "icon": "id-card",   "url": "/uanachama/"},
+        {"key": "vifurushi",   "label": "Vifurushi",   "icon": "wallet",    "url": "/vifurushi/"},
+        {"key": "changia",     "label": "Changia",     "icon": "hand-heart", "url": "/changia/"},
         {"key": "mawasiliano", "label": "Mawasiliano", "icon": "phone",     "url": "/mawasiliano/"},
     ]
 
@@ -17,6 +19,8 @@ def footer_menu():
         {"label": "Nyumbani",    "url": "/"},
         {"label": "Kuhusu Sisi", "url": "/kuhusu/"},
         {"label": "Uanachama",   "url": "/uanachama/"},
+        {"label": "Vifurushi na Ada", "url": "/vifurushi/"},
+        {"label": "Changia",     "url": "/changia/"},
         {"label": "Huduma Zetu", "url": "/huduma/"},
         {"label": "Habari",      "url": "/habari/"},
         {"label": "Matukio",     "url": "/matukio-yetu/"},

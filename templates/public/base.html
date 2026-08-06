@@ -53,9 +53,19 @@
       </button>
     </form>
 
-    <a href="{% url 'core:login' %}" class="btn btn--primary">
-      <svg><use href="#i-user"></use></svg> <span class="hide-xs">{% trans "Ingia / Login" %}</span>
-    </a>
+    {% if is_authed %}
+      <a href="{% url user.home_url_name %}" class="btn btn--primary">
+        <svg><use href="#i-dashboard"></use></svg> <span class="hide-xs">{% trans "Dashibodi" %}</span>
+      </a>
+      <a href="{% url 'core:logout' %}" class="icon-btn pub-logout" title="{% trans 'Toka' %}"
+         aria-label="{% trans 'Toka' %}">
+        <svg width="18" height="18"><use href="#i-logout"></use></svg>
+      </a>
+    {% else %}
+      <a href="{% url 'core:login' %}" class="btn btn--primary">
+        <svg><use href="#i-user"></use></svg> <span class="hide-xs">{% trans "Ingia / Login" %}</span>
+      </a>
+    {% endif %}
 
     <button class="icon-btn pub-burger" data-drawer-open aria-label="{% trans 'Menyu' %}">
       <svg width="21" height="21"><use href="#i-menu"></use></svg>
@@ -81,12 +91,33 @@
     {% endfor %}
   </nav>
   <div class="drawer__foot">
-    <a href="{% url 'core:login' %}" class="btn btn--primary btn--block">
-      <svg><use href="#i-user"></use></svg> {% trans "Ingia / Login" %}
-    </a>
-    <a href="{% url 'core:jiunge' %}" class="btn btn--gold btn--block">
-      <svg><use href="#i-user-plus"></use></svg> {% trans "Jiunge Sasa" %}
-    </a>
+    {% if is_authed %}
+      <div class="drawer__who">
+        <span class="drawer__avatar">{{ user.initials }}</span>
+        <span>
+          <b>{{ user.get_full_name|default:user.username }}</b>
+          <small>{{ user.get_role_display }}</small>
+        </span>
+      </div>
+      <a href="{% url user.home_url_name %}" class="btn btn--primary btn--block">
+        <svg><use href="#i-dashboard"></use></svg> {% trans "Dashibodi" %}
+      </a>
+      {% if can_join %}
+        <a href="{% url 'core:jiunge' %}" class="btn btn--gold btn--block">
+          <svg><use href="#i-user-plus"></use></svg> {% trans "Jiunge Sasa" %}
+        </a>
+      {% endif %}
+      <a href="{% url 'core:logout' %}" class="btn btn--block drawer__out">
+        <svg><use href="#i-logout"></use></svg> {% trans "Toka" %}
+      </a>
+    {% else %}
+      <a href="{% url 'core:login' %}" class="btn btn--primary btn--block">
+        <svg><use href="#i-user"></use></svg> {% trans "Ingia / Login" %}
+      </a>
+      <a href="{% url 'core:jiunge' %}" class="btn btn--gold btn--block">
+        <svg><use href="#i-user-plus"></use></svg> {% trans "Jiunge Sasa" %}
+      </a>
+    {% endif %}
   </div>
 </aside>
 
