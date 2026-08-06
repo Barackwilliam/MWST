@@ -3,7 +3,11 @@
 {% block title %}{% trans "Nyumbani" %}{% endblock %}
 
 {% block head %}
-<link rel="preload" as="image" href="{% static 'img/hero-mosque.jpg' %}">
+{# Preload picha inayolingana na skrini pekee — simu isipakue faili ya desktop #}
+<link rel="preload" as="image" media="(min-width: 1025px)"
+      href="{% static 'img/hero-mosque.webp' %}" type="image/webp">
+<link rel="preload" as="image" media="(max-width: 1024px)"
+      href="{% static 'img/hero-mosque-sm.webp' %}" type="image/webp">
 <style>
   /* Picha halisi ya kituo cha elimu ya Kiislamu.
      Gradient inaiweka giza upande wa kushoto ili maandishi meupe yasomeke. */
@@ -12,12 +16,25 @@
       linear-gradient(100deg, rgba(4,35,24,.93) 0%, rgba(6,48,31,.78) 42%,
                       rgba(10,64,40,.30) 72%, rgba(10,64,40,.10) 100%),
       url("{% static 'img/hero-mosque.jpg' %}") center 62% / cover no-repeat;
+    background-image:
+      linear-gradient(100deg, rgba(4,35,24,.93) 0%, rgba(6,48,31,.78) 42%,
+                      rgba(10,64,40,.30) 72%, rgba(10,64,40,.10) 100%),
+      image-set(url("{% static 'img/hero-mosque.webp' %}") type("image/webp"),
+                url("{% static 'img/hero-mosque.jpg' %}") type("image/jpeg"));
   }
+  /* Simu: overlay nyepesi zaidi — msikiti uonekane bila kupoteza usomekaji.
+     Gradient ni nzito juu (ambapo maandishi yapo) na nyepesi chini. */
   @media (max-width: 1024px) {
     .hero--home {
       background:
-        linear-gradient(180deg, rgba(4,35,24,.88) 0%, rgba(6,48,31,.90) 100%),
-        url("{% static 'img/hero-mosque-sm.jpg' %}") center 55% / cover no-repeat;
+        linear-gradient(180deg, rgba(4,35,24,.90) 0%, rgba(5,42,27,.74) 46%,
+                        rgba(6,48,31,.62) 72%, rgba(4,35,24,.86) 100%),
+        url("{% static 'img/hero-mosque-sm.jpg' %}") center 45% / cover no-repeat;
+      background-image:
+        linear-gradient(180deg, rgba(4,35,24,.90) 0%, rgba(5,42,27,.74) 46%,
+                        rgba(6,48,31,.62) 72%, rgba(4,35,24,.86) 100%),
+        image-set(url("{% static 'img/hero-mosque-sm.webp' %}") type("image/webp"),
+                  url("{% static 'img/hero-mosque-sm.jpg' %}") type("image/jpeg"));
     }
   }
 </style>

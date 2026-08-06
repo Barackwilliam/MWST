@@ -10,7 +10,7 @@ Mfano:  static/img/scenes/elimu.jpg, static/img/scenes/afya.jpg n.k.
 Kama picha haipo bado, mchoro (SVG) wa chini unaonekana badala yake —
 mara ukishaweka faili husika, picha halisi itaonekana kiotomatiki.
 {% endcomment %}
-{% with imgpath="img/scenes/"|add:scene|add:".jpg" %}
+{% with imgpath="img/scenes/"|add:scene|add:".jpg" webppath="img/scenes/"|add:scene|add:".webp" %}
 <svg class="illus__svg" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
   <defs>
     <linearGradient id="sk-{{ scene }}" x1="0" y1="0" x2="0" y2="1">
@@ -167,5 +167,9 @@ mara ukishaweka faili husika, picha halisi itaonekana kiotomatiki.
   <!-- Ukingo wa dhahabu -->
   <rect x="4" y="4" width="392" height="252" rx="6" fill="none" stroke="url(#gd-{{ scene }})" stroke-width="1.4" opacity=".45"/>
 </svg>
-<img class="illus__img" src="{% static imgpath %}" alt="" loading="lazy" onerror="this.remove()">
+<picture class="illus__pic">
+  <source srcset="{% static webppath %}" type="image/webp">
+  <img class="illus__img" src="{% static imgpath %}" alt="" loading="lazy" decoding="async"
+       onerror="(this.closest('picture')||this).remove()">
+</picture>
 {% endwith %}

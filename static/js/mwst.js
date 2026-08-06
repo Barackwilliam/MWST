@@ -506,3 +506,59 @@
     });
   }
 })();
+
+/* ==========================================================================
+   MAPENDELEO YA VIDAKUZI
+   Kidirisha kidogo kinachotimiza ahadi iliyo kwenye Sera ya Vidakuzi.
+   Uchaguzi unahifadhiwa kwenye localStorage kwa mwaka mmoja.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  var KEY = "mwst-cookie-consent";
+  var MAX_AGE = 365 * 24 * 60 * 60 * 1000;
+  var bar = document.getElementById("cookiebar");
+  if (!bar) return;
+
+  function read() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      var v = JSON.parse(raw);
+      if (!v || !v.at || Date.now() - v.at > MAX_AGE) return null;
+      return v;
+    } catch (e) { return null; }
+  }
+
+  function show() { bar.hidden = false; requestAnimationFrame(function () { bar.classList.add("is-in"); }); }
+  function hide() { bar.classList.remove("is-in"); setTimeout(function () { bar.hidden = true; }, 260); }
+
+  function save(choice) {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ choice: choice, at: Date.now() }));
+    } catch (e) { /* kivinjari kimezuia hifadhi — tunaendelea tu */ }
+    document.documentElement.dataset.cookieConsent = choice;
+    hide();
+  }
+
+  var saved = read();
+  if (saved) {
+    document.documentElement.dataset.cookieConsent = saved.choice;
+  } else {
+    show();
+  }
+
+  bar.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-cookie]");
+    if (btn) save(btn.getAttribute("data-cookie"));
+  });
+
+  // Kitufe cha "Badilisha mapendeleo" kwenye ukurasa wa Sera ya Vidakuzi
+  document.addEventListener("click", function (e) {
+    if (e.target.closest("[data-cookie-reopen]")) {
+      try { localStorage.removeItem(KEY); } catch (err) { /* kimya */ }
+      delete document.documentElement.dataset.cookieConsent;
+      show();
+    }
+  });
+})();

@@ -1,0 +1,13 @@
+# Kiswahili ndiyo lugha ya chanzo (msgid), kwa hiyo katalogi hii haina
+# tafsiri — gettext inarudisha msgid yenyewe. Faili ipo ili Django ione
+# lugha ya "sw" imesajiliwa.
+msgid ""
+msgstr ""
+"Project-Id-Version: MWST MMS\n"
+"PO-Revision-Date: 2026-08-06\n"
+"Last-Translator: MWST\n"
+"Language-Team: Kiswahili\n"
+"Language: sw\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"

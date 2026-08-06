@@ -13,7 +13,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import get_language, gettext as _
 from django.views.decorators.http import require_POST
 
 from accounts.models import AuditLog, Role
@@ -26,7 +26,7 @@ from programs.models import AssistanceRequest, Event, EventRegistration
 
 from . import queries as q
 from . import registry
-from .data import navs, pages as pg, tz_map
+from .data import legal, navs, pages as pg, tz_map
 from .forms import (ApplicationForm, AssistanceForm, BeneficiaryForm,
                     BootstrapMixin, BroadcastForm,
                     ContactForm,
@@ -307,6 +307,20 @@ def picha(request):
     """Maktaba ya picha na video kwa umma."""
     ctx = q.public_gallery(album_slug=request.GET.get("albamu"), page=_page(request))
     return render(request, "public/picha.html", _pub(request, "picha", ctx))
+
+
+def faragha(request):
+    """Sera ya Faragha — maudhui kamili kwa lugha ya mtumiaji."""
+    doc = legal.privacy(get_language())
+    return render(request, "public/legal.html",
+                  _pub(request, "faragha", {"doc": doc}))
+
+
+def vidakuzi(request):
+    """Sera ya Vidakuzi."""
+    doc = legal.cookies(get_language())
+    return render(request, "public/legal.html",
+                  _pub(request, "vidakuzi", {"doc": doc}))
 
 
 def mawasiliano(request):

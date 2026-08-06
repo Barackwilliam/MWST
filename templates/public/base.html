@@ -125,6 +125,14 @@
     </div>
   </div>
 
+  <div class="pub-foot__legal">
+    <a href="{% url 'core:faragha' %}">{% trans "Sera ya Faragha" %}</a>
+    <span>&bull;</span>
+    <a href="{% url 'core:vidakuzi' %}">{% trans "Sera ya Vidakuzi" %}</a>
+    <span>&bull;</span>
+    <a href="{% url 'core:mawasiliano' %}">{% trans "Wasiliana Nasi" %}</a>
+  </div>
+
   <div class="pub-foot__bottom">
     <span>&copy; {{ year }} Muslim Welfare Society of Tanzania (MWST). {% trans "Haki zote zimehifadhiwa." %}</span>
     <span class="pub-foot__values">
@@ -133,6 +141,22 @@
     </span>
   </div>
 </footer>
+
+{# ---------------- Kidirisha cha mapendeleo ya vidakuzi ---------------- #}
+{# Sera ya Vidakuzi inaahidi kidirisha hiki, kwa hiyo lazima kiwepo kweli. #}
+<div class="cookiebar" id="cookiebar" hidden>
+  <div class="cookiebar__body">
+    <svg class="cookiebar__ico" width="20" height="20"><use href="#i-shield"></use></svg>
+    <p>
+      {% trans "Tunatumia vidakuzi vya lazima ili tovuti ifanye kazi, na vidakuzi vya hiari kwa uchambuzi na mapendeleo yako." %}
+      <a href="{% url 'core:vidakuzi' %}">{% trans "Soma Sera ya Vidakuzi" %}</a>
+    </p>
+  </div>
+  <div class="cookiebar__actions">
+    <button type="button" class="btn btn--ghost" data-cookie="essential">{% trans "Vya lazima tu" %}</button>
+    <button type="button" class="btn btn--gold" data-cookie="all">{% trans "Kubali vyote" %}</button>
+  </div>
+</div>
 
 {{ i18n_js|json_script:"mwst-i18n" }}
 {% block prescripts %}{% endblock %}
