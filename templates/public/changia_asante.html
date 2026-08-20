@@ -1,0 +1,142 @@
+{% extends "public/base.html" %}
+{% load i18n mwst_tags %}
+{% block title %}{% trans "Asante kwa Mchango Wako" %}{% endblock %}
+
+{% block body %}
+<section class="section thanks">
+  <div class="thanks__wrap">
+
+    {# ---------------- Hongera ---------------- #}
+    <div class="thanks__card reveal">
+      <span class="thanks__tick">
+        <svg width="34" height="34"><use href="#i-check-circle"></use></svg>
+      </span>
+      {% if gift.status == "confirmed" %}
+        <h1>{% trans "Hongera, na asante sana!" %}</h1>
+        <p class="thanks__lead">
+          {% blocktrans with name=gift.display_name %}Malipo yako yamekamilika, {{ name }}. Allah akubariki kwa moyo wako wa kutoa.{% endblocktrans %}
+        </p>
+      {% elif gift.status == "failed" %}
+        <h1>{% trans "Malipo hayakukamilika" %}</h1>
+        <p class="thanks__lead">
+          {% trans "Hakuna pesa iliyotolewa kwenye akaunti yako. Unaweza kujaribu tena wakati wowote." %}
+        </p>
+      {% else %}
+        <h1>{% trans "Asante — tumepokea ombi lako" %}</h1>
+        <p class="thanks__lead">
+          {% blocktrans with name=gift.display_name %}Ombi lako limehifadhiwa, {{ name }}. Malipo bado yanasubiri kukamilika.{% endblocktrans %}
+        </p>
+      {% endif %}
+
+      <dl class="thanks__facts">
+        <div>
+          <dt>{% trans "Namba ya risiti" %}</dt>
+          <dd><b>{{ gift.receipt_no }}</b></dd>
+        </div>
+        <div>
+          <dt>{% trans "Kiasi" %}</dt>
+          <dd><b>TSh {{ gift.amount|floatformat:0 }}</b></dd>
+        </div>
+        <div>
+          <dt>{% trans "Mfuko" %}</dt>
+          <dd>{{ gift.fund.tx_name|default:gift.fund.name }}</dd>
+        </div>
+        <div>
+          <dt>{% trans "Hali" %}</dt>
+          <dd><span class="badge badge--{{ gift.badge }}">{{ gift.get_status_display }}</span></dd>
+        </div>
+      </dl>
+
+      <p class="thanks__note">
+        {% if gift.status == "confirmed" %}
+          {% trans "Malipo yamethibitishwa. Hifadhi namba ya risiti hapo juu kwa kumbukumbu zako." %}
+        {% elif gift.status == "failed" %}
+          {% trans "Muamala haukukamilika. Hakuna kilichokatwa kwenye akaunti yako." %}
+        {% else %}
+          {% trans "Malipo yanathibitishwa. Ukilipa kwa njia ya mtandaoni, hali hubadilika yenyewe ndani ya dakika chache; ukituma kwa benki, afisa atathibitisha baada ya pesa kuingia. Hifadhi namba ya risiti hapo juu." %}
+        {% endif %}
+      </p>
+    </div>
+
+    {# ---------------- Uanachama umeanza ---------------- #}
+    {% if is_fee and member %}
+      <div class="thanks__invite reveal">
+        <span class="thanks__inviteico"><svg width="24" height="24"><use href="#i-id-card"></use></svg></span>
+        <div class="thanks__invitebody">
+          <h2>{% trans "Uanachama wako umeanza" %}</h2>
+          <p>{% trans "Ada yako imepokelewa na uanachama wako umeanzishwa rasmi. Kadi yako ya kidijitali iko tayari." %}</p>
+          <dl class="thanks__facts" style="margin-top:16px">
+            <div>
+              <dt>{% trans "Namba ya uanachama" %}</dt>
+              <dd><b>{{ member.membership_no }}</b></dd>
+            </div>
+            <div>
+              <dt>{% trans "Daraja" %}</dt>
+              <dd>{{ member.category.name }}</dd>
+            </div>
+            <div>
+              <dt>{% trans "Kipindi kinaisha" %}</dt>
+              <dd>{{ member.expires_on|date:"d M Y" }}</dd>
+            </div>
+          </dl>
+          {% if temp_password %}
+            {# Nenosiri linaonyeshwa MARA MOJA tu; halihifadhiwi popote. #}
+            <p class="thanks__small" style="margin-top:14px">
+              <b>{% trans "Taarifa za kuingia" %}</b><br>
+              {% trans "Jina la mtumiaji" %}: <b>{{ member.membership_no }}</b><br>
+              {% trans "Nenosiri la muda" %}: <b>{{ temp_password }}</b><br>
+              {% trans "Liandike sasa — halitaonyeshwa tena. Libadilishe ukiingia mara ya kwanza." %}
+            </p>
+          {% endif %}
+          <div class="hstack" style="flex-wrap:wrap;margin-top:18px">
+            <a href="{% url 'core:login' %}" class="btn btn--gold">
+              <svg><use href="#i-user-check"></use></svg> {% trans "Ingia Kwenye Akaunti Yako" %}
+            </a>
+          </div>
+          <p class="thanks__small">
+            {% trans "Uanachama hudumu miaka mitatu. Utakumbushwa kabla kipindi hakijaisha." %}
+          </p>
+        </div>
+      </div>
+
+    {# ---------------- Mwaliko wa akaunti ---------------- #}
+    {% elif show_invite %}
+      <div class="thanks__invite reveal">
+        <span class="thanks__inviteico"><svg width="24" height="24"><use href="#i-user-plus"></use></svg></span>
+        <div class="thanks__invitebody">
+          <h2>{% trans "Fungua akaunti ya mhisani — ni bure" %}</h2>
+          <p>
+            {% trans "Hutahitaji akaunti ili kuchangia, na hatutakulazimisha kamwe. Lakini ukifungua akaunti, kila mchango wako utahifadhiwa mahali pamoja." %}
+          </p>
+          <p class="thanks__small" style="margin:-6px 0 14px">
+            {% trans "Hii SI akaunti ya uanachama. Ni akaunti ya mhisani — hakuna ada wala masharti, na unaweza kuiacha wakati wowote. Ukitaka uanachama baadaye, utapata njia ndani ya akaunti yako." %}
+          </p>
+          <ul class="thanks__list">
+            <li>{% trans "Kumbukumbu kamili ya michango yako yote, mwaka hadi mwaka." %}</li>
+            <li>{% trans "Risiti zote mahali pamoja — rahisi wakati wa hesabu au zaka." %}</li>
+            <li>{% trans "Kuona jinsi mchango wako ulivyotumika kwenye miradi." %}</li>
+            <li>{% trans "Kuchangia tena bila kujaza taarifa zako upya." %}</li>
+          </ul>
+          <div class="hstack" style="flex-wrap:wrap;margin-top:18px">
+            <a href="{% url 'core:donor_register' %}?risiti={{ gift.receipt_no }}" class="btn btn--gold">
+              <svg><use href="#i-user-plus"></use></svg> {% trans "Fungua Akaunti ya Mhisani" %}
+            </a>
+            <a href="{% url 'core:home' %}" class="btn btn--ghost">{% trans "Baadaye" %}</a>
+          </div>
+          <p class="thanks__small">
+            {% trans "Mchango huu utaunganishwa moja kwa moja na akaunti yako mpya." %}
+          </p>
+        </div>
+      </div>
+    {% elif has_account %}
+      <div class="hstack" style="justify-content:center;flex-wrap:wrap;margin-top:22px">
+        <a href="{% url 'core:donor_dashboard' %}" class="btn btn--primary">
+          <svg><use href="#i-dashboard"></use></svg> {% trans "Tazama Michango Yangu" %}
+        </a>
+        <a href="{% url 'core:changia' %}" class="btn btn--ghost">{% trans "Changia Tena" %}</a>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends "public/base.html" %}
+{% load i18n static mwst_tags %}
+{% block title %}{% trans "Toa Mchango" %}{% endblock %}
+
+{% block body %}
+<div class="section" style="padding-bottom:0">{% include "base/messages.html" %}</div>
+
+<section class="section gv">
+  <form method="post" novalidate class="gv__card" data-give>
+    {% csrf_token %}
+
+    {# ---------------- Kichwa ---------------- #}
+    <header class="gv__head">
+      <span class="gv__glow" aria-hidden="true"></span>
+      <div class="gv__headmain">
+        <span class="gv__headico"><svg width="21" height="21"><use href="#i-hand-heart"></use></svg></span>
+        <div>
+          <h1>{% trans "Toa Mchango" %}</h1>
+          <p>{% trans "Lipa kwa njia salama, haraka na rahisi" %}</p>
+        </div>
+      </div>
+      <span class="gv__headbadge">
+        <svg width="13" height="13"><use href="#i-lock"></use></svg>
+        <b>{% trans "Imelindwa kwa SSL" %}</b>
+      </span>
+    </header>
+
+    {% if form.errors %}
+      <div class="gv__err">
+        <svg width="15" height="15"><use href="#i-alert"></use></svg>
+        <span>
+          {% for field in form %}{% for e in field.errors %}{{ field.label }}: {{ e }}<br>{% endfor %}{% endfor %}
+          {% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}
+        </span>
+      </div>
+    {% endif %}
+
+    <div class="gv__body">
+      {# ================= FOMU ================= #}
+      <div class="gv__form">
+
+        {# ---- 1. Aina ya mchango ---- #}
+        <div class="gv__step">
+          <span class="gv__label"><span class="gv__n">1</span>{% trans "Aina ya mchango" %}</span>
+
+          {% comment %}Chaguo la asili — JS inaifunika na dropdown inayofunguka chini
+             daima. Bila JS, hii inabaki inafanya kazi kama kawaida.{% endcomment %}
+          <div class="gv__select" data-purpose-wrap>
+            <svg class="gv__selectico" width="18" height="18" data-purpose-icon>
+              <use href="#i-hand-heart"></use>
+            </svg>
+            <select name="purpose" id="id_purpose" required data-purpose>
+              {% for g in purpose_groups %}
+                <optgroup label="{{ g.name }}">
+                  {% for p in purposes %}{% if p.group == g.key %}
+                    <option value="{{ p.key }}" data-note="{{ p.note }}" data-icon="{{ p.icon }}"
+                            {% if p.key == form.purpose.value %}selected{% endif %}>{{ p.name }}</option>
+                  {% endif %}{% endfor %}
+                </optgroup>
+              {% endfor %}
+            </select>
+            <svg class="gv__chev" width="16" height="16"><use href="#i-chevron-down"></use></svg>
+          </div>
+          <p class="gv__note" data-purpose-note></p>
+        </div>
+
+        {# ---- 2. Taarifa zako ---- #}
+        <div class="gv__step">
+          <span class="gv__label"><span class="gv__n">2</span>{% trans "Taarifa zako" %}</span>
+          <div class="gv__grid">
+            <div class="gv__f">
+              <label for="id_full_name">{% trans "Jina kamili" %} <em>*</em></label>
+              <input type="text" name="full_name" id="id_full_name" required
+                     value="{{ form.full_name.value|default:'' }}"
+                     placeholder="{% trans 'Ingiza jina kamili' %}">
+            </div>
+            <div class="gv__f">
+              <label for="id_phone">{% trans "Namba ya simu" %} <em>*</em></label>
+              <input type="tel" name="phone" id="id_phone" required
+                     value="{{ form.phone.value|default:'' }}" placeholder="07XX XXX XXX">
+            </div>
+            <div class="gv__f">
+              <label for="id_email">{% trans "Barua pepe" %} <small>{% trans "hiari" %}</small></label>
+              <input type="email" name="email" id="id_email"
+                     value="{{ form.email.value|default:'' }}" placeholder="example@email.com">
+            </div>
+            <div class="gv__f">
+              <label for="id_region">{% trans "Mkoa" %} <small>{% trans "hiari" %}</small></label>
+              <input type="text" name="region" id="id_region"
+                     value="{{ form.region.value|default:'' }}" placeholder="{% trans 'Mkoa wako' %}">
+            </div>
+          </div>
+
+          <details class="gv__more">
+            <summary>{% trans "Ongeza ujumbe au changia bila jina" %}</summary>
+            <div class="gv__f" style="margin-top:13px">
+              <label for="id_message">{% trans "Ujumbe" %} <small>{% trans "hiari" %}</small></label>
+              <textarea name="message" id="id_message" rows="2"
+                        placeholder="{% trans 'Andika ujumbe wako...' %}">{{ form.message.value|default:'' }}</textarea>
+            </div>
+            <label class="gv__check">
+              <input type="checkbox" name="anonymous" value="1"
+                     {% if form.anonymous.value %}checked{% endif %}>
+              <span>{% trans "Nataka kuchangia bila jina langu kuonekana hadharani" %}</span>
+            </label>
+          </details>
+        </div>
+
+        {# ---- 3. Kiasi ---- #}
+        <div class="gv__step">
+          <label class="gv__label" for="id_amount">
+            <span class="gv__n">3</span>{% trans "Kiasi" %}
+          </label>
+          <p class="gv__hint">{% trans "Ingiza kiasi cha mwezi mmoja. Ukichagua miezi zaidi hapo chini, jumla itahesabiwa yenyewe pamoja na punguzo." %}</p>
+          <div class="gv__amount">
+            <select name="currency" data-currency aria-label="{% trans 'Fedha' %}">
+              {% for c in currencies %}
+                <option value="{{ c.code }}" data-rate="{{ c.rate }}" data-symbol="{{ c.symbol }}"
+                        {% if c.code == form.currency.value %}selected{% endif %}>{{ c.code }}</option>
+              {% endfor %}
+            </select>
+            <input type="number" name="amount" id="id_amount" min="1" step="any" required
+                   value="{{ form.amount.value|default:'' }}" data-amount
+                   placeholder="{% trans 'Ingiza kiasi' %}">
+          </div>
+          <div class="gv__chips">
+            {% for a in presets %}
+              <button type="button" class="gv__chip" data-preset="{{ a }}">{{ a|floatformat:0 }}</button>
+            {% endfor %}
+          </div>
+          <p class="gv__fx" data-sum-fx hidden></p>
+        </div>
+
+        {# ---- 4. Marudio ---- #}
+        <div class="gv__step">
+          <span class="gv__label"><span class="gv__n">4</span>{% trans "Marudio" %}</span>
+          <div class="gv__pills">
+            {% for r in recurrences %}
+              <label class="gv__pill{% if r.key == form.recurrence.value %} is-on{% endif %}"
+                     data-months="{{ r.months }}" data-discount="{{ r.discount }}">
+                <input type="radio" name="recurrence" value="{{ r.key }}"
+                       {% if r.key == form.recurrence.value %}checked{% endif %}>
+                <span>{{ r.name }}</span>
+                {% if r.discount %}<small class="gv__off">-{{ r.discount }}%</small>{% endif %}
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        {# ---- 5. Njia ya malipo ---- #}
+        <div class="gv__step">
+          <span class="gv__label"><span class="gv__n">5</span>{% trans "Njia ya malipo" %}</span>
+          <div class="gv__pays">
+            {% for p in providers %}
+              {% if p.soon %}
+                <button type="button" class="gv__pay is-soon" data-soon="{{ p.name }}">
+                  <span class="gv__payico"><svg width="18" height="18"><use href="#i-{{ p.icon }}"></use></svg></span>
+                  <span class="gv__paytxt"><b>{{ p.name }}</b><small>{{ p.sub }}</small></span>
+                  <span class="gv__soon">{% trans "Inakuja" %}</span>
+                </button>
+              {% else %}
+                <label class="gv__pay{% if p.key == form.provider.value %} is-on{% endif %}">
+                  <input type="radio" name="provider" value="{{ p.key }}"
+                         {% if p.key == form.provider.value %}checked{% endif %}>
+                  <span class="gv__payico"><svg width="18" height="18"><use href="#i-{{ p.icon }}"></use></svg></span>
+                  <span class="gv__paytxt"><b>{{ p.name }}</b><small>{{ p.sub }}</small></span>
+                  <span class="gv__payok"><svg width="12" height="12"><use href="#i-check"></use></svg></span>
+                </label>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <p class="gv__soonmsg" data-soon-msg hidden
+             data-text="{% trans 'njia hii inakuja hivi punde. Kwa sasa tafadhali tumia Pesapal.' %}"></p>
+
+          {% comment %}Beji rasmi ya Pesapal. Inaonyesha mitandao halisi
+          inayokubalika, jambo linalomtoa mtu wasiwasi kabla ya kubofya
+          "Lipa Sasa" — hasa anayelipa mtandaoni kwa mara ya kwanza.{% endcomment %}
+          <div class="paybadge">
+            <picture>
+              <source media="(max-width: 560px)" srcset="{% static 'img/pesapal-sm.webp' %}">
+              <img src="{% static 'img/pesapal.webp' %}" width="640" height="332" loading="lazy"
+                   alt="{% trans 'Pesapal — Mixx by Yas, Airtel Money, Visa, American Express, e-wallet' %}">
+            </picture>
+          </div>
+
+        </div>
+      </div>
+
+      {# ================= MUHTASARI ================= #}
+      <aside class="gv__side">
+        <div class="gv__sum">
+          <h2>{% trans "Muhtasari wa malipo" %}</h2>
+          <dl>
+            <div><dt>{% trans "Aina" %}</dt><dd data-sum-purpose>&mdash;</dd></div>
+            <div><dt>{% trans "Marudio" %}</dt><dd data-sum-recurrence>&mdash;</dd></div>
+            <div><dt>{% trans "Kwa mwezi" %}</dt><dd data-sum-amount>&mdash;</dd></div>
+            <div data-sum-monthsrow hidden><dt>{% trans "Miezi" %}</dt><dd data-sum-months>&mdash;</dd></div>
+            <div data-sum-offrow hidden><dt>{% trans "Punguzo" %}</dt><dd class="gv__free" data-sum-off>&mdash;</dd></div>
+            <div><dt>{% trans "Ada ya huduma" %}</dt><dd class="gv__free">{% trans "Hakuna" %}</dd></div>
+          </dl>
+          <div class="gv__total">
+            <span>{% trans "Jumla" %}</span>
+            <b data-sum-total>&mdash;</b>
+          </div>
+
+          <button type="submit" class="gv__go">
+            <span>{% trans "LIPA SASA" %}</span>
+            <svg width="16" height="16"><use href="#i-arrow-right"></use></svg>
+          </button>
+
+          <ul class="gv__trust">
+            <li><svg width="13" height="13"><use href="#i-shield"></use></svg>
+                {% trans "Malipo yanapitia Pesapal" %}</li>
+            <li><svg width="13" height="13"><use href="#i-lock"></use></svg>
+                {% trans "Kadi na CVV havihifadhiwi hapa" %}</li>
+            <li><svg width="13" height="13"><use href="#i-receipt"></use></svg>
+                {% trans "Risiti hutolewa papo hapo" %}</li>
+          </ul>
+
+          <p class="gv__terms">
+            {% trans "Kwa kutuma, unakubali" %}
+            <a href="{% url 'core:masharti' %}">{% trans "Masharti ya Huduma" %}</a>
+            {% trans "na" %}
+            <a href="{% url 'core:faragha' %}">{% trans "Sera ya Faragha" %}</a>.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </form>
+
+  <footer class="gv__foot">
+    <span><svg width="14" height="14"><use href="#i-check-circle"></use></svg> {% trans "Uwazi na uwajibikaji" %}</span>
+    <span><svg width="14" height="14"><use href="#i-headset"></use></svg> {{ org_phone }}</span>
+    <span><svg width="14" height="14"><use href="#i-mail"></use></svg> {{ org_email }}</span>
+  </footer>
+</section>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "public/base.html" %}
+{% load i18n mwst_tags %}
+{% block title %}{{ item|tx:"title" }}{% endblock %}
+
+{% block body %}
+<section class="section">
+  <div class="anc__wrap">
+    <a href="{% url 'core:matangazo' %}" class="anc__back">
+      <svg width="15" height="15" style="transform:scaleX(-1)"><use href="#i-arrow-right"></use></svg>
+      {% trans "Matangazo yote" %}
+    </a>
+
+    <article class="anc reveal">
+      <header class="anc__head">
+        <span class="anc__ico tint-{{ item.tint }}">
+          <svg width="22" height="22"><use href="#i-{{ item.icon }}"></use></svg>
+        </span>
+        <div>
+          {% if item.is_urgent %}
+            <span class="anc__urgent">{% trans "DHARURA" %}</span>
+          {% endif %}
+          <h1>{{ item|tx:"title" }}</h1>
+          <p class="anc__meta">
+            <svg width="14" height="14"><use href="#i-calendar"></use></svg>
+            {{ item.published_on|date:"d F Y" }}
+            {% if item.approved_by %}
+              <span>&bull;</span>{% trans "Imeidhinishwa na" %}
+              {{ item.approved_by.get_full_name|default:item.approved_by.username }}
+            {% endif %}
+          </p>
+        </div>
+      </header>
+
+      <div class="anc__body">{{ item|tx:"body"|linebreaks }}</div>
+
+      <footer class="anc__foot">
+        <a href="{% url 'core:changia' %}" class="btn btn--gold">
+          <svg><use href="#i-hand-heart"></use></svg> {% trans "Changia Sasa" %}
+        </a>
+        <a href="{% url 'core:mawasiliano' %}" class="btn btn--ghost">{% trans "Wasiliana Nasi" %}</a>
+      </footer>
+    </article>
+
+    {% if others %}
+      <h2 class="anc__morehead">{% trans "Matangazo mengine" %}</h2>
+      <div class="anc__more">
+        {% for a in others %}
+          <a href="{% url 'core:tangazo' a.pk %}" class="anc__card reveal">
+            <span class="anc__cardico tint-{{ a.tint }}">
+              <svg width="17" height="17"><use href="#i-{{ a.icon }}"></use></svg>
+            </span>
+            <b>{{ a|tx:"title" }}</b>
+            <small>{{ a.published_on|date:"d M Y" }}</small>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

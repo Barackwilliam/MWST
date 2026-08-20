@@ -1,0 +1,5385 @@
+# MUWESTA English catalogue. msgid ni Kiswahili.
+# ONYO: usiendeshe `makemessages --no-obsolete` kwenye mradi huu.
+msgid ""
+msgstr ""
+"Project-Id-Version: MWST MMS\n"
+"PO-Revision-Date: 2026-08-10\n"
+"Last-Translator: MUWESTA\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "\"%(x)s\" imefutwa."
+msgstr "\"%(x)s\" has been deleted."
+
+msgid "\"%(x)s\" imehifadhiwa."
+msgstr "\"%(x)s\" has been saved."
+
+msgid "%(n)d Habari"
+msgstr "%(n)d News items"
+
+msgid "%(n)d Matukio"
+msgstr "%(n)d Events"
+
+msgid "%(n)d Picha"
+msgstr "%(n)d Photos"
+
+msgid "%(n)s Watu"
+msgstr "%(n)s People"
+
+msgid "%(name)s amepandishwa daraja la %(t)s na kadi mpya imetolewa."
+msgstr "%(name)s has been raised to the %(t)s tier and a new card issued."
+
+msgid "%(s)s Watu"
+msgstr "%(s)s People"
+
+msgid "%(title)s lipo baada ya siku %(days)d."
+msgstr "%(title)s is %(days)d days away."
+
+msgid "(Mwaka %(y)d)"
+msgstr "(Year %(y)d)"
+
+msgid "(Mwezi Huu)"
+msgstr "(This Month)"
+
+msgid "1 kwa kila TZS 10,000"
+msgstr "1 per TZS 10,000"
+
+msgid "1,240 wanafunzi wamefadhiliwa"
+msgstr "1,240 students sponsored"
+
+msgid "12 Habari"
+msgstr "12 News items"
+
+msgid "12 miradi imekamilika"
+msgstr "12 projects completed"
+
+msgid "165 Picha"
+msgstr "165 Photos"
+
+msgid "18 kambi za afya mwaka huu"
+msgstr "18 health camps this year"
+
+msgid "2,450 Watu"
+msgstr "2,450 People"
+
+msgid "2,450 wanufaika kwa mwezi"
+msgstr "2,450 beneficiaries per month"
+
+msgid "34 visima vimechimbwa"
+msgstr "34 boreholes drilled"
+
+msgid "8 Matukio"
+msgstr "8 Events"
+
+msgid "860 wajasiriamali wamewezeshwa"
+msgstr "860 entrepreneurs supported"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Ada"
+msgstr "Fees"
+
+msgid "Ada Nyingine"
+msgstr "Other Fees"
+
+msgid "Ada Zilizokusanywa (Mwezi Huu)"
+msgstr "Fees Collected (This Month)"
+
+msgid "Ada Zilizokusanywa (Mwezi)"
+msgstr "Fees Collected (Month)"
+
+msgid "Ada Zilizokusanywa Leo"
+msgstr "Fees Collected Today"
+
+msgid "Ada Zilizolipwa"
+msgstr "Fees Paid"
+
+msgid "Ada ya Mwezi"
+msgstr "Monthly Fee"
+
+msgid "Ada ya Uanachama"
+msgstr "Membership Fee"
+
+msgid "Ada ya Uanachama (Mwezi)"
+msgstr "Membership Fee (Monthly)"
+
+msgid "Ada za Uanachama"
+msgstr "Membership Fees"
+
+msgid "Afisa"
+msgstr "Officer"
+
+msgid "Afisa Malipo ya Ada"
+msgstr "Subscriptions Officer"
+
+msgid "Afisa Michango"
+msgstr "Contributions Officer"
+
+msgid "Afisa Miradi"
+msgstr "Projects Officer"
+
+msgid "Afisa Usajili"
+msgstr "Registration Officer"
+
+msgid "Afya"
+msgstr "Health"
+
+msgid "Aina"
+msgstr "Tiers"
+
+msgid "Aina ya Mchango"
+msgstr "Contribution Type"
+
+msgid "Aina ya Msaada"
+msgstr "Assistance Type"
+
+msgid "Aina ya Uanachama"
+msgstr "Membership Tier"
+
+msgid "Aina ya uanachama unayotaka"
+msgstr "The membership tier you want"
+
+msgid "Aina za Matukio"
+msgstr "Event Types"
+
+msgid "Aina za Msaada"
+msgstr "Assistance Types"
+
+msgid "Aina za Wanachama"
+msgstr "Membership Types"
+
+msgid "Aina zote"
+msgstr "All types"
+
+msgid "Akaunti Yako"
+msgstr "Your Account"
+
+msgid "Akaunti binafsi"
+msgstr "Personal account"
+
+msgid "Akaunti binafsi inayoonyesha michango, malipo na salio lako."
+msgstr "A personal account showing your contributions, payments and balance."
+
+msgid "Akaunti ya Kuingia"
+msgstr "Sign-in Account"
+
+msgid "Akaunti yako haijaunganishwa na mwanachama yeyote."
+msgstr "Your account is not linked to any member."
+
+msgid "Akaunti yako si ya mwanachama, kwa hiyo huna wasifu wa uanachama."
+msgstr "Your account is not a member account, so you have no membership profile."
+
+msgid "Akaunti yako si ya mwanachama."
+msgstr "Your account is not a member account."
+
+msgid "Akaunti za Wanachama"
+msgstr "Member Accounts"
+
+msgid "Akiba / Savings"
+msgstr "Savings"
+
+msgid "Albamu"
+msgstr "Albums"
+
+msgid "Alh"
+msgstr "Thu"
+
+msgid "Alika kwenye mafunzo"
+msgstr "Training invitations"
+
+msgid "Alika kwenye semina, mafunzo na mikutano ya jumuiya."
+msgstr "Invitations to seminars, training and society meetings."
+
+msgid "Aliyetuma"
+msgstr "Sent by"
+
+msgid "Andika Ujumbe"
+msgstr "Compose Message"
+
+msgid "Andika hapa..."
+msgstr "Type here..."
+
+msgid "Andika ujumbe wako hapa..."
+msgstr "Write your message here..."
+
+msgid "Anuani Kamili"
+msgstr "Full Address"
+
+msgid "Anuani ya Posta"
+msgstr "Postal Address"
+
+msgid "Anza Sasa"
+msgstr "Start Now"
+
+msgid "Arifa"
+msgstr "Notifications"
+
+msgid "Arifa Muhimu"
+msgstr "Important Alerts"
+
+msgid "Arifa Zangu"
+msgstr "My Notifications"
+
+msgid "Arifa ya Ndani"
+msgstr "In-app Notification"
+
+msgid "Arifa za Matukio"
+msgstr "Event Alerts"
+
+msgid "Arifa zinafika mara moja kwenye dashibodi ya mwanachama. Barua pepe zinahitaji SMTP kuwekwa. SMS zinahifadhiwa kwenye foleni hadi gateway iunganishwe."
+msgstr "Notifications arrive instantly on the member dashboard. Email requires SMTP to be configured. SMS is queued until a gateway is connected."
+
+msgid "Arifa zote"
+msgstr "All alerts"
+
+msgid "Arusha Mjini, Arusha"
+msgstr "Arusha Town, Arusha"
+
+msgid "Asante kwa mchango wako. Namba ya risiti: %(no)s."
+msgstr "Thank you for your contribution. Receipt number: %(no)s."
+
+msgid "Asante. Ujumbe wako umepokelewa; tutakujibu ndani ya saa 24 za kazi."
+msgstr "Thank you. Your message has been received; we will reply within 24 working hours."
+
+msgid "Asilimia"
+msgstr "Percentage"
+
+msgid "Asilimia ya Lengo Lililofikiwa"
+msgstr "Percentage of Target Reached"
+
+msgid "Asilimia ya Utekelezaji"
+msgstr "Completion Rate"
+
+msgid "Au ingia kama"
+msgstr "Or sign in as"
+
+msgid "Awamu ijayo"
+msgstr "Next phase"
+
+msgid "Aya za Qur'an"
+msgstr "Qur'an Verses"
+
+msgid "Baada ya kulipa kwa simu au benki, weka taarifa hapa. Afisa wa fedha atathibitisha."
+msgstr "After paying by phone or bank, enter the details here. A finance officer will confirm."
+
+msgid "Bado"
+msgstr "Not yet"
+
+msgid "Bado hujachangia"
+msgstr "You have not contributed yet"
+
+msgid "Bado hujajiandikisha"
+msgstr "You have not registered yet"
+
+msgid "Bado hujalipa"
+msgstr "You have not paid yet"
+
+msgid "Bado hujapata pointi"
+msgstr "You have no points yet"
+
+msgid "Bado huna akaunti?"
+msgstr "Don't have an account?"
+
+msgid "Barua Pepe"
+msgstr "Email"
+
+msgid "Benki"
+msgstr "Bank"
+
+msgid "Bonyeza QR code kuhakiki kadi hii, au mwambie afisa aiskan."
+msgstr "Tap the QR code to verify this card, or ask an officer to scan it."
+
+msgid "Chagua Aina"
+msgstr "Choose a Tier"
+
+msgid "Chagua Aina ya Uanachama"
+msgstr "Select Membership Tier"
+
+msgid "Chagua Albamu"
+msgstr "Choose an Album"
+
+msgid "Chagua Jinsia"
+msgstr "Select Gender"
+
+msgid "Chagua Kata"
+msgstr "Select Ward"
+
+msgid "Chagua Mkoa"
+msgstr "Select Region"
+
+msgid "Chagua Picha"
+msgstr "Choose Photo"
+
+msgid "Chagua Uraia"
+msgstr "Select Citizenship"
+
+msgid "Chagua Wilaya"
+msgstr "Select District"
+
+msgid "Chagua aina ya uanachama"
+msgstr "Choose membership type"
+
+msgid "Chagua aina ya uanachama inayokufaa: Bronze hadi Diamond."
+msgstr "Pick the membership tier that suits you: Bronze to Diamond."
+
+msgid "Chagua kategoria."
+msgstr "Choose a tier."
+
+msgid "Chagua mkoa."
+msgstr "Choose a region."
+
+msgid "Chagua ombi kuona maelezo."
+msgstr "Select an application to see details."
+
+msgid "Changia / Donate"
+msgstr "Donate"
+
+msgid "Changia Mradi Huu"
+msgstr "Support This Project"
+
+msgid "Changia mradi wowote na ufuatilie maendeleo yake."
+msgstr "Support any project and follow its progress."
+
+msgid "Chanzo"
+msgstr "Source"
+
+msgid "Chapisha"
+msgstr "Print"
+
+msgid "Chapisha / Hifadhi PDF"
+msgstr "Print / Save as PDF"
+
+msgid "Chapisha Kadi"
+msgstr "Print Card"
+
+msgid "Cheti cha uanachama"
+msgstr "Membership certificate"
+
+msgid "Chini ya 2,000"
+msgstr "Less than 2,000"
+
+msgid "Chini ya MB 25"
+msgstr "Under 25 MB"
+
+msgid "Chuja"
+msgstr "Filter"
+
+msgid "Daraja"
+msgstr "Tier"
+
+msgid "Daraja Langu"
+msgstr "My Tier"
+
+msgid "Daraja la Heshima"
+msgstr "Honorary Tier"
+
+msgid "Daraja maalum"
+msgstr "Special tier"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Dashboard - Msimamizi Mkuu (Mikoa Yote za Tanzania)"
+msgstr "Dashboard - Super Administrator (All Regions of Tanzania)"
+
+msgid "Dashboard / Malipo ya Ada"
+msgstr "Dashboard / Subscription Payments"
+
+msgid "Dashboard / Michango"
+msgstr "Dashboard / Contributions"
+
+msgid "Dashboard > Usajili wa Mwanachama"
+msgstr "Dashboard > Member Registration"
+
+msgid "Dashboard ya Usimamizi wa Matukio"
+msgstr "Events Management Dashboard"
+
+msgid "Dashboard ya Wadau na Wahisani"
+msgstr "Partners & Donors Dashboard"
+
+msgid "Dashibodi"
+msgstr "Dashboard"
+
+msgid "Dashibodi Kuu"
+msgstr "Main Dashboard"
+
+msgid "Dashibodi ya Kanda"
+msgstr "Zone Dashboard"
+
+msgid "Dashibodi ya Usimamizi wa Picha na Video"
+msgstr "Photo & Video Management Dashboard"
+
+msgid "Data nyingine yote ni halisi"
+msgstr "All other data is real"
+
+msgid "Dhamira Yetu"
+msgstr "Our Mission"
+
+msgid "Dini"
+msgstr "Religion"
+
+msgid "Dira Yetu"
+msgstr "Our Vision"
+
+msgid "Dira, Dhamira na Maadili"
+msgstr "Vision, Mission and Values"
+
+msgid "Eleza hali yako kwa kina. Afisa wa ustawi atakupigia simu."
+msgstr "Describe your situation in detail. A welfare officer will call you."
+
+msgid "Elimu"
+msgstr "Education"
+
+msgid "Elimu na Mafunzo"
+msgstr "Education and Training"
+
+msgid "Endelea Kutazama"
+msgstr "Keep Exploring"
+
+msgid "Faharasa"
+msgstr "Index"
+
+msgid "Faida"
+msgstr "Benefits"
+
+msgid "Faida na tuzo zote"
+msgstr "All benefits and rewards"
+
+msgid "Faida za Uanachama"
+msgstr "Membership Benefits"
+
+msgid "Faida zote za Bronze"
+msgstr "All Bronze benefits"
+
+msgid "Faida zote za Gold"
+msgstr "All Gold benefits"
+
+msgid "Faida zote za Silver"
+msgstr "All Silver benefits"
+
+msgid "Faili \"%(t)s\" limepakiwa."
+msgstr "File \"%(t)s\" uploaded."
+
+msgid "Faili ni kubwa mno. Kiwango cha juu ni MB 25."
+msgstr "File is too large. The maximum is 25 MB."
+
+msgid "Familia & Wategemezi"
+msgstr "Family & Dependants"
+
+msgid "Familia na Wanufaika"
+msgstr "Family and Beneficiaries"
+
+msgid "Fedha"
+msgstr "Finance"
+
+msgid "Fedha za jumuiya zinatoka wapi?"
+msgstr "Where does the society's funding come from?"
+
+msgid "Fikia kadi yako ya uanachama, historia ya malipo, pointi na huduma zote za MUWESTA."
+msgstr "Access your membership card, payment history, points and all MUWESTA services."
+
+msgid "Fomu ya Usajili"
+msgstr "Registration Form"
+
+msgid "Fuatilia shughuli, miradi, matangazo na fursa mbalimbali kutoka MUWESTA."
+msgstr "Follow activities, projects, announcements and opportunities from MUWESTA."
+
+msgid "Funga"
+msgstr "Close"
+
+msgid "Fungua Kampeni Mpya"
+msgstr "Launch New Campaign"
+
+msgid "Fungua Kanda"
+msgstr "Open Zone"
+
+msgid "Fungua kanda"
+msgstr "Open zone"
+
+msgid "Fungua risiti"
+msgstr "Open receipt"
+
+msgid "Fursa ya kuomba msaada wa dharura, matibabu au elimu."
+msgstr "The right to request emergency, medical or education assistance."
+
+msgid "Futa"
+msgstr "Clear"
+
+msgid "Galeria"
+msgstr "Gallery"
+
+msgid "Ghairi"
+msgstr "Cancel"
+
+msgid "Habari"
+msgstr "News"
+
+msgid "Habari Mpya"
+msgstr "Latest News"
+
+msgid "Habari Nyingine"
+msgstr "More News"
+
+msgid "Habari Zilizochapishwa Mwezi Huu"
+msgstr "News Published This Month"
+
+msgid "Habari na Picha"
+msgstr "News & Photos"
+
+msgid "Habari na Taarifa za MUWESTA"
+msgstr "MUWESTA News and Announcements"
+
+msgid "Habari za Karibuni"
+msgstr "Latest News"
+
+msgid "Haijaanza"
+msgstr "Not Started"
+
+msgid "Haipo"
+msgstr "None"
+
+msgid "Haiwezi kufutwa: %(e)s"
+msgstr "Cannot be deleted: %(e)s"
+
+msgid "Haki ya kupiga kura"
+msgstr "Voting rights"
+
+msgid "Haki ya kupiga kura kwenye Mkutano Mkuu wa mwaka."
+msgstr "The right to vote at the Annual General Meeting."
+
+msgid "Haki zote zimehifadhiwa."
+msgstr "All rights reserved."
+
+msgid "Hakiki"
+msgstr "Verify"
+
+msgid "Hakiki Kadi"
+msgstr "Verify Card"
+
+msgid "Hakiki kadi"
+msgstr "Verify card"
+
+msgid "Hakikisha tarehe ya kuzaliwa ni sahihi."
+msgstr "Please check the date of birth."
+
+msgid "Hakikisha umeandika namba sawasawa, au skan QR code iliyo kwenye kadi. Kama tatizo linaendelea, wasiliana nasi."
+msgstr "Check that the number is correct, or scan the QR code on the card. If the problem continues, contact us."
+
+msgid "Hakuna arifa"
+msgstr "No notifications"
+
+msgid "Hakuna daraja maalum lililowekwa."
+msgstr "No special tier has been configured."
+
+msgid "Hakuna kanda iliyowekwa."
+msgstr "No zone has been assigned."
+
+msgid "Hakuna maombi"
+msgstr "No applications"
+
+msgid "Hakuna maombi yanayolingana na kichujio hiki."
+msgstr "No applications match this filter."
+
+msgid "Hakuna matangazo"
+msgstr "No announcements"
+
+msgid "Hakuna matukio yanayokuja"
+msgstr "No upcoming events"
+
+msgid "Hakuna mtumiaji yeyote kwenye database. Endesha: python manage.py seed"
+msgstr "There are no users in the database. Run: python manage.py seed"
+
+msgid "Hakuna picha bado"
+msgstr "No photos yet"
+
+msgid "Hakuna rekodi"
+msgstr "No records"
+
+msgid "Hakuna ujumbe uliotumwa"
+msgstr "No messages sent"
+
+msgid "Hakuna waliosajiliwa"
+msgstr "None registered"
+
+msgid "Hakuna wanachama"
+msgstr "No members"
+
+msgid "Hakuna wanafamilia"
+msgstr "No family members"
+
+msgid "Hakuna wanufaika"
+msgstr "No beneficiaries"
+
+msgid "Halali"
+msgstr "Valid"
+
+msgid "Halali Hadi"
+msgstr "Valid Until"
+
+msgid "Halali kwa Muda"
+msgstr "Valid For"
+
+msgid "Hali"
+msgstr "Status"
+
+msgid "Hali ya Malipo"
+msgstr "Payment Status"
+
+msgid "Hali ya Maombi"
+msgstr "Application Status"
+
+msgid "Hali ya Uanachama"
+msgstr "Membership Status"
+
+msgid "Hali ya mwanachama imebadilishwa."
+msgstr "The member's status has been changed."
+
+msgid "Hali zote"
+msgstr "All statuses"
+
+msgid "Halmashauri"
+msgstr "Councils"
+
+msgid "Hamisha Malipo"
+msgstr "Filter Payments"
+
+msgid "Hapana. Huduma zetu zinatolewa kwa kila mwenye uhitaji bila kujali dini, kabila au eneo analotoka."
+msgstr "No. Our services are open to anyone in need, regardless of religion, ethnicity or location."
+
+msgid "Hariri"
+msgstr "Edit"
+
+msgid "Hariri Mwanachama"
+msgstr "Edit Member"
+
+msgid "Hariri Ombi"
+msgstr "Edit Application"
+
+msgid "Hariri Taarifa"
+msgstr "Edit Details"
+
+msgid "Hariri Wasifu"
+msgstr "Edit Profile"
+
+msgid "Hatua"
+msgstr "Actions"
+
+msgid "Hatua Nne Tu"
+msgstr "Just Four Steps"
+
+msgid "Hatua za Haraka"
+msgstr "Quick Actions"
+
+msgid "Hatua za Usajili"
+msgstr "Registration Steps"
+
+msgid "Hifadhi"
+msgstr "Storage"
+
+msgid "Hifadhi Inayopatikana"
+msgstr "Available Storage"
+
+msgid "Hifadhi Mabadiliko"
+msgstr "Save Changes"
+
+msgid "Hifadhi Nenosiri"
+msgstr "Save Password"
+
+msgid "Hifadhi Ombi"
+msgstr "Save Application"
+
+msgid "Historia"
+msgstr "History"
+
+msgid "Historia ya MUWESTA"
+msgstr "MUWESTA History"
+
+msgid "Historia ya Malipo"
+msgstr "Payment History"
+
+msgid "Historia ya Michango"
+msgstr "Contribution History"
+
+msgid "Historia ya Pointi"
+msgstr "Points History"
+
+msgid "Historia ya malipo"
+msgstr "Payment history"
+
+msgid "Historia yote ya malipo"
+msgstr "Full payment history"
+
+msgid "Historia, Dira na Dhamira ya MUWESTA"
+msgstr "History, Vision and Mission of MUWESTA"
+
+msgid "Huduma"
+msgstr "Services"
+
+msgid "Huduma Zetu"
+msgstr "Our Services"
+
+msgid "Huduma Zinazogusa Maisha"
+msgstr "Services That Touch Lives"
+
+msgid "Huduma za Afya"
+msgstr "Health Services"
+
+msgid "Huduma za Ustawi"
+msgstr "Welfare Services"
+
+msgid "Huna ruhusa ya kufikia ukurasa huu."
+msgstr "You do not have permission to view this page."
+
+msgid "Huna ruhusa ya kusimamia %(x)s."
+msgstr "You do not have permission to manage %(x)s."
+
+msgid "Huruma"
+msgstr "Compassion"
+
+msgid "Idadi"
+msgstr "Count"
+
+msgid "Idadi ya Kanda"
+msgstr "Number of Zones"
+
+msgid "Idadi ya Kata"
+msgstr "Number of Wards"
+
+msgid "Idadi ya Malipo"
+msgstr "Number of Payments"
+
+msgid "Idadi ya Michango"
+msgstr "Number of Contributions"
+
+msgid "Idadi ya Mikoa"
+msgstr "Number of Regions"
+
+msgid "Idadi ya Wilaya"
+msgstr "Number of Districts"
+
+msgid "Idhinisha"
+msgstr "Approve"
+
+msgid "Idhinisha Maombi"
+msgstr "Approve Application"
+
+msgid "Ijm"
+msgstr "Fri"
+
+msgid "Ikilinganishwa na mwezi jana"
+msgstr "compared to last month"
+
+msgid "Ilemela, Mwanza"
+msgstr "Ilemela, Mwanza"
+
+msgid "Ilitolewa"
+msgstr "Issued"
+
+msgid "Imani"
+msgstr "Faith"
+
+msgid "Imani kwa Vitendo, Huduma na Maendeleo kwa Binadamu"
+msgstr "Faith in Action, Service and Development for Humanity"
+
+msgid "Imani kwa Vitendo,<br>Huduma na Maendeleo<br>kwa Binadamu"
+msgstr "Faith in Action,<br>Service and Development<br>for Humanity"
+
+msgid "Imani kwa vitendo, Huduma na Maendeleo kwa binadamu"
+msgstr "Faith in action, Service and Development for humanity"
+
+msgid "Imani · Huruma · Huduma · Maendeleo"
+msgstr "Faith · Compassion · Service · Development"
+
+msgid "Imani, Huruma, Huduma na Maendeleo. Haya ndiyo yanayoongoza kila uamuzi na kila huduma tunayoitoa."
+msgstr "Faith, Compassion, Service and Development. These guide every decision and every service we deliver."
+
+msgid "Imeahirishwa"
+msgstr "Postponed"
+
+msgid "Imefanyika"
+msgstr "Completed"
+
+msgid "Imefikiwa"
+msgstr "Achieved"
+
+msgid "Imeghairiwa"
+msgstr "Cancelled"
+
+msgid "Imehakikiwa"
+msgstr "Checked at"
+
+msgid "Imeidhinishwa"
+msgstr "Approved"
+
+msgid "Imeisha muda"
+msgstr "Expired"
+
+msgid "Imekamilika"
+msgstr "Completed"
+
+msgid "Imekataliwa"
+msgstr "Rejected"
+
+msgid "Imelipwa"
+msgstr "Paid"
+
+msgid "Imepakuliwa kama SVG."
+msgstr "Downloaded as SVG."
+
+msgid "Imepangwa"
+msgstr "Scheduled"
+
+msgid "Imepitishwa"
+msgstr "Approved"
+
+msgid "Imesimama"
+msgstr "On Hold"
+
+msgid "Imesitishwa"
+msgstr "Suspended"
+
+msgid "Imethibitisha"
+msgstr "Confirmed"
+
+msgid "Imethibitishwa na Muslim Welfare Society of Tanzania"
+msgstr "Verified by the Muslim Welfare Society of Tanzania"
+
+msgid "Inaendelea"
+msgstr "In Progress"
+
+msgid "Inafanya kazi"
+msgstr "Working"
+
+msgid "Inahitaji gateway"
+msgstr "Needs a gateway"
+
+msgid "Inajayo"
+msgstr "Upcoming"
+
+msgid "Inakuja hivi karibuni"
+msgstr "Coming soon"
+
+msgid "Inaonyesha %(a)s hadi %(b)s ya %(t)s rekodi"
+msgstr "Showing %(a)s to %(b)s of %(t)s records"
+
+msgid "Inasubiri"
+msgstr "Pending"
+
+msgid "Inasubiri Uthibitisho"
+msgstr "Awaiting Confirmation"
+
+msgid "Inasubiri idhini"
+msgstr "Awaiting approval"
+
+msgid "Inatengeneza picha..."
+msgstr "Generating image..."
+
+msgid "Inatumika"
+msgstr "In use"
+
+msgid "Inaweza kuchaguliwa"
+msgstr "Selectable"
+
+msgid "Inayofuata"
+msgstr "Next"
+
+msgid "Ingia"
+msgstr "Sign In"
+
+msgid "Ingia / Login"
+msgstr "Sign In / Login"
+
+msgid "Ingia Kwenye Akaunti Yako"
+msgstr "Sign In to Your Account"
+
+msgid "Ingia Mfumo"
+msgstr "Sign In"
+
+msgid "Ingia kama"
+msgstr "Sign in as"
+
+msgid "Ingiza Mtaa / Kijiji"
+msgstr "Enter Street / Village"
+
+msgid "Ingiza Namba ya Kitambulisho"
+msgstr "Enter National ID Number"
+
+msgid "Ingiza anuani kamili"
+msgstr "Enter full address"
+
+msgid "Ingiza jina kamili"
+msgstr "Enter full name"
+
+msgid "JPEG au PNG, chini ya MB 2"
+msgstr "JPEG or PNG, under 2 MB"
+
+msgid "Jaza Fomu"
+msgstr "Fill the Form"
+
+msgid "Jaza anuani na mawasiliano"
+msgstr "Fill in address and contact details"
+
+msgid "Jaza fomu hii kuanza safari yako ya uanachama. Itachukua dakika chache tu."
+msgstr "Complete this form to begin your membership journey. It only takes a few minutes."
+
+msgid "Jaza kichwa kwa Kiswahili na Kiingereza ili faili lionekane vizuri kwa lugha zote mbili. Ukiacha Kiingereza tupu, Kiswahili kitatumika."
+msgstr "Fill in the title in both Swahili and English so the file displays well in either language. If you leave English blank, Swahili is used."
+
+msgid "Jaza taarifa zako binafsi"
+msgstr "Fill in your personal details"
+
+msgid "Jaza taarifa zako binafsi na za mawasiliano mtandaoni."
+msgstr "Enter your personal and contact details online."
+
+msgid "Je, ni lazima uwe Mwislamu kupata huduma?"
+msgstr "Do you have to be Muslim to receive services?"
+
+msgid "Jiandikishe"
+msgstr "Register"
+
+msgid "Jiandikishe kwenye matukio ya jumuiya"
+msgstr "Register for community events"
+
+msgid "Jiandikishe mapema — nafasi ni chache."
+msgstr "Register early — places are limited."
+
+msgid "Jifunze Zaidi"
+msgstr "Learn More"
+
+msgid "Jifunze Zaidi Kuhusu MUWESTA"
+msgstr "Learn More About MUWESTA"
+
+msgid "Jiji"
+msgstr "City Council"
+
+msgid "Jina"
+msgstr "Name"
+
+msgid "Jina Kamili"
+msgstr "Full Name"
+
+msgid "Jina au namba"
+msgstr "Name or number"
+
+msgid "Jina au risiti"
+msgstr "Name or receipt"
+
+msgid "Jina la Mchangiaji"
+msgstr "Donor Name"
+
+msgid "Jina la Mwanachama"
+msgstr "Member Name"
+
+msgid "Jina la mtumiaji au nenosiri si sahihi."
+msgstr "Username or password is incorrect."
+
+msgid "Jina lako kamili"
+msgstr "Your full name"
+
+msgid "Jina, namba ya uanachama, simu..."
+msgstr "Name, membership number, phone..."
+
+msgid "Jinsi ya Kujiunga"
+msgstr "How to Join"
+
+msgid "Jinsi ya Kupata Pointi"
+msgstr "How to Earn Points"
+
+msgid "Jinsia"
+msgstr "Gender"
+
+msgid "Jinsia na tarehe ya kuzaliwa"
+msgstr "Gender and date of birth"
+
+msgid "Jiografia"
+msgstr "Geography"
+
+msgid "Jiunge"
+msgstr "Join"
+
+msgid "Jiunge Sasa"
+msgstr "Join Now"
+
+msgid "Jiunge na Familia ya MUWESTA"
+msgstr "Join the MUWESTA Family"
+
+msgid "Jiunge na MUWESTA Leo"
+msgstr "Join MUWESTA Today"
+
+msgid "Jiunge nasi kwenye semina, mikutano, mafunzo na shughuli za kijamii zinazofanyika nchini kote."
+msgstr "Join us at seminars, meetings, training and community activities held across the country."
+
+msgid "Jms"
+msgstr "Sat"
+
+msgid "Jnn"
+msgstr "Tue"
+
+msgid "Jpl"
+msgstr "Sun"
+
+msgid "Jtn"
+msgstr "Wed"
+
+msgid "Jtt"
+msgstr "Mon"
+
+msgid "Julai 2026"
+msgstr "July 2026"
+
+msgid "Jumamosi: 09:00 - 13:00"
+msgstr "Saturday: 09:00 - 13:00"
+
+msgid "Jumatatu - Ijumaa: 08:00 - 17:00"
+msgstr "Monday - Friday: 08:00 - 17:00"
+
+msgid "Jumla"
+msgstr "Total"
+
+msgid "Jumla kwa Mwaka 2026"
+msgstr "Total for Year 2026"
+
+msgid "Jumla ya Matukio"
+msgstr "Total Events"
+
+msgid "Jumla ya Michango"
+msgstr "Total Contributions"
+
+msgid "Jumla ya Michango Iliyopokelewa"
+msgstr "Total Contributions Received"
+
+msgid "Jumla ya Picha"
+msgstr "Total Photos"
+
+msgid "Jumla ya Ripoti"
+msgstr "Summary Reports"
+
+msgid "Jumla ya Video"
+msgstr "Total Videos"
+
+msgid "Jumla ya Wadau Waliosajiliwa"
+msgstr "Registered Partners"
+
+msgid "Jumla ya Wahisani"
+msgstr "Total Donors"
+
+msgid "Jumla ya Wanachama"
+msgstr "Total Members"
+
+msgid "Jumla ya Washiriki"
+msgstr "Total Participants"
+
+msgid "Jumla ya pointi"
+msgstr "Total points"
+
+msgid "Jumuiya ilianzishwa Dodoma na wanachama waanzilishi 42 wenye lengo la kusaidia jamii."
+msgstr "The society was founded in Dodoma by 42 founding members aiming to serve the community."
+
+msgid "Kadi Haijapatikana"
+msgstr "Card Not Found"
+
+msgid "Kadi Ilitolewa"
+msgstr "Card Issued"
+
+msgid "Kadi Yako"
+msgstr "Your Card"
+
+msgid "Kadi Yako ya Uanachama"
+msgstr "Your Membership Card"
+
+msgid "Kadi Yangu"
+msgstr "My Card"
+
+msgid "Kadi Yangu ya Uanachama"
+msgstr "My Membership Card"
+
+msgid "Kadi Zilizotolewa kwa Mwezi"
+msgstr "Cards Issued by Month"
+
+msgid "Kadi Zote"
+msgstr "All Cards"
+
+msgid "Kadi hii haipo kwenye mfumo wa MUWESTA."
+msgstr "This card is not in the MUWESTA system."
+
+msgid "Kadi hii imesitishwa. Wasiliana na ofisi ya MUWESTA."
+msgstr "This card has been suspended. Contact the MUWESTA office."
+
+msgid "Kadi hii imethibitishwa na MUWESTA."
+msgstr "This card has been verified by MUWESTA."
+
+msgid "Kadi imepakuliwa."
+msgstr "Card downloaded."
+
+msgid "Kadi mpya imetolewa"
+msgstr "New card issued"
+
+msgid "Kadi mpya imetolewa."
+msgstr "A new card has been issued."
+
+msgid "Kadi ni Halali"
+msgstr "Card is Valid"
+
+msgid "Kadi ya Benki"
+msgstr "Bank Card"
+
+msgid "Kadi ya Kidijitali"
+msgstr "Digital Card"
+
+msgid "Kadi ya Kidijitali yenye QR"
+msgstr "A QR-Enabled Digital Card"
+
+msgid "Kadi ya Uanachama"
+msgstr "Membership Card"
+
+msgid "Kadi ya kidijitali"
+msgstr "Digital card"
+
+msgid "Kadi yenye QR code inayothibitisha uanachama wako popote."
+msgstr "A QR-coded card that verifies your membership anywhere."
+
+msgid "Kadi za Uanachama"
+msgstr "Membership Cards"
+
+msgid "Kadi, malipo, pointi na maombi yako"
+msgstr "Your card, payments, points and requests"
+
+msgid "Kalenda Kamili"
+msgstr "Full Calendar"
+
+msgid "Kalenda kamili"
+msgstr "Full calendar"
+
+msgid "Kalenda ya Matukio"
+msgstr "Events Calendar"
+
+msgid "Kalenda ya Matukio Muhimu"
+msgstr "Key Events Calendar"
+
+msgid "Kama barua pepe hiyo ipo kwenye mfumo, utapokea kiungo cha kuweka nenosiri jipya. Angalia pia folda ya spam."
+msgstr "If that email is in the system, you will receive a link to set a new password. Check your spam folder too."
+
+msgid "Kama umelipa kwa simu, weka namba ya uthibitisho"
+msgstr "If you paid by phone, enter the confirmation number"
+
+msgid "Kambi ya upimaji afya bure Nkuhungu"
+msgstr "Free health screening camp at Nkuhungu"
+
+msgid "Kambi za afya bure na msaada wa matibabu."
+msgstr "Free health camps and medical assistance."
+
+msgid "Kambi za upimaji afya bure, msaada wa matibabu, na ujenzi wa vituo vya afya vijijini."
+msgstr "Free health screening camps, medical assistance and rural health centre construction."
+
+msgid "Kampeni"
+msgstr "Campaigns"
+
+msgid "Kampeni Zinazoendelea"
+msgstr "Ongoing Campaigns"
+
+msgid "Kampeni hai"
+msgstr "Active campaigns"
+
+msgid "Kampeni ya %(title)s itamalizika baada ya siku %(days)d."
+msgstr "The %(title)s campaign ends in %(days)d days."
+
+msgid "Kampeni zote"
+msgstr "All campaigns"
+
+msgid "Kanda"
+msgstr "Zone"
+
+msgid "Kanda ya Kaskazini"
+msgstr "Northern Zone"
+
+msgid "Kanda ya Kati"
+msgstr "Central Zone"
+
+msgid "Kanda ya Kusini na Nyanda za Juu Kusini"
+msgstr "Southern & Southern Highlands Zone"
+
+msgid "Kanda ya Magharibi"
+msgstr "Western Zone"
+
+msgid "Kanda ya Mashariki"
+msgstr "Eastern Zone"
+
+msgid "Kanda ya Ziwa"
+msgstr "Lake Zone"
+
+msgid "Kanuni za Pointi"
+msgstr "Points Rules"
+
+msgid "Karibu MUWESTA"
+msgstr "Welcome to MUWESTA"
+
+msgid "Karibu Tena"
+msgstr "Welcome Back"
+
+msgid "Karibu kwenye Mfumo wa Usimamizi wa Uanachama wa MUWESTA"
+msgstr "Welcome to the MUWESTA Membership Management System"
+
+msgid "Karibu, %(name)s!"
+msgstr "Welcome, %(name)s!"
+
+msgid "Karibu, Ndugu Msimamizi"
+msgstr "Welcome, Administrator"
+
+msgid "Kata"
+msgstr "Ward"
+
+msgid "Kataa"
+msgstr "Reject"
+
+msgid "Kategoria maalum"
+msgstr "Specific tier"
+
+msgid "Kategoria za Habari"
+msgstr "News Categories"
+
+msgid "Kategoria za Uanachama"
+msgstr "Membership Categories"
+
+msgid "Katibu Mkuu"
+msgstr "Secretary General"
+
+msgid "Kazi Zetu"
+msgstr "Our Work"
+
+msgid "Kiasi"
+msgstr "Amount"
+
+msgid "Kiasi (TZS)"
+msgstr "Amount (TZS)"
+
+msgid "Kiasi Kilichoidhinishwa"
+msgstr "Amount Approved"
+
+msgid "Kiasi Kilichoombwa"
+msgstr "Amount Requested"
+
+msgid "Kiasi Kilichopokelewa"
+msgstr "Amount Received"
+
+msgid "Kichujio cha Maombi"
+msgstr "Application Filters"
+
+msgid "Kichwa kwa Kiingereza"
+msgstr "Title in English"
+
+msgid "Kiingereza"
+msgstr "English"
+
+msgid "Kiislamu"
+msgstr "Islam"
+
+msgid "Kila kitu kinasimamiwa hapa hapa ndani ya mfumo"
+msgstr "Everything is managed here, inside the system"
+
+msgid "Kila mwanachama ana akaunti kwenye mfumo inayoonyesha michango yake yote na ripoti za matumizi zinachapishwa kila mwaka."
+msgstr "Every member has an account showing all their contributions, and expenditure reports are published annually."
+
+msgid "Kila mwanachama anapata huduma hizi bila kujali aina ya uanachama."
+msgstr "Every member receives these regardless of membership tier."
+
+msgid "Kila mwanachama anapata kadi yenye namba ya kipekee na QR code inayothibitisha uanachama popote — mikutanoni, ofisini au wakati wa kuomba huduma."
+msgstr "Every member receives a card with a unique number and QR code that verifies membership anywhere — at meetings, in offices, or when requesting services."
+
+msgid "Kila tunachokifanya kinaongozwa na nguzo hizi tatu."
+msgstr "Everything we do rests on these three pillars."
+
+msgid "Kila unapolipa ada, kuchangia au kushiriki shughuli, unapata pointi zinazokupandisha ngazi ya utambulisho."
+msgstr "Every fee you pay, contribution you make or activity you join earns points that move you up the recognition ladder."
+
+msgid "Kilichoidhinishwa"
+msgstr "Amount Approved"
+
+msgid "Kimekusanywa"
+msgstr "Collected"
+
+msgid "Kinondoni, Dar es Salaam"
+msgstr "Kinondoni, Dar es Salaam"
+
+msgid "Kipaumbele kwenye misaada"
+msgstr "Priority for assistance"
+
+msgid "Kipengele hiki"
+msgstr "This feature"
+
+msgid "Kipengele hiki bado hakijajengwa. Kinahitaji huduma ya nje (SMS, barua pepe, PDF au Excel) itakayoungwa awamu ijayo. Vipengele vingine vyote vinafanya kazi kwa data halisi."
+msgstr "This feature is not built yet. It needs an external service (SMS, email, PDF or Excel) that will be connected in the next phase. Everything else works on real data."
+
+msgid "Kipengele hiki kitapatikana mfumo wa nyuma (backend) utakapokamilika. Kwa sasa unaona muundo na taarifa za mfano."
+msgstr "This feature will be available once the backend is complete. For now you are viewing the layout with sample data."
+
+msgid "Kiswahili"
+msgstr "Kiswahili"
+
+msgid "Kitambulisho (NIDA), barua pepe na picha — si lazima sasa"
+msgstr "National ID (NIDA), email and photo — not required now"
+
+msgid "Kitendo"
+msgstr "Action"
+
+msgid "Kiungo Hakifai"
+msgstr "Link Not Valid"
+
+msgid "Kiungo Kimetumwa"
+msgstr "Link Sent"
+
+msgid "Kiungo cha Uhakiki"
+msgstr "Verification Link"
+
+msgid "Kiungo hiki kimeisha muda au kimeshatumika. Omba kingine."
+msgstr "This link has expired or has already been used. Request another."
+
+msgid "Kiwango cha Uthibitisho"
+msgstr "Confirmation Rate"
+
+msgid "Kiwango cha juu: MB 25 kwa faili"
+msgstr "Maximum: 25 MB per file"
+
+msgid "Kongamano"
+msgstr "Conference"
+
+msgid "Kongamano la kitaifa linalowaleta pamoja wasomi na walimu wa dini."
+msgstr "A national conference bringing together scholars and religious teachers."
+
+msgid "Kuanzishwa kwa MUWESTA"
+msgstr "MUWESTA Founded"
+
+msgid "Kubadili eneo"
+msgstr "Change area"
+
+msgid "Kubadili lugha"
+msgstr "Change language"
+
+msgid "Kuchagua kipindi"
+msgstr "Select period"
+
+msgid "Kuchagua mwaka"
+msgstr "Select year"
+
+msgid "Kuchagua mwezi"
+msgstr "Select month"
+
+msgid "Kuchangia mradi"
+msgstr "Contribute to project"
+
+msgid "Kuchapisha kadi"
+msgstr "Print card"
+
+msgid "Kucheza video"
+msgstr "Play video"
+
+msgid "Kuchuja kwa aina"
+msgstr "Filter by type"
+
+msgid "Kuchuja kwa tarehe"
+msgstr "Filter by date"
+
+msgid "Kuchuja malipo"
+msgstr "Filter payments"
+
+msgid "Kufungua albamu"
+msgstr "Open album"
+
+msgid "Kufungua picha"
+msgstr "Open photo"
+
+msgid "Kughairi usajili"
+msgstr "Cancel registration"
+
+msgid "Kuhariri wasifu"
+msgstr "Edit profile"
+
+msgid "Kuhifadhi PDF: bonyeza Chapisha kisha chagua \"Save as PDF\"."
+msgstr "To save as PDF: click Print, then choose \"Save as PDF\"."
+
+msgid "Kuhifadhi na kuendelea hatua ya 2"
+msgstr "Save and continue to step 2"
+
+msgid "Kuhudhuria Mkutano Mkuu"
+msgstr "Attending the AGM"
+
+msgid "Kuhudhuria mafunzo au semina"
+msgstr "Attending training or a seminar"
+
+msgid "Kuhusu Sisi"
+msgstr "About Us"
+
+msgid "Kuingia kwenye mfumo"
+msgstr "Sign in to the system"
+
+msgid "Kujiandikisha kwenye tukio"
+msgstr "Register for event"
+
+msgid "Kujitolea kwenye shughuli"
+msgstr "Volunteering"
+
+msgid "Kulipa ada kwa wakati"
+msgstr "Paying fees on time"
+
+msgid "Kulipa ada ya uanachama"
+msgstr "Pay membership fee"
+
+msgid "Kumbuka mimi"
+msgstr "Remember me"
+
+msgid "Kumbukumbu"
+msgstr "Reference"
+
+msgid "Kumbukumbu au jina"
+msgstr "Reference or name"
+
+msgid "Kumbukumbu za Matendo"
+msgstr "Audit Log"
+
+msgid "Kumbukumbu za Ujumbe"
+msgstr "Message Logs"
+
+msgid "Kumleta mwanachama mpya"
+msgstr "Referring a new member"
+
+msgid "Kuona arifa"
+msgstr "View notifications"
+
+msgid "Kuona maelezo ya malipo"
+msgstr "View payment details"
+
+msgid "Kuona maelezo ya mchango"
+msgstr "View contribution details"
+
+msgid "Kuona risiti"
+msgstr "View receipt"
+
+msgid "Kuona ujumbe"
+msgstr "View messages"
+
+msgid "Kuongeza tukio jipya"
+msgstr "Add new event"
+
+msgid "Kuonyesha nenosiri"
+msgstr "Show password"
+
+msgid "Kupakia faili mpya"
+msgstr "Upload new file"
+
+msgid "Kupakia picha ya mwanachama"
+msgstr "Upload member photo"
+
+msgid "Kupakua kadi ya PDF"
+msgstr "Download card as PDF"
+
+msgid "Kupakua ripoti"
+msgstr "Download report"
+
+msgid "Kupakua risiti"
+msgstr "Download receipt"
+
+msgid "Kupiga simu"
+msgstr "Call"
+
+msgid "Kurejesha nenosiri"
+msgstr "Reset password"
+
+msgid "Kurekodi malipo mapya"
+msgstr "Record new payment"
+
+msgid "Kurekodi mchango mpya"
+msgstr "Record new contribution"
+
+msgid "Kusoma"
+msgstr "Read-only"
+
+msgid "Kusoma habari kamili"
+msgstr "Read the full article"
+
+msgid "Kutoa huduma za elimu, afya, ustawi na uwezeshaji kiuchumi kwa mujibu wa maadili ya Kiislamu, bila ubaguzi."
+msgstr "To provide education, health, welfare and economic empowerment services in line with Islamic values, without discrimination."
+
+msgid "Kutoka ada za wanachama, michango ya hiari, Zaka, Sadaqa, Waqf na ufadhili wa mashirika washirika ya ndani na kimataifa."
+msgstr "From membership fees, voluntary contributions, Zakat, Sadaqah, Waqf and funding from local and international partner organisations."
+
+msgid "Kutuma barua pepe"
+msgstr "Send email"
+
+msgid "Kutuma maombi ya uanachama"
+msgstr "Submit membership application"
+
+msgid "Kutuma ujumbe"
+msgstr "Send message"
+
+msgid "Kuwa jumuiya kinara ya huduma za kijamii Tanzania, inayoaminika na kuchangia maendeleo endelevu ya binadamu."
+msgstr "To be Tanzania's leading community service organisation — trusted and contributing to sustainable human development."
+
+msgid "Kuwa sehemu ya mabadiliko. Uanachama wako unasaidia elimu, afya na ustawi wa maelfu ya Watanzania."
+msgstr "Be part of the change. Your membership supports education, health and welfare for thousands of Tanzanians."
+
+msgid "Kuwasiliana na msaada"
+msgstr "Contact support"
+
+msgid "Kwanza"
+msgstr "First"
+
+msgid "Kwenye Usahihishaji"
+msgstr "Under Review"
+
+msgid "Lazima uwe na umri wa miaka 18 au zaidi. Malipo ya ada yatafanyika baada ya ombi lako kuidhinishwa — usilipe chochote sasa."
+msgstr "You must be 18 or older. Fees are paid after your application is approved — do not pay anything now."
+
+msgid "Lengo (TZS)"
+msgstr "Target (TZS)"
+
+msgid "Lengo la Mwaka"
+msgstr "Annual Target"
+
+msgid "Lengo la Uchangishaji"
+msgstr "Fundraising Target"
+
+msgid "Leo"
+msgstr "Today"
+
+msgid "Limelipwa"
+msgstr "Paid"
+
+msgid "Lipa Ada"
+msgstr "Pay Fee"
+
+msgid "Lipa Ada ya Uanachama"
+msgstr "Pay Membership Fee"
+
+msgid "Lipa kwa M-Pesa"
+msgstr "Pay by M-Pesa"
+
+msgid "Lipa kwa M-Pesa, Airtel Money, Tigo Pesa au benki."
+msgstr "Pay by M-Pesa, Airtel Money, Tigo Pesa or bank transfer."
+
+msgid "MUWESTA Membership Management System"
+msgstr "MUWESTA Membership Management System"
+
+msgid "MUWESTA Support Center"
+msgstr "MUWESTA Support Center"
+
+msgid "MUWESTA ilifungua matawi katika mikoa 12 na kuanzisha mfumo wa uanachama wa kudumu."
+msgstr "MUWESTA opened branches in 12 regions and established a permanent membership system."
+
+msgid "MUWESTA imekabidhi msaada wa vyakula, mavazi na vifaa muhimu kwa familia 120 zilizoathirika na mafuriko katika wilaya za Chamwino na Bahi. Msaada huu una thamani ya zaidi ya TZS 85 milioni na umetolewa kwa ushirikiano na wadau wa ndani na kimataifa."
+msgstr "MUWESTA has delivered food, clothing and essential supplies to 120 families affected by flooding in Chamwino and Bahi districts. The aid is worth over TZS 85 million and was provided with local and international partners."
+
+msgid "MUWESTA ni jumuiya ya kijamii isiyo ya kiserikali inayotoa huduma za elimu, afya, ustawi na uwezeshaji kiuchumi kwa jamii ya Watanzania."
+msgstr "MUWESTA is a non-governmental community organisation providing education, health, welfare and economic empowerment services to Tanzanian communities."
+
+msgid "MUWESTA ni nini?"
+msgstr "What is MUWESTA?"
+
+msgid "Maadili Yetu"
+msgstr "Our Values"
+
+msgid "Maarufu"
+msgstr "Popular"
+
+msgid "Mada"
+msgstr "Subject"
+
+msgid "Maelekezo"
+msgstr "Instructions"
+
+msgid "Maelezo"
+msgstr "Description"
+
+msgid "Maelezo ya Maombi"
+msgstr "Application Details"
+
+msgid "Maelezo ya hifadhi"
+msgstr "Storage details"
+
+msgid "Maelezo ya mwanachama"
+msgstr "Member details"
+
+msgid "Maendeleo"
+msgstr "Development"
+
+msgid "Maeneo"
+msgstr "Areas"
+
+msgid "Maeneo Sita ya Huduma"
+msgstr "Six Areas of Service"
+
+msgid "Mafunzo"
+msgstr "Training"
+
+msgid "Mafunzo ya siku mbili kwa vijana wenye umri wa miaka 18 hadi 35."
+msgstr "Two days of training for young people aged 18 to 35."
+
+msgid "Mafunzo ya usimamizi wa media"
+msgstr "Media management guide"
+
+msgid "Mahali"
+msgstr "Location"
+
+msgid "Mahusiano na Jamii"
+msgstr "Community Relations"
+
+msgid "Maji Safi na Salama"
+msgstr "Clean and Safe Water"
+
+msgid "Maktaba ya Picha na Video"
+msgstr "Photo and Video Library"
+
+msgid "Malalamiko"
+msgstr "Complaints"
+
+msgid "Malipo"
+msgstr "Payments"
+
+msgid "Malipo %(no)s yameghairiwa."
+msgstr "Payment %(no)s cancelled."
+
+msgid "Malipo %(no)s yamethibitishwa."
+msgstr "Payment %(no)s confirmed."
+
+msgid "Malipo & Michango"
+msgstr "Payments & Contributions"
+
+msgid "Malipo Yaliyokosekana"
+msgstr "Outstanding Payments"
+
+msgid "Malipo Yaliyothibitishwa"
+msgstr "Confirmed Payments"
+
+msgid "Malipo Yanayofuata"
+msgstr "Next Payment"
+
+msgid "Malipo Yanayosubiri"
+msgstr "Pending Payments"
+
+msgid "Malipo Yangu"
+msgstr "My Payments"
+
+msgid "Malipo Yenye Uthibitisho"
+msgstr "Confirmed Payments"
+
+msgid "Malipo haya tayari yamethibitishwa."
+msgstr "This payment has already been confirmed."
+
+msgid "Malipo kwa Aina"
+msgstr "Payments by Type"
+
+msgid "Malipo kwa Aina ya Uanachama"
+msgstr "Payments by Membership Type"
+
+msgid "Malipo kwa Mwanachama"
+msgstr "Payments by Member"
+
+msgid "Malipo kwa Mwezi"
+msgstr "Payments by Month"
+
+msgid "Malipo kwa Vyanzo"
+msgstr "Payments by Source"
+
+msgid "Malipo mapya yamepokelewa"
+msgstr "New payment received"
+
+msgid "Malipo ya Ada"
+msgstr "Subscription Payments"
+
+msgid "Malipo ya Hivi Karibuni"
+msgstr "Recent Payments"
+
+msgid "Malipo yamerekodiwa. Risiti: %(no)s"
+msgstr "Payment recorded. Receipt: %(no)s"
+
+msgid "Malipo yamewasilishwa. Namba ya risiti: %(no)s. Yatathibitishwa na afisa wa fedha."
+msgstr "Payment submitted. Receipt number: %(no)s. It will be confirmed by a finance officer."
+
+msgid "Manispaa"
+msgstr "Municipal Council"
+
+msgid "Maombi Haya Mwezi"
+msgstr "Applications This Month"
+
+msgid "Maombi Leo"
+msgstr "Applications Today"
+
+msgid "Maombi Mapya"
+msgstr "New Applications"
+
+msgid "Maombi Yaliyoakataliwa"
+msgstr "Rejected Applications"
+
+msgid "Maombi Yaliyopitishwa"
+msgstr "Approved Applications"
+
+msgid "Maombi Yanayosubiri"
+msgstr "Pending Applications"
+
+msgid "Maombi Yangu"
+msgstr "My Requests"
+
+msgid "Maombi Yote"
+msgstr "All Requests"
+
+msgid "Maombi kwa Mwezi"
+msgstr "Applications by Month"
+
+msgid "Maombi mapya ya uanachama"
+msgstr "New membership application"
+
+msgid "Maombi ya Hivi Karibuni"
+msgstr "Recent Applications"
+
+msgid "Maombi ya Karibuni"
+msgstr "Recent Applications"
+
+msgid "Maombi ya Msaada"
+msgstr "Assistance Requests"
+
+msgid "Maombi ya Uanachama"
+msgstr "Membership Applications"
+
+msgid "Maombi ya scholarship kwa wanafunzi wa Kidato na Vyuo yanakaribishwa hadi 31 Agosti 2026."
+msgstr "Scholarship applications for secondary and college students are open until 31 August 2026."
+
+msgid "Mapato kwa Mwezi"
+msgstr "Revenue by Month"
+
+msgid "Mapato ya Jumla (Mwaka Huu)"
+msgstr "Total Revenue (This Year)"
+
+msgid "Mapato ya Kanda kwa Mwezi"
+msgstr "Zone Revenue by Month"
+
+msgid "Mapato ya Mwaka Huu"
+msgstr "Revenue This Year"
+
+msgid "Mapato ya Mwezi Huu"
+msgstr "Revenue This Month"
+
+msgid "Mapendekezo ya Haraka"
+msgstr "Quick Suggestions"
+
+msgid "Maswali Yanayoulizwa"
+msgstr "Frequently Asked Questions"
+
+msgid "Maswali Yanayoulizwa Sana"
+msgstr "Frequently Asked Questions"
+
+msgid "Matangazo"
+msgstr "Announcements"
+
+msgid "Matangazo Muhimu"
+msgstr "Important Announcements"
+
+msgid "Matangazo na Taarifa"
+msgstr "Announcements & Notices"
+
+msgid "Matawi"
+msgstr "Branches"
+
+msgid "Matukio"
+msgstr "Events"
+
+msgid "Matukio 3 mapya yameongezwa kwenye kalenda."
+msgstr "3 new events added to the calendar."
+
+msgid "Matukio Mwaka Huu"
+msgstr "Events This Year"
+
+msgid "Matukio Yaliyofanyika"
+msgstr "Past Events"
+
+msgid "Matukio Yaliyofanyika Mwezi Huu"
+msgstr "Events Held This Month"
+
+msgid "Matukio Yanayokuja"
+msgstr "Upcoming Events"
+
+msgid "Matukio Yanayokuja Hivi Karibuni"
+msgstr "Events Coming Up Soon"
+
+msgid "Matukio Yangu"
+msgstr "My Events"
+
+msgid "Matukio kwa Aina"
+msgstr "Events by Type"
+
+msgid "Matukio kwa Hali"
+msgstr "Events by Status"
+
+msgid "Matukio na Mafunzo"
+msgstr "Events and Training"
+
+msgid "Matukio na Mikutano"
+msgstr "Events & Meetings"
+
+msgid "Matukio na Shughuli za MUWESTA"
+msgstr "MUWESTA Events and Activities"
+
+msgid "Matukio ya Hivi Karibuni"
+msgstr "Recent Events"
+
+msgid "Matukio ya Hivi Punde"
+msgstr "Latest Events"
+
+msgid "Matukio ya Kanda"
+msgstr "Zone Events"
+
+msgid "Matukio ya tarehe"
+msgstr "Events on"
+
+msgid "Matukio yaliyopita"
+msgstr "Past events"
+
+msgid "Matukio yote yanayokuja"
+msgstr "All upcoming events"
+
+msgid "Matumizi Jumla"
+msgstr "Total Expenditure"
+
+msgid "Maudhui"
+msgstr "Content"
+
+msgid "Mawasiliano"
+msgstr "Contact"
+
+msgid "Mazingira na Uhamasishaji"
+msgstr "Environment & Awareness"
+
+msgid "Mbele"
+msgstr "Next"
+
+msgid "Mchanganuo wa Kanda"
+msgstr "Zone Breakdown"
+
+msgid "Mchangiaji"
+msgstr "Contributor"
+
+msgid "Mchango %(no)s umeghairiwa."
+msgstr "Contribution %(no)s cancelled."
+
+msgid "Mchango %(no)s umethibitishwa."
+msgstr "Contribution %(no)s confirmed."
+
+msgid "Mchango huu tayari umethibitishwa."
+msgstr "This contribution has already been confirmed."
+
+msgid "Mchango umerekodiwa. Risiti: %(no)s"
+msgstr "Contribution recorded. Receipt: %(no)s"
+
+msgid "Mchango wa hiari"
+msgstr "Voluntary contribution"
+
+msgid "Mchango wa kila mwezi"
+msgstr "Monthly contribution"
+
+msgid "Mdau mpya amesajiliwa: %(name)s"
+msgstr "New partner registered: %(name)s"
+
+msgid "Media & Habari Mpya"
+msgstr "Media & Latest News"
+
+msgid "Media na Habari Mpya"
+msgstr "Media and Latest News"
+
+msgid "Menyu"
+msgstr "Menu"
+
+msgid "Menyu ya akaunti"
+msgstr "Account menu"
+
+msgid "Mfumo"
+msgstr "System"
+
+msgid "Mfumo mzima na mikoa yote"
+msgstr "The whole system and all regions"
+
+msgid "Mfumo wa Kidijitali"
+msgstr "Digital System"
+
+msgid "Mgawanyo wa Michango kwa Aina"
+msgstr "Contribution Breakdown by Type"
+
+msgid "Mgeni"
+msgstr "Foreign"
+
+msgid "Miamala"
+msgstr "Transactions"
+
+msgid "Miamala ya Haribuni"
+msgstr "Recent Transactions"
+
+msgid "Miamala ya Karibuni"
+msgstr "Recent Transactions"
+
+msgid "Miamala ya Pointi"
+msgstr "Point Transactions"
+
+msgid "Michango"
+msgstr "Contributions"
+
+msgid "Michango %(n)d imethibitishwa leo."
+msgstr "%(n)d contributions confirmed today."
+
+msgid "Michango %(n)d inasubiri kuthibitishwa."
+msgstr "%(n)d contributions awaiting confirmation."
+
+msgid "Michango 7 imethibitishwa leo."
+msgstr "7 contributions confirmed today."
+
+msgid "Michango Mengine"
+msgstr "Other Contributions"
+
+msgid "Michango Yangu"
+msgstr "My Contributions"
+
+msgid "Michango iliyothibitishwa"
+msgstr "Confirmed Contributions"
+
+msgid "Michango kwa Aina"
+msgstr "Contributions by Type"
+
+msgid "Michango kwa Miradi"
+msgstr "Contributions by Project"
+
+msgid "Michango kwa Mkoa"
+msgstr "Contributions by Region"
+
+msgid "Michango kwa Mradi"
+msgstr "Contributions by Project"
+
+msgid "Michango kwa Mwanachama"
+msgstr "Contributions by Member"
+
+msgid "Michango kwa Mwezi"
+msgstr "Contributions by Month"
+
+msgid "Michango na Malengo"
+msgstr "Contributions & Targets"
+
+msgid "Michango na Malipo"
+msgstr "Contributions and Payments"
+
+msgid "Michango ya Hiari"
+msgstr "Voluntary Contributions"
+
+msgid "Michango ya Hivi Karibuni"
+msgstr "Recent Contributions"
+
+msgid "Michango ya Mwaka"
+msgstr "Annual Contributions"
+
+msgid "Michango ya Mwezi Huu"
+msgstr "Contributions This Month"
+
+msgid "Michango ya Ustawi"
+msgstr "Welfare Contributions"
+
+msgid "Michango ya mikoa yote"
+msgstr "Contributions from all regions"
+
+msgid "Michango yote hadi sasa"
+msgstr "All contributions to date"
+
+msgid "Miezi 12"
+msgstr "12 Months"
+
+msgid "Mifuko ya Fedha"
+msgstr "Funds"
+
+msgid "Mikoa"
+msgstr "Regions"
+
+msgid "Mikoa Iliyofikiwa"
+msgstr "Regions Reached"
+
+msgid "Mikoa Inayohusika"
+msgstr "Regions Involved"
+
+msgid "Mikoa Tunayofanya Kazi"
+msgstr "Regions We Serve"
+
+msgid "Mikoa Yote"
+msgstr "All Regions"
+
+msgid "Mikoa na Halmashauri"
+msgstr "Regions and Councils"
+
+msgid "Mikoa na Wilaya"
+msgstr "Regions & Districts"
+
+msgid "Mikoa ya Kanda"
+msgstr "Zone Regions"
+
+msgid "Mikoa yote"
+msgstr "All regions"
+
+msgid "Mikopo midogo, mafunzo ya ujasiriamali na vikundi vya akiba kwa wanawake na vijana."
+msgstr "Microloans, entrepreneurship training and savings groups for women and youth."
+
+msgid "Mikutano"
+msgstr "Meetings"
+
+msgid "Mipangilio"
+msgstr "Settings"
+
+msgid "Mipangilio ya Mfumo"
+msgstr "System Settings"
+
+msgid "Miradi"
+msgstr "Projects"
+
+msgid "Miradi Inayoendelea"
+msgstr "Ongoing Projects"
+
+msgid "Miradi Jumla"
+msgstr "Total Projects"
+
+msgid "Miradi maalum"
+msgstr "Special Projects"
+
+msgid "Miradi ya Elimu na Afya"
+msgstr "Education and Health Projects"
+
+msgid "Miradi ya Maendeleo"
+msgstr "Development Projects"
+
+msgid "Misaada"
+msgstr "Aid"
+
+msgid "Misaada Iliyotolewa"
+msgstr "Assistance Issued"
+
+msgid "Misaada kwa Wenye Mahitaji"
+msgstr "Aid for Those in Need"
+
+msgid "Mji"
+msgstr "Town Council"
+
+msgid "Mkoa"
+msgstr "Region"
+
+msgid "Mkoa / Wilaya"
+msgstr "Region / District"
+
+msgid "Mkoa maalum"
+msgstr "Specific region"
+
+msgid "Mkoa na halmashauri unapoishi"
+msgstr "Your region and council"
+
+msgid "Mkusanyiko wa albamu"
+msgstr "Album collection"
+
+msgid "Mkutano"
+msgstr "Meeting"
+
+msgid "Mkutano Mkuu wa mwaka wenye taarifa ya utendaji, ripoti ya fedha na uchaguzi."
+msgstr "The Annual General Meeting covering performance, financial reports and elections."
+
+msgid "Mkutano wa wadau kuhusu miradi ya maji"
+msgstr "Stakeholder meeting on water projects"
+
+msgid "Mnapokea wafadhili wa kimataifa?"
+msgstr "Do you accept international donors?"
+
+msgid "Mnufaika ameondolewa."
+msgstr "Beneficiary removed."
+
+msgid "Mnufaika ameongezwa."
+msgstr "Beneficiary added."
+
+msgid "Mpango wa Ustawi wa Yatima"
+msgstr "Orphan Welfare Programme"
+
+msgid "Mpango wa kudumu wa kusaidia yatima na wajane ulizinduliwa katika mikoa yote."
+msgstr "A permanent programme supporting orphans and widows was launched across all regions."
+
+msgid "Mpe mwanachama taarifa hizi za kuingia: jina la mtumiaji %(user)s, nenosiri la muda %(pw)s. Amwambie alibadilishe baada ya kuingia mara ya kwanza."
+msgstr "Give the member these sign-in details: username %(user)s, temporary password %(pw)s. Tell them to change it after their first sign-in."
+
+msgid "Mradi"
+msgstr "Project"
+
+msgid "Mradi (si lazima)"
+msgstr "Project (optional)"
+
+msgid "Mradi / Maelezo"
+msgstr "Project / Description"
+
+msgid "Mratibu"
+msgstr "Coordinator"
+
+msgid "Mratibu wa Kanda"
+msgstr "Zone Coordinator"
+
+msgid "Msaada"
+msgstr "Help"
+
+msgid "Msaada & Maombi"
+msgstr "Assistance & Requests"
+
+msgid "Msaada kwa yatima, wajane, wazee na familia zilizoathirika na majanga."
+msgstr "Support for orphans, widows, the elderly and families affected by disasters."
+
+msgid "Msaada na Maombi"
+msgstr "Assistance and Requests"
+
+msgid "Msaada wa Ustawi"
+msgstr "Welfare Support"
+
+msgid "Msaada wa ustawi"
+msgstr "Welfare support"
+
+msgid "Msimamizi"
+msgstr "Administrator"
+
+msgid "Msimamizi Mkuu"
+msgstr "Super Administrator"
+
+msgid "Msimamizi pekee ndiye anayeweza kutoa daraja la heshima."
+msgstr "Only an administrator can grant the honorary tier."
+
+msgid "Mtaa / Kijiji"
+msgstr "Street / Village"
+
+msgid "Mtanzania"
+msgstr "Tanzanian"
+
+msgid "Muda wa Uanachama"
+msgstr "Membership Validity"
+
+msgid "Muda wa kadi hii umeisha."
+msgstr "This card has expired."
+
+msgid "Muhtasari wa Akaunti Yako"
+msgstr "Your Account Summary"
+
+msgid "Muhtasari wa Kanda"
+msgstr "Zone Summary"
+
+msgid "Muhtasari wa Kifedha"
+msgstr "Financial Summary"
+
+msgid "Muhtasari wa Malipo"
+msgstr "Payments Summary"
+
+msgid "Muhtasari wa Mapato"
+msgstr "Revenue Summary"
+
+msgid "Muhtasari wa Matukio"
+msgstr "Events Summary"
+
+msgid "Muhtasari wa Michango"
+msgstr "Contributions Summary"
+
+msgid "Muhtasari wa Pointi"
+msgstr "Points Summary"
+
+msgid "Muhtasari wa Taifa"
+msgstr "National Overview"
+
+msgid "Muhtasari wa Usajili"
+msgstr "Registration Summary"
+
+msgid "Muslim Welfare Society of Tanzania"
+msgstr "Muslim Welfare Society of Tanzania"
+
+msgid "Muslim Welfare Society of Tanzania ni jumuiya ya kijamii inayolenga kuinua hali ya maisha ya jamii kupitia elimu, afya, ustawi na miradi ya maendeleo endelevu."
+msgstr "Muslim Welfare Society of Tanzania is a community organisation working to improve lives through education, health, welfare and sustainable development projects."
+
+msgid "Muundo umekamilika — data ni ya mfano"
+msgstr "Layout complete — data is sample"
+
+msgid "Mwaka"
+msgstr "Year"
+
+msgid "Mwaka %(y)d"
+msgstr "Year %(y)d"
+
+msgid "Mwaka %(y)d H"
+msgstr "Year %(y)d AH"
+
+msgid "Mwaka 2026"
+msgstr "Year 2026"
+
+msgid "Mwaka Huu"
+msgstr "This Year"
+
+msgid "Mwaka mmoja bila kukatiza"
+msgstr "One uninterrupted year"
+
+msgid "Mwambie afisa aiskan QR code kuthibitisha uanachama wako."
+msgstr "Ask an officer to scan the QR code to confirm your membership."
+
+msgid "Mwanachama"
+msgstr "Member"
+
+msgid "Mwanachama huyu si wa kanda yako."
+msgstr "This member is not in your zone."
+
+msgid "Mwanachama mpya amejiunga"
+msgstr "New member joined"
+
+msgid "Mwanachama tayari yupo daraja la %(t)s."
+msgstr "The member is already on the %(t)s tier."
+
+msgid "Mwanafamilia ameondolewa."
+msgstr "Family member removed."
+
+msgid "Mwanafamilia ameongezwa."
+msgstr "Family member added."
+
+msgid "Mwanamke"
+msgstr "Female"
+
+msgid "Mwanaume"
+msgstr "Male"
+
+msgid "Mweka Hazina"
+msgstr "Treasurer"
+
+msgid "Mwenendo wa Matukio"
+msgstr "Events Trend"
+
+msgid "Mwenendo wa Michango"
+msgstr "Contribution Trend"
+
+msgid "Mwenendo wa Upakiaji"
+msgstr "Upload Trend"
+
+msgid "Mwenyekiti"
+msgstr "Chairperson"
+
+msgid "Mwezi"
+msgstr "Month"
+
+msgid "Mwezi Huu"
+msgstr "This Month"
+
+msgid "Mwezi huu"
+msgstr "This month"
+
+msgid "Mwezi uliopita"
+msgstr "Previous month"
+
+msgid "Mwezi unaofuata"
+msgstr "Next month"
+
+msgid "Mwisho"
+msgstr "Last"
+
+msgid "Mwombaji lazima awe na umri wa miaka 18 au zaidi."
+msgstr "The applicant must be 18 years or older."
+
+msgid "Mzuri"
+msgstr "Good"
+
+msgid "Na kheri yoyote mnayoitanguliza kwa ajili yenu, mtaikuta kwa Allah."
+msgstr "And whatever good you put forward for yourselves, you will find it with Allah."
+
+msgid "Na msaidiane katika heri na taqwa."
+msgstr "And cooperate in righteousness and piety."
+
+msgid "Na. ya Mwanachama"
+msgstr "Member No."
+
+msgid "Nafasi kwenye kamati"
+msgstr "A seat on committees"
+
+msgid "Nakubali masharti na kanuni za uanachama wa MUWESTA."
+msgstr "I accept the MUWESTA membership terms and conditions."
+
+msgid "Namba"
+msgstr "Number"
+
+msgid "Namba hii haipo kwenye mfumo wa MUWESTA"
+msgstr "This number is not in the MUWESTA system"
+
+msgid "Namba hii tayari ni ya mwanachama. Kama umesahau namba yako ya uanachama, wasiliana nasi."
+msgstr "This number already belongs to a member. If you have forgotten your membership number, contact us."
+
+msgid "Namba hii ya kitambulisho tayari imesajiliwa."
+msgstr "This national ID is already registered."
+
+msgid "Namba ya Akaunti"
+msgstr "Account Number"
+
+msgid "Namba ya Kadi"
+msgstr "Card Number"
+
+msgid "Namba ya Kitambulisho"
+msgstr "National ID Number"
+
+msgid "Namba ya Kitambulisho (NIDA)"
+msgstr "National ID (NIDA)"
+
+msgid "Namba ya Maombi"
+msgstr "Application No."
+
+msgid "Namba ya Muamala"
+msgstr "Transaction Number"
+
+msgid "Namba ya Mwanachama"
+msgstr "Membership No."
+
+msgid "Namba ya Simu"
+msgstr "Phone Number"
+
+msgid "Namba ya Uanachama / Barua pepe"
+msgstr "Membership Number / Email"
+
+msgid "Namba ya simu inayotumika"
+msgstr "A working phone number"
+
+msgid "Nani Sisi"
+msgstr "Who We Are"
+
+msgid "Naomba msaada wa ustawi, nifanyeje?"
+msgstr "How do I request welfare assistance?"
+
+msgid "Nataka kuchangia mradi maalum, inawezekana?"
+msgstr "Can I contribute to a specific project?"
+
+msgid "Nataka kuchangia mradi wa %(p)s. Tafadhali nielekeze jinsi ya kulipa."
+msgstr "I would like to contribute to the %(p)s project. Please guide me on how to pay."
+
+msgid "Nawezaje kufuatilia matumizi ya michango yangu?"
+msgstr "How can I track how my contributions are used?"
+
+msgid "Nawezaje kujiunga na MUWESTA?"
+msgstr "How do I join MUWESTA?"
+
+msgid "Ndiyo"
+msgstr "Yes"
+
+msgid "Ndiyo. Tunashirikiana na mashirika ya kimataifa. Wasiliana na ofisi kuu kwa taratibu za makubaliano."
+msgstr "Yes. We partner with international organisations. Contact the head office for agreement procedures."
+
+msgid "Ndiyo. Unaweza kuchagua mradi unaotaka kuufadhili wakati wa kutoa mchango, na utapokea ripoti ya matumizi."
+msgstr "Yes. You can choose which project to fund when contributing, and you will receive an expenditure report."
+
+msgid "Nenosiri"
+msgstr "Password"
+
+msgid "Nenosiri Limebadilishwa"
+msgstr "Password Changed"
+
+msgid "Ni nani atakayemkopesha Allah mkopo mzuri?"
+msgstr "Who is it that would lend Allah a goodly loan?"
+
+msgid "Nilihudhuria"
+msgstr "Attended"
+
+msgid "Nilizohudhuria"
+msgstr "Attended"
+
+msgid "Nilizojiandikisha"
+msgstr "My Registrations"
+
+msgid "Nilizopata Mwezi Huu"
+msgstr "Earned This Month"
+
+msgid "Nimelipa Mwaka Huu"
+msgstr "Paid This Year"
+
+msgid "Njia"
+msgstr "Method"
+
+msgid "Njia ya Malipo"
+msgstr "Payment Method"
+
+msgid "Njia za Kutuma"
+msgstr "Delivery Channels"
+
+msgid "Njia zote"
+msgstr "All methods"
+
+msgid "Nkuhungu, Dodoma"
+msgstr "Nkuhungu, Dodoma"
+
+msgid "Nkuhungu, Dodoma, Tanzania"
+msgstr "Nkuhungu, Dodoma, Tanzania"
+
+msgid "Notisi & Taarifa"
+msgstr "Notices & Announcements"
+
+msgid "Nyaraka"
+msgstr "Documents"
+
+msgid "Nyaraka Nyingine"
+msgstr "Other Documents"
+
+msgid "Nyingine"
+msgstr "Other"
+
+msgid "Nyinginezo"
+msgstr "Others"
+
+msgid "Nyuma"
+msgstr "Previous"
+
+msgid "Nyumbani"
+msgstr "Home"
+
+msgid "Ofisi"
+msgstr "Office"
+
+msgid "Ofisi Kuu"
+msgstr "Head Office"
+
+msgid "Ofisi Kuu - Dodoma"
+msgstr "Head Office - Dodoma"
+
+msgid "Ofisi Zetu"
+msgstr "Our Offices"
+
+msgid "Ofisi ya Kanda"
+msgstr "Zone Office"
+
+msgid "Omba Kiungo Kingine"
+msgstr "Request Another Link"
+
+msgid "Omba Msaada"
+msgstr "Request Assistance"
+
+msgid "Omba msaada wa matibabu, elimu, dharura au chakula"
+msgstr "Request medical, education, emergency or food assistance"
+
+msgid "Ombi %(ref)s limehifadhiwa."
+msgstr "Application %(ref)s has been saved."
+
+msgid "Ombi %(ref)s limeidhinishwa."
+msgstr "Request %(ref)s approved."
+
+msgid "Ombi %(ref)s limekataliwa."
+msgstr "Request %(ref)s rejected."
+
+msgid "Ombi %(ref)s limesasishwa."
+msgstr "Application %(ref)s has been updated."
+
+msgid "Ombi %(ref)s tayari limeshughulikiwa."
+msgstr "Application %(ref)s has already been processed."
+
+msgid "Ombi hili si la kanda yako."
+msgstr "This application is not in your zone."
+
+msgid "Ombi lako la msaada limepokelewa. Kumbukumbu: %(ref)s"
+msgstr "Your assistance request has been received. Reference: %(ref)s"
+
+msgid "Ombi lako limepokelewa. Namba ya kumbukumbu ni %(ref)s — iandike. Afisa wa usajili atahakiki taarifa zako, kisha utapigiwa simu na kupewa namba yako ya uanachama pamoja na nenosiri la kuingia kwenye mfumo."
+msgstr "Your application has been received. Your reference is %(ref)s — write it down. A registration officer will verify your details, then call you with your membership number and a password to sign in."
+
+msgid "Ombi lako limepokelewa. Namba ya kumbukumbu: %(ref)s. Tutawasiliana nawe baada ya kuhakiki taarifa zako."
+msgstr "Your application has been received. Reference: %(ref)s. We will contact you once your details are verified."
+
+msgid "Ombi limeidhinishwa. Namba ya uanachama: %(no)s"
+msgstr "Application approved. Membership number: %(no)s"
+
+msgid "Ombi limekataliwa."
+msgstr "Application rejected."
+
+msgid "Ondoa"
+msgstr "Remove"
+
+msgid "Ongeza"
+msgstr "Add"
+
+msgid "Ongeza Habari"
+msgstr "Add News"
+
+msgid "Ongeza Matukio"
+msgstr "Add Events"
+
+msgid "Ongeza Mchango"
+msgstr "Add Contribution"
+
+msgid "Ongeza Mnufaika"
+msgstr "Add Beneficiary"
+
+msgid "Ongeza Mpya"
+msgstr "Add New"
+
+msgid "Ongeza Mwanachama"
+msgstr "Add Member"
+
+msgid "Ongeza Mwanafamilia"
+msgstr "Add Family Member"
+
+msgid "Ongeza Tukio"
+msgstr "Add Event"
+
+msgid "Ongeza ya Kwanza"
+msgstr "Add the First One"
+
+msgid "Orodha kamili"
+msgstr "Full list"
+
+msgid "Orodha kamili ya maombi"
+msgstr "Full applications list"
+
+msgid "Orodha kamili ya mikoa"
+msgstr "Full regions list"
+
+msgid "Orodha ya Maombi ya Uanachama"
+msgstr "Membership Applications List"
+
+msgid "Orodha ya Wanachama"
+msgstr "Members List"
+
+msgid "Orodha ya Washiriki"
+msgstr "Participants List"
+
+msgid "Orodha ya miradi"
+msgstr "Projects list"
+
+msgid "Pakia"
+msgstr "Upload"
+
+msgid "Pakia Faili"
+msgstr "Upload File"
+
+msgid "Pakia Mpya"
+msgstr "Upload New"
+
+msgid "Pakia Picha"
+msgstr "Upload Photo"
+
+msgid "Pakia Picha au Video"
+msgstr "Upload Photo or Video"
+
+msgid "Pakia Video"
+msgstr "Upload Video"
+
+msgid "Pakiwa Mwezi Huu"
+msgstr "Uploaded This Month"
+
+msgid "Pakua (PDF)"
+msgstr "Download (PDF)"
+
+msgid "Pakua (SVG)"
+msgstr "Download (SVG)"
+
+msgid "Pakua Cheti"
+msgstr "Download Certificate"
+
+msgid "Pakua Kadi"
+msgstr "Download Card"
+
+msgid "Pakua Kadi (PNG)"
+msgstr "Download Card (PNG)"
+
+msgid "Pakua Ripoti"
+msgstr "Download Report"
+
+msgid "Pakua Risiti"
+msgstr "Download Receipt"
+
+msgid "Pakua kadi kama picha, kisha uihifadhi kwenye simu yako au uichapishe. Afisa yeyote anaweza kuiskan QR code kuthibitisha uanachama wako."
+msgstr "Download the card as an image, then save it on your phone or print it. Any officer can scan the QR code to confirm your membership."
+
+msgid "Pakuliwa (Downloads)"
+msgstr "Downloads"
+
+msgid "Panga Faili"
+msgstr "Organise Files"
+
+msgid "Panga Matukio"
+msgstr "Schedule Events"
+
+msgid "Pata Pointi kwa Kila Ushiriki"
+msgstr "Earn Points for Every Contribution"
+
+msgid "Pata pointi kwa kila malipo, mchango na ushiriki"
+msgstr "Earn points for every payment, contribution and activity"
+
+msgid "Pata pointi kwa kila mchango na ushiriki, kisha ubadilishe na tuzo."
+msgstr "Earn points for every contribution and activity, then redeem them for rewards."
+
+msgid "Picha"
+msgstr "Photos"
+
+msgid "Picha & Video"
+msgstr "Photos & Video"
+
+msgid "Picha Zilizohudumiwa Kila Mwezi"
+msgstr "Photos Published Each Month"
+
+msgid "Picha Zilizohudumiwa Mwezi Huu"
+msgstr "Photos Published This Month"
+
+msgid "Picha kwa Kategoria"
+msgstr "Photos by Category"
+
+msgid "Picha na Video"
+msgstr "Photos and Video"
+
+msgid "Picha ya Mwanachama"
+msgstr "Member Photo"
+
+msgid "Picha ya Pasipoti"
+msgstr "Passport Photo"
+
+msgid "Picha za Hivi Karibuni"
+msgstr "Recent Photos"
+
+msgid "Picha za Shughuli Zetu"
+msgstr "Photos of Our Work"
+
+msgid "Picha zote"
+msgstr "All photos"
+
+msgid "Piga simu au tembelea ofisi ya tawi lililo karibu nawe."
+msgstr "Call us or visit your nearest branch office."
+
+msgid "Pointi"
+msgstr "Points"
+
+msgid "Pointi & Faida"
+msgstr "Points & Benefits"
+
+msgid "Pointi & Tuzo"
+msgstr "Points & Rewards"
+
+msgid "Pointi 10 kwa kila malipo"
+msgstr "10 points per payment"
+
+msgid "Pointi 150 kwa kila malipo"
+msgstr "150 points per payment"
+
+msgid "Pointi 25 kwa kila malipo"
+msgstr "25 points per payment"
+
+msgid "Pointi 50 kwa kila malipo"
+msgstr "50 points per payment"
+
+msgid "Pointi Ulizopata Mwezi Huu"
+msgstr "Points Earned This Month"
+
+msgid "Pointi Zako"
+msgstr "Your Points"
+
+msgid "Pointi Zako Sasa"
+msgstr "Your Current Points"
+
+msgid "Pointi Zangu"
+msgstr "My Points"
+
+msgid "Pointi Zilizotolewa"
+msgstr "Points Issued"
+
+msgid "Pointi Zilizotolewa (Mwaka Huu)"
+msgstr "Points Issued (This Year)"
+
+msgid "Pointi na Faida"
+msgstr "Points and Benefits"
+
+msgid "Pointi na Tuzo"
+msgstr "Points and Rewards"
+
+msgid "Pointi za Uanachama"
+msgstr "Membership Points"
+
+msgid "Pointi zimeongezwa"
+msgstr "Points awarded"
+
+msgid "Points"
+msgstr "Points"
+
+msgid "Pokea Kadi"
+msgstr "Receive Your Card"
+
+msgid "Pokea namba ya uanachama na kadi ya kidijitali yenye QR."
+msgstr "Receive your membership number and a QR-coded digital card."
+
+msgid "Programu"
+msgstr "Programmes"
+
+msgid "Ramani ya Kanda"
+msgstr "Zone Map"
+
+msgid "Ramani ya Wanachama kwa Mikoa"
+msgstr "Map of Members by Region"
+
+msgid "Ramani ya mkoa"
+msgstr "Region map"
+
+msgid "Rejesha"
+msgstr "Reactivate"
+
+msgid "Rejesha Nenosiri"
+msgstr "Reset Password"
+
+msgid "Rekebisha Nenosiri"
+msgstr "Reset Password"
+
+msgid "Rekodi Malipo"
+msgstr "Record Payment"
+
+msgid "Rekodi Malipo Mpya"
+msgstr "Record New Payment"
+
+msgid "Rekodi Mchango"
+msgstr "Record Contribution"
+
+msgid "Rekodi hizi haziwezi kuhaririwa."
+msgstr "These records cannot be edited."
+
+msgid "Rekodi malipo ya ada"
+msgstr "Record subscription payment"
+
+msgid "Rekodi za Malipo ya Ada"
+msgstr "Subscription Payment Records"
+
+msgid "Rekodi za Mchango"
+msgstr "Contribution Records"
+
+msgid "Rekodi za Michango"
+msgstr "Contribution Records"
+
+msgid "Rekodi za Michango za Hivi Karibuni"
+msgstr "Recent Contribution Records"
+
+msgid "Ripoti"
+msgstr "Reports"
+
+msgid "Ripoti & Takwimu"
+msgstr "Reports & Statistics"
+
+msgid "Ripoti kamili ya fedha"
+msgstr "Full financial report"
+
+msgid "Ripoti kamili ya mikoa"
+msgstr "Full regional report"
+
+msgid "Ripoti kamili ya usajili"
+msgstr "Full registration report"
+
+msgid "Ripoti ya kadi"
+msgstr "Cards report"
+
+msgid "Ripoti ya mwaka"
+msgstr "Annual report"
+
+msgid "Ripoti za Fedha"
+msgstr "Financial Reports"
+
+msgid "Ripoti za Malipo"
+msgstr "Payment Reports"
+
+msgid "Ripoti za Michango"
+msgstr "Contribution Reports"
+
+msgid "Ripoti za Mikoa"
+msgstr "Regional Reports"
+
+msgid "Ripoti za Mkoa"
+msgstr "Region Reports"
+
+msgid "Ripoti za Uanachama"
+msgstr "Membership Reports"
+
+msgid "Ripoti za Wilaya"
+msgstr "District Reports"
+
+msgid "Risiti"
+msgstr "Receipt"
+
+msgid "Risiti Na."
+msgstr "Receipt No."
+
+msgid "Risiti hii imetolewa na mfumo. Haihitaji saini."
+msgstr "This receipt was issued by the system. No signature required."
+
+msgid "Risiti ya Malipo"
+msgstr "Payment Receipt"
+
+msgid "Rudi"
+msgstr "Back"
+
+msgid "Rudi Kuingia"
+msgstr "Back to Sign In"
+
+msgid "Rudi kwenye Maktaba"
+msgstr "Back to Library"
+
+msgid "S.L.P 1234, Dodoma, Tanzania"
+msgstr "P.O. Box 1234, Dodoma, Tanzania"
+
+msgid "SMS %(n)d zimehifadhiwa kwenye foleni. Zitatumwa gateway itakapounganishwa."
+msgstr "%(n)d SMS queued. They will be sent once a gateway is connected."
+
+msgid "Saa za Kazi"
+msgstr "Working Hours"
+
+msgid "Sadaqa"
+msgstr "Sadaqah"
+
+msgid "Safari Yetu"
+msgstr "Our Journey"
+
+msgid "Sajili Mdau Mpya"
+msgstr "Register New Partner"
+
+msgid "Sajili Mhisani"
+msgstr "Register Donor"
+
+msgid "Sajili Mwanachama"
+msgstr "Register Member"
+
+msgid "Sajili Mwanachama Mpya"
+msgstr "Register a New Member"
+
+msgid "Sajili Mwanafamilia"
+msgstr "Register Family Member"
+
+msgid "Salio la Akaunti"
+msgstr "Account Balance"
+
+msgid "Salio la Mwaka"
+msgstr "Year Balance"
+
+msgid "Sasa hivi"
+msgstr "Just now"
+
+msgid "Sasa unaweza kuingia kwa nenosiri lako jipya."
+msgstr "You can now sign in with your new password."
+
+msgid "Sasisha Wasifu"
+msgstr "Update Profile"
+
+msgid "Sauti kwenye Maamuzi"
+msgstr "A Voice in Decisions"
+
+msgid "Sawa, nimeelewa"
+msgstr "Got it"
+
+msgid "Semina"
+msgstr "Seminar"
+
+msgid "Semina hii inalenga kuwajengea uwezo viongozi waamini katika uongozi bora na maadili."
+msgstr "This seminar builds the capacity of leaders in good governance and ethics."
+
+msgid "Semina ya siku moja kwa viongozi wa matawi na wanachama wanaotaka kuongoza."
+msgstr "A one-day seminar for branch leaders and members aspiring to lead."
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Shughuli"
+msgstr "Activity"
+
+msgid "Shughuli za Hivi Karibuni"
+msgstr "Recent Activity"
+
+msgid "Shughuli za Kijamii"
+msgstr "Community Activities"
+
+msgid "Shughuli zote"
+msgstr "All activity"
+
+msgid "Shughuli, miradi na matukio ya MUWESTA katika picha."
+msgstr "MUWESTA activities, projects and events in pictures."
+
+msgid "Si lazima sasa, lakini itahitajika kabla ya kupewa kadi"
+msgstr "Not required now, but it will be needed before your card is issued"
+
+msgid "Si lazima. Ikiwepo, utapokea risiti na taarifa kwa barua pepe"
+msgstr "Optional. If provided, you will receive receipts and updates by email"
+
+msgid "Siku %(n)d"
+msgstr "%(n)d Days"
+
+msgid "Simu"
+msgstr "Phone"
+
+msgid "Singida"
+msgstr "Singida"
+
+msgid "Sitisha"
+msgstr "Suspend"
+
+msgid "Soma Katiba"
+msgstr "Read Constitution"
+
+msgid "Soma Zaidi"
+msgstr "Read More"
+
+msgid "Super Admin"
+msgstr "Super Admin"
+
+msgid "Taarifa & Matangazo"
+msgstr "News & Announcements"
+
+msgid "Taarifa Binafsi"
+msgstr "Personal Details"
+
+msgid "Taarifa mpya za kuingia: jina la mtumiaji %(user)s, nenosiri la muda %(pw)s"
+msgstr "New sign-in details: username %(user)s, temporary password %(pw)s"
+
+msgid "Taarifa na Matangazo"
+msgstr "News and Announcements"
+
+msgid "Taarifa na matangazo"
+msgstr "News and announcements"
+
+msgid "Taarifa za %(name)s zimesasishwa."
+msgstr "%(name)s's details have been updated."
+
+msgid "Taarifa za Faili"
+msgstr "File Details"
+
+msgid "Taarifa za Kadi"
+msgstr "Card Details"
+
+msgid "Taarifa za Makazi"
+msgstr "Residence Details"
+
+msgid "Taarifa za Mawasiliano"
+msgstr "Contact Details"
+
+msgid "Taarifa za Mwanachama"
+msgstr "Member Details"
+
+msgid "Taarifa za Ombi"
+msgstr "Application Details"
+
+msgid "Taarifa za Uanachama"
+msgstr "Membership Details"
+
+msgid "Tafadhali jaza jina na namba ya simu."
+msgstr "Please enter a name and phone number."
+
+msgid "Tafadhali sahihisha makosa hapa chini."
+msgstr "Please correct the errors below."
+
+msgid "Tafuta"
+msgstr "Search"
+
+msgid "Tafuta Mchangiaji"
+msgstr "Find Donor"
+
+msgid "Tafuta hapa..."
+msgstr "Search here..."
+
+msgid "Tafuta jina, namba ya simu, email, n.k"
+msgstr "Search name, phone, email, etc."
+
+msgid "Tafuta..."
+msgstr "Search..."
+
+msgid "Takwimu zote"
+msgstr "All time"
+
+msgid "Tangaza Habari"
+msgstr "Publish News"
+
+msgid "Tanzanite"
+msgstr "Tanzanite"
+
+msgid "Tanzanite Member"
+msgstr "Tanzanite Member"
+
+msgid "Tanzanite haliombwi. Ni daraja la heshima linalotolewa na Uongozi wa MUWESTA kwa wanachama waliotoa mchango wa kipekee kwa jumuiya."
+msgstr "Tanzanite cannot be applied for. It is an honorary tier granted by the MUWESTA leadership to members who have made an exceptional contribution to the society."
+
+msgid "Tarehe"
+msgstr "Date"
+
+msgid "Tarehe Hadi"
+msgstr "Date To"
+
+msgid "Tarehe Kutoka"
+msgstr "Date From"
+
+msgid "Tarehe ya Kuzaliwa"
+msgstr "Date of Birth"
+
+msgid "Tarehe ya Malipo"
+msgstr "Payment Date"
+
+msgid "Tarehe ya Maombi"
+msgstr "Application Date"
+
+msgid "Tarehe ya Usajili"
+msgstr "Registration Date"
+
+msgid "Tarehe ya malipo ijayo"
+msgstr "Next payment date"
+
+msgid "Taslimu"
+msgstr "Cash"
+
+msgid "Tawi la Arusha"
+msgstr "Arusha Branch"
+
+msgid "Tawi la Dar es Salaam"
+msgstr "Dar es Salaam Branch"
+
+msgid "Tawi la Mwanza"
+msgstr "Mwanza Branch"
+
+msgid "Tayari una ombi linalosubiri, namba %(ref)s. Tutawasiliana nawe hivi karibuni."
+msgstr "You already have a pending application, reference %(ref)s. We will contact you soon."
+
+msgid "Tazama Faida na Tuzo Zote"
+msgstr "View All Benefits & Rewards"
+
+msgid "Tazama Galeria Yote"
+msgstr "View Full Gallery"
+
+msgid "Tazama Habari Zote"
+msgstr "View All News"
+
+msgid "Tazama Historia Yote ya Malipo"
+msgstr "View Full Payment History"
+
+msgid "Tazama Kalenda"
+msgstr "View Calendar"
+
+msgid "Tazama Matukio Yote"
+msgstr "View All Events"
+
+msgid "Tazama Picha Zote"
+msgstr "View All Photos"
+
+msgid "Tazama Ripoti"
+msgstr "View Report"
+
+msgid "Tazama Ripoti Kamili"
+msgstr "View Full Report"
+
+msgid "Tazama Video"
+msgstr "Watch Video"
+
+msgid "Tazama Yote"
+msgstr "View All"
+
+msgid "Tazama Zote"
+msgstr "View All"
+
+msgid "Tazama kalenda kamili"
+msgstr "View full calendar"
+
+msgid "Tazama kalenda yote"
+msgstr "View full calendar"
+
+msgid "Tazama maelezo kamili"
+msgstr "View full details"
+
+msgid "Tazama miradi yote"
+msgstr "View all projects"
+
+msgid "Tazama yote"
+msgstr "View all"
+
+msgid "Tazama zote"
+msgstr "View all"
+
+msgid "Tembelea ukurasa wa Uanachama, jaza fomu ya mtandaoni, chagua aina ya uanachama na ulipe ada. Utapokea namba ya uanachama na kadi ya kidijitali."
+msgstr "Visit the Membership page, complete the online form, choose a tier and pay the fee. You will receive a membership number and digital card."
+
+msgid "Tengeneza Akaunti"
+msgstr "Create Account"
+
+msgid "Tengeneza Ripoti"
+msgstr "Generate Report"
+
+msgid "Tengeneza Ripoti ya Malipo"
+msgstr "Generate Payment Report"
+
+msgid "Tengeneza Risiti"
+msgstr "Generate Receipt"
+
+msgid "Thibitisha"
+msgstr "Confirm"
+
+msgid "Thibitisha na kamilisha usajili"
+msgstr "Confirm and complete registration"
+
+msgid "Toa Daraja la Tanzanite"
+msgstr "Grant Tanzanite Tier"
+
+msgid "Toa Kadi Mpya"
+msgstr "Issue New Card"
+
+msgid "Toa Mchango"
+msgstr "Make a Contribution"
+
+msgid "Toka"
+msgstr "Sign out"
+
+msgid "Toka (Logout)"
+msgstr "Logout"
+
+msgid "Tukio"
+msgstr "Event"
+
+msgid "Tuko tayari kukusikiliza. Tuma ujumbe, piga simu au tutembelee ofisi zetu Dodoma."
+msgstr "We are ready to listen. Send a message, call us or visit our Dodoma offices."
+
+msgid "Tuma Barua ya Shukrani"
+msgstr "Send Thank-You Letter"
+
+msgid "Tuma Email"
+msgstr "Send Email"
+
+msgid "Tuma Email kwa Wote"
+msgstr "Send Email to All"
+
+msgid "Tuma Kikumbusho kwa Waliokosekana"
+msgstr "Send Reminder to Defaulters"
+
+msgid "Tuma Kiungo"
+msgstr "Send Link"
+
+msgid "Tuma Maombi"
+msgstr "Submit Application"
+
+msgid "Tuma Maoni"
+msgstr "Send Feedback"
+
+msgid "Tuma SMS"
+msgstr "Send SMS"
+
+msgid "Tuma SMS kwa Wote"
+msgstr "Send SMS to All"
+
+msgid "Tuma Shukrani"
+msgstr "Send Thanks"
+
+msgid "Tuma Ualikaji"
+msgstr "Send Invitations"
+
+msgid "Tuma Ujumbe"
+msgstr "Send a Message"
+
+msgid "Tumia fomu kuomba msaada."
+msgstr "Use the form to request assistance."
+
+msgid "Tumia fomu upande wa kulia kulipa ada yako."
+msgstr "Use the form on the right to pay your fees."
+
+msgid "Tumia {jina} na {namba} kubadilishwa na taarifa za kila mwanachama"
+msgstr "Use {jina} and {namba} to insert each member's details"
+
+msgid "Tunatekeleza huduma za kijamii, kiuchumi na kiimani kwa mujibu wa maadili ya Kiislamu kwa maendeleo ya jamii na ustawi wa binadamu."
+msgstr "We deliver social, economic and faith-based services in line with Islamic values, for community development and human welfare."
+
+msgid "Tunatoa huduma katika maeneo sita makuu yanayolenga kuinua hali ya maisha ya jamii kwa njia endelevu."
+msgstr "We work across six main areas aimed at improving community life sustainably."
+
+msgid "Tunavyogusa Jamii"
+msgstr "How We Touch the Community"
+
+msgid "Tupo kwa ajili yako"
+msgstr "We are here for you"
+
+msgid "Tutakujibu ndani ya saa 24 za kazi."
+msgstr "We reply within 24 working hours."
+
+msgid "Tuzo"
+msgstr "Rewards"
+
+msgid "Tuzo Inayofuata"
+msgstr "Next Reward"
+
+msgid "Tuzo Zinazopatikana"
+msgstr "Available Rewards"
+
+msgid "Uanachama"
+msgstr "Membership"
+
+msgid "Uanachama unamalizika"
+msgstr "Membership expires"
+
+msgid "Uanachama wa MUWESTA unakupa fursa ya kushiriki katika huduma za kijamii, kupata msaada wa ustawi, na kujenga jamii bora kwa pamoja."
+msgstr "MUWESTA membership lets you take part in community service, access welfare support, and help build a better society together."
+
+msgid "Uanachama wako ni hai"
+msgstr "Your membership is active"
+
+msgid "Uchimbaji wa visima katika maeneo yenye uhaba."
+msgstr "Borehole drilling in areas facing water shortages."
+
+msgid "Uchimbaji wa visima na ujenzi wa miundombinu ya maji katika maeneo yenye uhaba."
+msgstr "Borehole drilling and water infrastructure in areas facing shortages."
+
+msgid "Uchumi"
+msgstr "Economy"
+
+msgid "Uendeshaji wa Jumla"
+msgstr "General Operations"
+
+msgid "Uendeshaji wa jumla"
+msgstr "General operations"
+
+msgid "Ufadhili wa masomo na mafunzo ya ufundi kwa vijana."
+msgstr "Scholarships and vocational training for young people."
+
+msgid "Ufadhili wa masomo, ujenzi wa madarasa, vifaa vya shule na mafunzo ya ufundi kwa vijana."
+msgstr "Scholarships, classroom construction, school supplies and vocational training for young people."
+
+msgid "Ugawaji wa mahitaji ya shule na chakula kwa yatima 300."
+msgstr "Distribution of school supplies and food to 300 orphans."
+
+msgid "Ugawaji wa vifaa vya elimu kwa shule 15"
+msgstr "Learning materials distributed to 15 schools"
+
+msgid "Uhakiki"
+msgstr "Verification"
+
+msgid "Uhakiki wa Kadi"
+msgstr "Card Verification"
+
+msgid "Uhusiano"
+msgstr "Relationship"
+
+msgid "Ujenzi na ukarabati wa misikiti, madrasa na vituo vya elimu ya dini."
+msgstr "Construction and renovation of mosques, madrasas and religious education centres."
+
+msgid "Ujenzi wa Vituo vya Ibada"
+msgstr "Building Places of Worship"
+
+msgid "Ujenzi wa Zahanati Dodoma waingia hatua ya mwisho"
+msgstr "Dodoma dispensary construction enters final phase"
+
+msgid "Ujenzi wa shule tatu na vituo viwili vya afya ulikamilika katika mikoa ya kati."
+msgstr "Three schools and two health centres were completed in the central regions."
+
+msgid "Ujenzi wa zahanati ya Nkuhungu umefikia asilimia 85 na unatarajiwa kukamilika Oktoba."
+msgstr "The Nkuhungu dispensary is 85% complete and is expected to finish in October."
+
+msgid "Ujumbe"
+msgstr "Message"
+
+msgid "Ujumbe (SMS)"
+msgstr "Messages (SMS)"
+
+msgid "Ujumbe (SMS/Email)"
+msgstr "Messages (SMS/Email)"
+
+msgid "Ujumbe Uliotumwa"
+msgstr "Messages Sent"
+
+msgid "Ujumbe kwa Wanachama"
+msgstr "Messages to Members"
+
+msgid "Ujumbe umewafikia wanachama %(n)d: arifa %(app)d, barua pepe %(mail)d."
+msgstr "Message reached %(n)d members: %(app)d notifications, %(mail)d emails."
+
+msgid "Ujumbe wa Mawasiliano"
+msgstr "Contact Messages"
+
+msgid "Ukaguzi & Uthibitisho"
+msgstr "Review & Confirmation"
+
+msgid "Ukuaji wa Wanachama"
+msgstr "Membership Growth"
+
+msgid "Ukubwa"
+msgstr "Size"
+
+msgid "Ukurasa"
+msgstr "Page"
+
+msgid "Ukurasa huu unaonyesha taarifa za msingi pekee. Taarifa binafsi za mwanachama hazionyeshwi hadharani."
+msgstr "This page shows basic details only. A member's personal information is not displayed publicly."
+
+msgid "Ukurasa uliopita"
+msgstr "Previous page"
+
+msgid "Ukurasa unaofuata"
+msgstr "Next page"
+
+msgid "Ukurasa wa Habari"
+msgstr "News page"
+
+msgid "Ukurasa wa Huduma Zetu"
+msgstr "Our Services page"
+
+msgid "Ukurasa wa Kuhusu Sisi"
+msgstr "About Us page"
+
+msgid "Ukurasa wa Matukio"
+msgstr "Events page"
+
+msgid "Ukurasa wa Mawasiliano"
+msgstr "Contact page"
+
+msgid "Ukurasa wa Nyumbani"
+msgstr "Home page"
+
+msgid "Ukurasa wa Uanachama"
+msgstr "Membership page"
+
+msgid "Ukurasa wa kwanza"
+msgstr "First page"
+
+msgid "Ukurasa wa mwisho"
+msgstr "Last page"
+
+msgid "Umealikwa"
+msgstr "Invited"
+
+msgid "Umebakiwa na majaribio %(n)d kabla ya kuzuiliwa."
+msgstr "You have %(n)d attempts left before being locked out."
+
+msgid "Umefikia!"
+msgstr "Reached!"
+
+msgid "Umejaribu mara nyingi mno. Subiri dakika 15 kisha ujaribu tena, au tumia \"Umesahau nenosiri?\"."
+msgstr "Too many attempts. Wait 15 minutes and try again, or use \"Forgot password?\"."
+
+msgid "Umejiandikisha"
+msgstr "Registered"
+
+msgid "Umejiandikisha kwenye %(title)s."
+msgstr "You have registered for %(title)s."
+
+msgid "Umepandishwa daraja la %(t)s"
+msgstr "You have been raised to the %(t)s tier"
+
+msgid "Umesahau nywila?"
+msgstr "Forgot password?"
+
+msgid "Umetoka kwenye mfumo."
+msgstr "You have signed out."
+
+msgid "Una uhakika unataka kufuta rekodi hii?"
+msgstr "Are you sure you want to delete this record?"
+
+msgid "Unahitaji Msaada?"
+msgstr "Need Help?"
+
+msgid "Unda Albamu"
+msgstr "Create Album"
+
+msgid "Uongozi"
+msgstr "Leadership"
+
+msgid "Uongozi wa MUWESTA umekutunuku daraja la heshima. Kadi yako mpya iko tayari."
+msgstr "The MUWESTA leadership has awarded you the honorary tier. Your new card is ready."
+
+msgid "Upakiaji wa Hivi Karibuni"
+msgstr "Recent Uploads"
+
+msgid "Upakiaji wote"
+msgstr "All uploads"
+
+msgid "Upanuzi wa Kitaifa"
+msgstr "National Expansion"
+
+msgid "Upimaji wa shinikizo la damu, kisukari, macho na ushauri wa lishe bila malipo."
+msgstr "Free screening for blood pressure, diabetes and eyesight, plus nutrition advice."
+
+msgid "Uraia"
+msgstr "Citizenship"
+
+msgid "Usajili"
+msgstr "Registration"
+
+msgid "Usajili & Wanachama"
+msgstr "Registration & Members"
+
+msgid "Usajili Mwanachama"
+msgstr "Member Registration"
+
+msgid "Usajili wa Hivi Karibuni"
+msgstr "Recent Registrations"
+
+msgid "Usajili wa Matukio"
+msgstr "Event Registrations"
+
+msgid "Usajili wa Mwanachama"
+msgstr "Member Registration"
+
+msgid "Usajili wa Uanachama"
+msgstr "Membership Registration"
+
+msgid "Usajili, malipo na michango"
+msgstr "Registration, payments and contributions"
+
+msgid "Usanidi wa Pointi"
+msgstr "Points Configuration"
+
+msgid "Ushauri wa kifedha"
+msgstr "Financial advisory"
+
+msgid "Ushirikiano na Udhamini"
+msgstr "Partnership and Sponsorship"
+
+msgid "Usimamizi wa Mfumo"
+msgstr "System Administration"
+
+msgid "Ustawi"
+msgstr "Welfare"
+
+msgid "Ustawi wa Jamii"
+msgstr "Community Welfare"
+
+msgid "Utahitaji vitu hivi"
+msgstr "You will need these"
+
+msgid "Utambulisho kwenye ripoti ya mwaka"
+msgstr "Recognition in the annual report"
+
+msgid "Utekelezaji wa Miradi"
+msgstr "Project Delivery"
+
+msgid "Uwezeshaji Kiuchumi"
+msgstr "Economic Empowerment"
+
+msgid "Uzinduzi wa mfumo wa kidijitali wa usimamizi wa uanachama, malipo na michango."
+msgstr "Launch of the digital system for managing membership, payments and contributions."
+
+msgid "Video"
+msgstr "Videos"
+
+msgid "Video kwa Kategoria"
+msgstr "Videos by Category"
+
+msgid "Video ya utangulizi"
+msgstr "Introduction video"
+
+msgid "Video za Hivi Karibuni"
+msgstr "Recent Videos"
+
+msgid "Video zote"
+msgstr "All videos"
+
+msgid "Viongozi Wetu"
+msgstr "Our Leaders"
+
+msgid "Visima vya Maji"
+msgstr "Water Boreholes"
+
+msgid "Vitabu, madawati na vifaa vya maabara vimekabidhiwa kwa shule 15 mkoani Mwanza."
+msgstr "Books, desks and laboratory equipment were handed over to 15 schools in Mwanza region."
+
+msgid "Vitendo"
+msgstr "Actions"
+
+msgid "Vitendo vya Haraka"
+msgstr "Quick Actions"
+
+msgid "Vitendo vya tukio"
+msgstr "Event actions"
+
+msgid "Vitendo zaidi"
+msgstr "More actions"
+
+msgid "Viungo"
+msgstr "Links"
+
+msgid "Wadau & Wahisani"
+msgstr "Partners & Donors"
+
+msgid "Wadau hai"
+msgstr "Active partners"
+
+msgid "Wadau kutoka mashirika manne walikutana kujadili upanuzi wa miradi ya visima."
+msgstr "Partners from four organisations met to discuss expanding borehole projects."
+
+msgid "Wadau na Wahisani"
+msgstr "Partners & Donors"
+
+msgid "Wadau, wahisani na kampeni"
+msgstr "Partners, donors and campaigns"
+
+msgid "Wahisani Wakubwa"
+msgstr "Top Donors"
+
+msgid "Wahisani hai"
+msgstr "Active donors"
+
+msgid "Wahisani kwa Mkoa"
+msgstr "Donors by Region"
+
+msgid "Wahisani na Wadau"
+msgstr "Donors and Partners"
+
+msgid "Wahisani wote"
+msgstr "All donors"
+
+msgid "Waliochelewa kulipa"
+msgstr "Members in arrears"
+
+msgid "Wanachama"
+msgstr "Members"
+
+msgid "Wanachama Hai"
+msgstr "Active Members"
+
+msgid "Wanachama Jumla"
+msgstr "Total Members"
+
+msgid "Wanachama Nchini Kote"
+msgstr "Members Nationwide"
+
+msgid "Wanachama Waliositishwa"
+msgstr "Suspended Members"
+
+msgid "Wanachama Wapya"
+msgstr "New Members"
+
+msgid "Wanachama Wapya (Mwezi)"
+msgstr "New Members (Month)"
+
+msgid "Wanachama hai pekee"
+msgstr "Active members only"
+
+msgid "Wanachama kwa Kategoria"
+msgstr "Members by Category"
+
+msgid "Wanachama kwa Mikoa"
+msgstr "Members by Region"
+
+msgid "Wanachama kwa Mwezi"
+msgstr "Members by Month"
+
+msgid "Wanachama wa Kanda"
+msgstr "Zone Members"
+
+msgid "Wanachama wanaweza kuomba kupitia akaunti zao. Wasio wanachama wanaweza kuwasiliana na ofisi ya tawi lililo karibu nao."
+msgstr "Members can apply through their account. Non-members should contact their nearest branch office."
+
+msgid "Wanachama wote"
+msgstr "All members"
+
+msgid "Wanachama wote nchini"
+msgstr "All members nationwide"
+
+msgid "Wanafamilia"
+msgstr "Family Members"
+
+msgid "Wanafamilia wako na wanaostahili kunufaika"
+msgstr "Your family members and eligible beneficiaries"
+
+msgid "Wanafunzi Waliofadhiliwa"
+msgstr "Students Sponsored"
+
+msgid "Wanufaika"
+msgstr "Beneficiaries"
+
+msgid "Wanufaika Mwezi Huu"
+msgstr "Beneficiaries This Month"
+
+msgid "Wanufaika kwa Mwezi"
+msgstr "Beneficiaries per Month"
+
+msgid "Wapokeaji"
+msgstr "Recipients"
+
+msgid "Waqf"
+msgstr "Waqf"
+
+msgid "Washiriki Jumla"
+msgstr "Total Participants"
+
+msgid "Washiriki kwa Mkoa"
+msgstr "Participants by Region"
+
+msgid "Washiriki wa mikoa yote"
+msgstr "Participants from all regions"
+
+msgid "Wasifu Wangu"
+msgstr "My Profile"
+
+msgid "Wasifu wako umesasishwa."
+msgstr "Your profile has been updated."
+
+msgid "Wasiliana Nasi"
+msgstr "Contact Us"
+
+msgid "Wasilisha"
+msgstr "Submit"
+
+msgid "Wasilisha Malipo"
+msgstr "Submit Payment"
+
+msgid "Wasilisha Mchango"
+msgstr "Submit Contribution"
+
+msgid "Wasilisha Ombi"
+msgstr "Submit Request"
+
+msgid "Watumiaji & Ruhusa"
+msgstr "Users & Permissions"
+
+msgid "Watumiaji wa Mfumo"
+msgstr "System Users"
+
+msgid "Watumishi"
+msgstr "Staff"
+
+msgid "Weka Nenosiri Jipya"
+msgstr "Set New Password"
+
+msgid "Weka barua pepe yako. Tutakutumia kiungo cha kuweka nenosiri jipya."
+msgstr "Enter your email. We will send you a link to set a new password."
+
+msgid "Weka namba sahihi ya simu, mfano 0712 345 678."
+msgstr "Enter a valid phone number, e.g. 0712 345 678."
+
+msgid "Wenye Barua Pepe"
+msgstr "With Email"
+
+msgid "Wenye Namba ya Simu"
+msgstr "With Phone Number"
+
+msgid "Wilaya"
+msgstr "Districts"
+
+msgid "Wilaya Tulizofikia"
+msgstr "Districts Reached"
+
+msgid "Yajayo"
+msgstr "Upcoming"
+
+msgid "Yaliyoidhinishwa"
+msgstr "Approved"
+
+msgid "Yaliyokosekana"
+msgstr "Outstanding"
+
+msgid "Yaliyolipwa"
+msgstr "Paid"
+
+msgid "Yaliyopita"
+msgstr "Past"
+
+msgid "Yaliyothibitisha"
+msgstr "Confirmed"
+
+msgid "Yameghairiwa"
+msgstr "Cancelled"
+
+msgid "Yanasubiri Uthibitisho"
+msgstr "Awaiting Confirmation"
+
+msgid "Yanayosubiri"
+msgstr "Pending"
+
+msgid "Yanayosubiri Uthibitisho"
+msgstr "Awaiting Confirmation"
+
+msgid "Zaidi ya 10,000"
+msgstr "More than 10,000"
+
+msgid "Zaidi ya watu 800 walipimwa shinikizo la damu, kisukari na macho bila malipo."
+msgstr "Over 800 people were screened for blood pressure, diabetes and eyesight free of charge."
+
+msgid "Zaka"
+msgstr "Zakat"
+
+msgid "Zaka, Sadaqa, Waqf na michango ya miradi"
+msgstr "Zakat, Sadaqah, Waqf and project contributions"
+
+msgid "Ziara"
+msgstr "Visits"
+
+msgid "Zilizobaki"
+msgstr "remaining"
+
+msgid "Zimebaki pointi %(n)s"
+msgstr "%(n)s points remaining"
+
+msgid "Zinabakia"
+msgstr "remaining"
+
+msgid "Zote"
+msgstr "All"
+
+msgid "halmashauri"
+msgstr "councils"
+
+msgid "ikilinganishwa na jana"
+msgstr "compared to yesterday"
+
+msgid "kata"
+msgstr "wards"
+
+msgid "kutoka mwezi jana"
+msgstr "from last month"
+
+msgid "kwa mwezi"
+msgstr "per month"
+
+msgid "maombi"
+msgstr "applications"
+
+msgid "mwezi jana"
+msgstr "last month"
+
+msgid "pointi"
+msgstr "points"
+
+msgid "rekodi"
+msgstr "records"
+
+msgid "vs mwaka jana"
+msgstr "vs last year"
+
+msgid "wanachama"
+msgstr "members"
+
+msgid "Sera ya Faragha"
+msgstr "Privacy Policy"
+
+msgid "Sera ya Vidakuzi"
+msgstr "Cookie Policy"
+
+msgid "Kurasa za kisheria"
+msgstr "Legal pages"
+
+msgid "Imeanza kutumika"
+msgstr "Effective from"
+
+msgid "Yaliyomo"
+msgstr "Contents"
+
+msgid "Badilisha mapendeleo ya vidakuzi"
+msgstr "Change cookie preferences"
+
+msgid "Tunatumia vidakuzi vya lazima ili tovuti ifanye kazi, na vidakuzi vya hiari kwa uchambuzi na mapendeleo yako."
+msgstr "We use strictly necessary cookies to make the site work, and optional cookies for analytics and your preferences."
+
+msgid "Soma Sera ya Vidakuzi"
+msgstr "Read the Cookie Policy"
+
+msgid "Vya lazima tu"
+msgstr "Essential only"
+
+msgid "Kubali vyote"
+msgstr "Accept all"
+
+msgid "Mtumiaji"
+msgstr "User"
+
+msgid "Kichwa"
+msgstr "Title"
+
+msgid "Wote"
+msgstr "All"
+
+msgid "Swali"
+msgstr "Question"
+
+msgid "Nguzo"
+msgstr "Pillar"
+
+msgid "Kwenye foleni"
+msgstr "Queued"
+
+msgid "Imetumwa"
+msgstr "Sent"
+
+msgid "Haikufanikiwa"
+msgstr "Failed"
+
+msgid "Ni mdau"
+msgstr "Is a stakeholder"
+
+msgid "Hapana"
+msgstr "No"
+
+msgid "Ukumbi"
+msgstr "Venue"
+
+msgid "Kiasi lazima kiwe zaidi ya sifuri."
+msgstr "The amount must be greater than zero."
+
+msgid "Weka mwanachama, mhisani au jina la mchangiaji."
+msgstr "Enter a member, a donor, or the contributor's name."
+
+msgid "Salio"
+msgstr "Balance"
+
+msgid "Fedha zenye masharti"
+msgstr "Restricted funds"
+
+msgid "Mfuko"
+msgstr "Fund"
+
+msgid "Mifuko"
+msgstr "Funds"
+
+msgid "Akiba"
+msgstr "Reserve"
+
+msgid "Ingizo la Leja"
+msgstr "Ledger Entry"
+
+msgid "Leja"
+msgstr "Ledger"
+
+msgid "Shirika"
+msgstr "Organisation"
+
+msgid "Tawi"
+msgstr "Branch"
+
+msgid "Herufi"
+msgstr "Letters"
+
+msgid "Sitisha wanachama waliochaguliwa"
+msgstr "Suspend selected members"
+
+msgid "Rejesha wanachama waliochaguliwa"
+msgstr "Reinstate selected members"
+
+msgid "Ikizimwa, mwombaji hawezi kuichagua mwenyewe. Msimamizi pekee ndiye anayeweza kumpandisha mwanachama kwenye daraja hili."
+msgstr "If disabled, applicants cannot choose it themselves. Only an administrator can move a member into this tier."
+
+msgid "Linaonyeshwa kwa heshima kwenye tovuti lakini si la kuomba."
+msgstr "Shown with recognition on the website, but not open to applications."
+
+msgid "Kumalizika"
+msgstr "Ends"
+
+msgid "Ionekane kwenye tovuti"
+msgstr "Show on the website"
+
+msgid "Mapato"
+msgstr "Income"
+
+msgid "Access your account"
+msgstr "Access your account"
+
+msgid "Umeomba kubadilisha nenosiri la akaunti yako ya MUWESTA. Bonyeza kiungo hapa chini:"
+msgstr "You have requested a password change for your MUWESTA account. Click the link below:"
+
+msgid "Kama hukuomba hili, puuza barua pepe hii — nenosiri lako halitabadilika."
+msgstr "If you did not request this, please ignore this email — your password will not be changed."
+
+msgid "Vifurushi"
+msgstr "Packages"
+
+msgid "Changia"
+msgstr "Donate"
+
+msgid "Vifurushi na Ada"
+msgstr "Packages & Fees"
+
+msgid "Dashibodi Yangu"
+msgstr "My Dashboard"
+
+msgid "Endelea Ulipoishia"
+msgstr "Pick up where you left off"
+
+msgid "Si wewe?"
+msgstr "Not you?"
+
+msgid "Karibu tena"
+msgstr "Welcome back"
+
+msgid "Nenda Kwenye Dashibodi"
+msgstr "Go to Dashboard"
+
+msgid "Jiunge Kama Mwanachama"
+msgstr "Join as a Member"
+
+msgid "Changia Sasa"
+msgstr "Donate Now"
+
+msgid "Tazama Mpangilio"
+msgstr "View the Plan"
+
+msgid "Mpangilio"
+msgstr "The Plan"
+
+msgid "Mpangilio wa Kifurushi cha Malipo ya Mwanachama"
+msgstr "Membership Payment Package Plan"
+
+msgid "Linganisha vifurushi vyote kwa mtazamo mmoja."
+msgstr "Compare every package at a glance."
+
+msgid "Chagua kifurushi kinachokufaa. Ada ya usajili hulipwa mara moja tu; ada ya mwaka hulipwa kila mwaka."
+msgstr "Choose the package that suits you. The registration fee is paid once only; the annual fee is paid every year."
+
+msgid "Kifurushi cha Mwanachama"
+msgstr "Membership Package"
+
+msgid "Ada ya Usajili (Mara moja)"
+msgstr "Registration Fee (One-off)"
+
+msgid "Ada ya Mwaka (TSh)"
+msgstr "Annual Fee (TSh)"
+
+msgid "Ripoti na Taarifa"
+msgstr "Reports and Updates"
+
+msgid "Huduma za Kipaumbele"
+msgstr "Priority Services"
+
+msgid "Cheti cha Shukrani"
+msgstr "Certificate of Appreciation"
+
+msgid "Fursa za Uongozi"
+msgstr "Leadership Opportunities"
+
+msgid "Alama za Utambuzi / Poini"
+msgstr "Recognition Marks / Points"
+
+msgid "Rangi ya Kadi"
+msgstr "Card Colour"
+
+msgid "Mwaka %(n)d"
+msgstr "%(n)d Year"
+
+msgid "Miaka %(n)d"
+msgstr "%(n)d Years"
+
+msgid "Uliza Zaidi"
+msgstr "Ask a Question"
+
+msgid "Kushiriki katika miradi ya kijamii"
+msgstr "Taking part in community projects"
+
+msgid "Kupata taarifa za kila mwezi"
+msgstr "Receiving monthly updates"
+
+msgid "Kipaumbele katika huduma na programu"
+msgstr "Priority in services and programmes"
+
+msgid "Kuchangia maendeleo ya jamii"
+msgstr "Contributing to community development"
+
+msgid "Kujenga uhusiano na wanachama wengine"
+msgstr "Building ties with fellow members"
+
+msgid "Maelezo Muhimu"
+msgstr "Important Notes"
+
+msgid "Ada ya usajili hulipwa mara moja tu."
+msgstr "The registration fee is paid once only."
+
+msgid "Ada ya mwaka hulipwa kila mwaka."
+msgstr "The annual fee is paid every year."
+
+msgid "Mwanachama ana haki zote kulingana na kifurushi alichochagua."
+msgstr "A member holds every right that comes with the package they chose."
+
+msgid "Malipo yote ni kwa shilingi za Kitanzania (TSh)."
+msgstr "All payments are in Tanzanian shillings (TSh)."
+
+msgid "Njia za Malipo"
+msgstr "Payment Methods"
+
+msgid "Baada ya kulipa, tuma namba ya muamala ili malipo yako yathibitishwe haraka."
+msgstr "After paying, send us the transaction reference so your payment is confirmed quickly."
+
+msgid "Kwa Mawasiliano"
+msgstr "Get in Touch"
+
+msgid "Madaraja ya Heshima"
+msgstr "Honorary Tiers"
+
+msgid "Haya hayaombwi. Msimamizi ndiye humpandisha mwanachama kwenye daraja hili."
+msgstr "These cannot be applied for. An administrator moves a member into this tier."
+
+msgid "Changia Sasa — Bila Hata Kufungua Akaunti"
+msgstr "Donate Now — No Account Needed"
+
+msgid "Mchango wako unaenda moja kwa moja kwenye elimu, afya, maji safi na msaada wa dharura. Jaza fomu hii kwa dakika moja."
+msgstr "Your gift goes straight to education, health, clean water and emergency relief. This form takes a minute."
+
+msgid "Jaza Taarifa za Mchango"
+msgstr "Your Donation Details"
+
+msgid "Hakuna akaunti inayohitajika"
+msgstr "No account needed"
+
+msgid "Namba ya simu"
+msgstr "Phone number"
+
+msgid "Barua pepe"
+msgstr "Email address"
+
+msgid "Kiasi (TSh)"
+msgstr "Amount (TSh)"
+
+msgid "Njia ya malipo"
+msgstr "Payment method"
+
+msgid "Namba ya muamala"
+msgstr "Transaction reference"
+
+msgid "Ujumbe (hiari)"
+msgstr "Message (optional)"
+
+msgid "Nataka kuchangia bila jina langu kuonekana hadharani"
+msgstr "Give without my name being shown publicly"
+
+msgid "Ukiwa tayari umelipa, weka namba ya risiti ya M-Pesa, Airtel, Tigo Pesa, HaloPesa au benki. Inaharakisha uthibitisho."
+msgstr "If you have already paid, enter the M-Pesa, Airtel, Tigo Pesa, HaloPesa or bank reference. It speeds up confirmation."
+
+msgid "Weka namba kamili ya simu."
+msgstr "Enter a complete phone number."
+
+msgid "Tuma Mchango"
+msgstr "Send Donation"
+
+msgid "Kwa kutuma, unakubali"
+msgstr "By sending this, you accept our"
+
+msgid "Jinsi Inavyofanya Kazi"
+msgstr "How It Works"
+
+msgid "Jaza fomu na uchague mfuko unaotaka kuchangia."
+msgstr "Fill in the form and choose the fund you want to support."
+
+msgid "Lipa kwa simu au benki kwa namba zilizo hapa chini."
+msgstr "Pay by mobile money or bank using the details below."
+
+msgid "Afisa wa michango anathibitisha, kisha unapata risiti."
+msgstr "A contributions officer confirms it, then your receipt is issued."
+
+msgid "Namba za Malipo"
+msgstr "Payment Channels"
+
+msgid "Tayari ni mhisani?"
+msgstr "Already a donor?"
+
+msgid "Ingia ili michango yako iunganishwe moja kwa moja na akaunti yako."
+msgstr "Sign in so your gifts are linked to your account automatically."
+
+msgid "Mchangiaji asiyetajwa"
+msgstr "Anonymous donor"
+
+msgid "Asante kwa Mchango Wako"
+msgstr "Thank You for Your Gift"
+
+msgid "Hongera, na asante sana!"
+msgstr "Well done, and thank you!"
+
+msgid "Mchango wako umepokelewa, %(name)s. Allah akubariki kwa moyo wako wa kutoa."
+msgstr "Your gift has been received, %(name)s. May Allah bless you for your generosity."
+
+msgid "Namba ya risiti"
+msgstr "Receipt number"
+
+msgid "Mchango wako unasubiri uthibitisho wa afisa wa michango. Utapokea risiti rasmi mara baada ya kuthibitishwa. Hifadhi namba ya risiti hapo juu."
+msgstr "Your gift is awaiting confirmation by a contributions officer. You will receive an official receipt once it is confirmed. Please keep the receipt number above."
+
+msgid "Fungua akaunti ya mhisani — ni bure"
+msgstr "Open a donor account — it's free"
+
+msgid "Hutahitaji akaunti ili kuchangia, na hatutakulazimisha kamwe. Lakini ukifungua akaunti, kila mchango wako utahifadhiwa mahali pamoja."
+msgstr "You never need an account to give, and we will never require one. But with an account, every gift you make is kept in one place."
+
+msgid "Kumbukumbu kamili ya michango yako yote, mwaka hadi mwaka."
+msgstr "A complete record of all your giving, year by year."
+
+msgid "Risiti zote mahali pamoja — rahisi wakati wa hesabu au zaka."
+msgstr "All your receipts together — handy at accounting or zakat time."
+
+msgid "Kuona jinsi mchango wako ulivyotumika kwenye miradi."
+msgstr "See how your gift was put to work on projects."
+
+msgid "Kuchangia tena bila kujaza taarifa zako upya."
+msgstr "Give again without re-entering your details."
+
+msgid "Fungua Akaunti ya Mhisani"
+msgstr "Open a Donor Account"
+
+msgid "Baadaye"
+msgstr "Maybe later"
+
+msgid "Mchango huu utaunganishwa moja kwa moja na akaunti yako mpya."
+msgstr "This gift will be linked to your new account automatically."
+
+msgid "Tazama Michango Yangu"
+msgstr "View My Giving"
+
+msgid "Changia Tena"
+msgstr "Give Again"
+
+msgid "Akaunti ya Mhisani"
+msgstr "Donor Account"
+
+msgid "Ili kutunza kumbukumbu za michango yako mahali pamoja."
+msgstr "So your giving records live in one place."
+
+msgid "Mchango %(r)s utaunganishwa na akaunti hii."
+msgstr "Gift %(r)s will be linked to this account."
+
+msgid "Jina kamili"
+msgstr "Full name"
+
+msgid "Rudia nenosiri"
+msgstr "Repeat password"
+
+msgid "Angalau herufi 8."
+msgstr "At least 8 characters."
+
+msgid "Barua pepe hii tayari ina akaunti. Tumia \"Ingia\" badala yake."
+msgstr "This email already has an account. Use \"Sign in\" instead."
+
+msgid "Nenosiri hazifanani."
+msgstr "The passwords do not match."
+
+msgid "Fungua Akaunti"
+msgstr "Create Account"
+
+msgid "Tayari una akaunti?"
+msgstr "Already have an account?"
+
+msgid "Ingia hapa"
+msgstr "Sign in here"
+
+msgid "Taarifa zako zinalindwa kwa mujibu wa"
+msgstr "Your information is protected under our"
+
+msgid "Akaunti yako ya mhisani iko tayari. Michango yako yote itaonekana hapa."
+msgstr "Your donor account is ready. All your giving will appear here."
+
+msgid "Mhisani"
+msgstr "Donor"
+
+msgid "Karibu, %(name)s"
+msgstr "Welcome, %(name)s"
+
+msgid "Hapa ni kumbukumbu ya michango yako yote kwa MUWESTA."
+msgstr "This is the record of everything you have given to MUWESTA."
+
+msgid "Jumla Uliyochangia"
+msgstr "Total Given"
+
+msgid "Michango Iliyothibitishwa"
+msgstr "Confirmed Gifts"
+
+msgid "Bado hujafanya mchango wowote kupitia akaunti hii."
+msgstr "You have not given anything through this account yet."
+
+msgid "Mgawanyo kwa Mfuko"
+msgstr "Split by Fund"
+
+msgid "Karibu Tena!"
+msgstr "Welcome Back!"
+
+msgid "Ingia ili kufikia akaunti yako ya MUWESTA"
+msgstr "Sign in to access your MUWESTA account"
+
+msgid "Chagua Jukumu Lako"
+msgstr "Select Your Role"
+
+msgid "Kujitolea"
+msgstr "Volunteer"
+
+msgid "Ingia ili kuona kumbukumbu za michango yako yote."
+msgstr "Sign in to see the record of all your giving."
+
+msgid "Wajitoleaji hutumia akaunti ile ile ya mwanachama."
+msgstr "Volunteers sign in with the same member account."
+
+msgid "Kadi yako, malipo, pointi na maombi yako."
+msgstr "Your card, payments, points and requests."
+
+msgid "Usajili, malipo, michango na ustawi."
+msgstr "Registration, payments, contributions and welfare."
+
+msgid "Mikoa, wadau na kampeni za kanda yako."
+msgstr "Regions, partners and campaigns in your zone."
+
+msgid "Mfumo mzima na mikoa yote."
+msgstr "The whole system, every region."
+
+msgid "Barua Pepe / Namba ya Uanachama"
+msgstr "Email Address / Membership Number"
+
+msgid "Weka barua pepe au namba ya uanachama"
+msgstr "Enter your email address or membership number"
+
+msgid "Weka nenosiri lako"
+msgstr "Enter your password"
+
+msgid "Onyesha nenosiri"
+msgstr "Show password"
+
+msgid "Kumbuka Mimi"
+msgstr "Remember Me"
+
+msgid "INGIA"
+msgstr "SIGN IN"
+
+msgid "AU"
+msgstr "OR"
+
+msgid "Ingia kwa Namba ya Simu (OTP)"
+msgstr "Sign in with Phone Number (OTP)"
+
+msgid "Taarifa zako ziko salama nasi. Tunaheshimu faragha yako na kulinda taarifa zako."
+msgstr "Your data is safe with us. We respect your privacy and protect your information."
+
+msgid "Jiunge kama mwanachama"
+msgstr "join as a member"
+
+msgid "au"
+msgstr "or"
+
+msgid "fungua akaunti ya mhisani"
+msgstr "open a donor account"
+
+msgid "Ada ya usajili"
+msgstr "Registration fee"
+
+msgid "Hulipwa mara moja tu wakati wa kujiunga."
+msgstr "Paid once, when joining."
+
+msgid "Ada ya mwaka"
+msgstr "Annual fee"
+
+msgid "Hulipwa kila mwaka."
+msgstr "Paid every year."
+
+msgid "Muda wa uanachama (miaka)"
+msgstr "Membership duration (years)"
+
+msgid "Alama za utambuzi"
+msgstr "Recognition marks"
+
+msgid "Alama ni za chini kabisa"
+msgstr "Marks are a floor"
+
+msgid "Ikiwashwa, alama zitaonyeshwa kama \"2,000+\"."
+msgstr "When enabled, marks are shown as \"2,000+\"."
+
+msgid "Kadi ya uanachama"
+msgstr "Membership card"
+
+msgid "Matukio na mafunzo"
+msgstr "Events and training"
+
+msgid "Ripoti na taarifa"
+msgstr "Reports and updates"
+
+msgid "Huduma za kipaumbele"
+msgstr "Priority services"
+
+msgid "Cheti cha shukrani"
+msgstr "Certificate of appreciation"
+
+msgid "Fursa za uongozi"
+msgstr "Leadership opportunities"
+
+msgid "Akaunti"
+msgstr "Account"
+
+msgid "Tuko hapa kukusaidia!"
+msgstr "We are here to help you!"
+
+msgid "Piga simu, tuandikie au tutembelee ofisini."
+msgstr "Call, write to us, or visit our office."
+
+msgid "Anwani ya Makazi"
+msgstr "Physical Address"
+
+msgid "Namba za Simu"
+msgstr "Phone Numbers"
+
+msgid "Maswali ya Jumla"
+msgstr "General Inquiries"
+
+msgid "Michango na Msaada"
+msgstr "Donations & Support"
+
+msgid "Dharura na Misaada"
+msgstr "Emergency & Relief"
+
+msgid "Tunalenga kujibu ndani ya saa 24."
+msgstr "We aim to respond within 24 hours."
+
+msgid "Jumatatu - Alhamisi"
+msgstr "Monday - Thursday"
+
+msgid "Ijumaa"
+msgstr "Friday"
+
+msgid "Jumamosi"
+msgstr "Saturday"
+
+msgid "Jumapili"
+msgstr "Sunday"
+
+msgid "Sikukuu za Taifa"
+msgstr "Public Holidays"
+
+msgid "Imefungwa"
+msgstr "Closed"
+
+msgid "Huduma zetu pia zinapatikana wakati wa programu na matukio maalum."
+msgstr "Our services are also available during special programmes and events."
+
+msgid "Tupate Hapa"
+msgstr "Find Us Here"
+
+msgid "Fungua kwenye Google Maps"
+msgstr "View on Google Maps"
+
+msgid "Tufuate Kwenye Mitandao"
+msgstr "Follow Us on Social Media"
+
+msgid "Asante kwa kuwa sehemu ya dhamira yetu."
+msgstr "Thank you for being part of our mission."
+
+msgid "Pamoja kwa Imani, Huduma na Maendeleo."
+msgstr "Together for Iman, Service & Development."
+
+msgid "Na tushirikiane katika wema na uchaji."
+msgstr "And cooperate in righteousness and piety."
+
+msgid "Tuandikie"
+msgstr "Write to Us"
+
+msgid "Jaza fomu hii na tutakujibu ndani ya saa 24."
+msgstr "Fill in this form and we will reply within 24 hours."
+
+msgid "Tuko hapa kukuhudumia. Tufikie kupitia njia zifuatazo."
+msgstr "We are here to serve you. Reach us through the following channels."
+
+msgid "DEMO"
+msgstr "DEMO"
+
+msgid "Malipo bado hayajaunganishwa"
+msgstr "Payments are not connected yet"
+
+msgid "Mfumo wa malipo (API ya mtoa huduma) bado haujaunganishwa. Unaweza kujaza fomu na kuona jinsi itakavyofanya kazi, lakini HAKUNA pesa halisi itakayotolewa kwenye akaunti yako."
+msgstr "The payment provider's API is not connected yet. You can fill in the form and see how it will work, but NO real money will be taken from your account."
+
+msgid "Tuma Mchango (Demo)"
+msgstr "Send Donation (Demo)"
+
+msgid "Imefanikiwa — lakini ni majaribio tu"
+msgstr "Success — but this is only a test"
+
+msgid "Mchango wako umehifadhiwa kwenye mfumo na risiti imetengenezwa, ili uone mtiririko mzima. Hata hivyo, API ya malipo bado haijaunganishwa, kwa hiyo hakuna pesa iliyohamishwa."
+msgstr "Your gift has been saved and a receipt generated so you can see the whole flow. However, the payment API is not connected yet, so no money moved."
+
+msgid "Ada ya Mwezi (TSh)"
+msgstr "Monthly Fee (TSh)"
+
+msgid "Badili lugha"
+msgstr "Change language"
+
+msgid "Nenda"
+msgstr "Go"
+
+msgid "Omba mtandaoni"
+msgstr "Apply online"
+
+msgid "Ada za kila kifurushi zinapatikana kwenye"
+msgstr "Fees for each package are on the"
+
+msgid "ukurasa wa Vifurushi na Ada"
+msgstr "Packages & Fees page"
+
+msgid "Tazama Ada"
+msgstr "View Fees"
+
+msgid "Imani kwa Vitendo, Huduma na Maendeleo"
+msgstr "Faith in Action, Service and Development"
+
+msgid "Malipo Salama (SSL)"
+msgstr "Secure Payment (SSL)"
+
+msgid "Taarifa zako zinalindwa"
+msgstr "Your information is protected"
+
+msgid "Chagua Aina ya Mchango"
+msgstr "Choose the Type of Donation"
+
+msgid "Kiasi cha Kuchangia"
+msgstr "Donation Amount"
+
+msgid "Rudia Mchango"
+msgstr "Repeat Donation"
+
+msgid "Chagua Njia ya Malipo"
+msgstr "Choose a Payment Method"
+
+msgid "Taarifa za Mchangiaji"
+msgstr "Donor Details"
+
+msgid "Viwango hapo juu ni vya TZS. Ukibadilisha fedha, weka kiasi mwenyewe."
+msgstr "The amounts above are in TZS. If you change currency, enter the amount yourself."
+
+msgid "Namba ya kadi na CVV hazikusanywi hapa. Kadi ikitumika, utapelekwa kwenye ukurasa salama wa mtoa huduma."
+msgstr "Card numbers and CVV are not collected here. If you pay by card you will be taken to the provider's secure page."
+
+msgid "Jina lako"
+msgstr "Your name"
+
+msgid "Barua Pepe (Hiari)"
+msgstr "Email (Optional)"
+
+msgid "Mkoa wako"
+msgstr "Your region"
+
+msgid "Ujumbe (Hiari)"
+msgstr "Message (Optional)"
+
+msgid "Andika ujumbe wako..."
+msgstr "Write your message..."
+
+msgid "Muhtasari"
+msgstr "Summary"
+
+msgid "Rudia"
+msgstr "Repeat"
+
+msgid "Ada ya Huduma"
+msgstr "Service Fee"
+
+msgid "TOA MCHANGO SASA"
+msgstr "DONATE NOW"
+
+msgid "TOA MCHANGO SASA (Demo)"
+msgstr "DONATE NOW (Demo)"
+
+msgid "Faida za Mchangiaji"
+msgstr "Donor Benefits"
+
+msgid "Hupata thawabu na baraka"
+msgstr "You earn reward and blessing"
+
+msgid "Husaidia wahitaji na miradi ya kijamii"
+msgstr "You help those in need and community projects"
+
+msgid "Uthibitisho wa malipo (risiti) hutolewa"
+msgstr "Proof of payment (a receipt) is issued"
+
+msgid "Taarifa kamili za matumizi zinapatikana"
+msgstr "Full reporting on how funds are used"
+
+msgid "Risiti ya papo hapo"
+msgstr "Instant receipt"
+
+msgid "Uwazi na uwajibikaji"
+msgstr "Transparency and accountability"
+
+msgid "Aina ya mchango"
+msgstr "Donation type"
+
+msgid "Rudia mchango"
+msgstr "Repeat donation"
+
+msgid "Kurudia"
+msgstr "Recurrence"
+
+msgid "Kiasi alichoweka"
+msgstr "Amount entered"
+
+msgid "Mitandao ya Simu"
+msgstr "Mobile Money"
+
+msgid "Kadi na Kimataifa"
+msgstr "Card & International"
+
+msgid "Benki (Tanzania)"
+msgstr "Bank (Tanzania)"
+
+msgid "Kimataifa"
+msgstr "International"
+
+msgid "Sadaqah (Hiari)"
+msgstr "Sadaqah (Voluntary)"
+
+msgid "Futari / Iftar"
+msgstr "Iftar"
+
+msgid "Elimu ya Kiislamu"
+msgstr "Islamic Education"
+
+msgid "Yatima"
+msgstr "Orphans"
+
+msgid "Afya na Matibabu"
+msgstr "Health and Treatment"
+
+msgid "Mradi wa Visima"
+msgstr "Water Wells"
+
+msgid "Ujenzi wa Misikiti"
+msgstr "Mosque Construction"
+
+msgid "Scholarship za Wanafunzi"
+msgstr "Student Scholarships"
+
+msgid "Chakula kwa Wahitaji"
+msgstr "Food for Those in Need"
+
+msgid "Misaada ya Dharura"
+msgstr "Emergency Relief"
+
+msgid "Michango ya Jumla"
+msgstr "General Donation"
+
+msgid "Mara Moja"
+msgstr "One Time"
+
+msgid "Kila Wiki"
+msgstr "Weekly"
+
+msgid "Kila Robo Mwaka"
+msgstr "Quarterly"
+
+msgid "Kila Nusu Mwaka"
+msgstr "Every Six Months"
+
+msgid "Kila Mwaka"
+msgstr "Annually"
+
+msgid "Chagua kifurushi, kipindi na njia ya malipo."
+msgstr "Choose a package, a period and a payment method."
+
+msgid "Vifurushi vya Uanachama"
+msgstr "Membership Packages"
+
+msgid "Kipindi cha Malipo"
+msgstr "Payment Period"
+
+msgid "mwezi"
+msgstr "month"
+
+msgid "Chagua"
+msgstr "Select"
+
+msgid "Hifadhi %(d)s%%"
+msgstr "Save %(d)s%%"
+
+msgid "Ongeza ada ya usajili (mwanachama mpya, hulipwa mara moja tu)"
+msgstr "Add the registration fee (new member, paid once only)"
+
+msgid "Taarifa za Mlipaji"
+msgstr "Payer Details"
+
+msgid "Aina ya Mlipaji"
+msgstr "Payer Type"
+
+msgid "Namba ya Uanachama"
+msgstr "Membership Number"
+
+msgid "Anwani"
+msgstr "Address"
+
+msgid "Maelezo (Hiari)"
+msgstr "Notes (Optional)"
+
+msgid "Kifurushi"
+msgstr "Package"
+
+msgid "Kipindi"
+msgstr "Period"
+
+msgid "Ada ya kipindi"
+msgstr "Period fee"
+
+msgid "Jumla ya Kulipa"
+msgstr "Total Payable"
+
+msgid "LIPA SASA"
+msgstr "PAY NOW"
+
+msgid "LIPA SASA (Demo)"
+msgstr "PAY NOW (Demo)"
+
+msgid "Kwa kubofya Lipa Sasa, unakubali"
+msgstr "By clicking Pay Now, you accept our"
+
+msgid "Malipo yako yanalindwa. Hatuhifadhi taarifa za kadi yako."
+msgstr "Your payment is protected. We do not store your card details."
+
+msgid "Malipo yako yamepokelewa."
+msgstr "Your payment has been received."
+
+msgid "Chagua kifurushi sahihi."
+msgstr "Choose a valid package."
+
+msgid "Salama na Kuaminika"
+msgstr "Secure and Trusted"
+
+msgid "Usimbaji wa SSL"
+msgstr "SSL encryption"
+
+msgid "Risiti ya Papo Hapo"
+msgstr "Instant Receipt"
+
+msgid "Uthibitisho kwa barua pepe"
+msgstr "Email confirmation"
+
+msgid "Uwazi"
+msgstr "Transparency"
+
+msgid "Ripoti za matumizi"
+msgstr "Spending reports"
+
+msgid "Kila Mwezi"
+msgstr "Monthly"
+
+msgid "Robo Mwaka"
+msgstr "Quarterly"
+
+msgid "Nusu Mwaka"
+msgstr "Half Year"
+
+msgid "Mwaka Mzima"
+msgstr "Full Year"
+
+msgid "Mwezi 1"
+msgstr "1 month"
+
+msgid "Miezi 3"
+msgstr "3 months"
+
+msgid "Miezi 6"
+msgstr "6 months"
+
+msgid "Mwanachama mpya"
+msgstr "New member"
+
+msgid "Taasisi"
+msgstr "Institution"
+
+msgid "Kipindi cha malipo"
+msgstr "Payment period"
+
+msgid "Aina ya mlipaji"
+msgstr "Payer type"
+
+msgid "Ongeza ada ya usajili (mwanachama mpya)"
+msgstr "Add the registration fee (new member)"
+
+msgid "Nukuu kuhusu kutoa"
+msgstr "Verses on giving"
+
+msgid "Nukuu iliyopita"
+msgstr "Previous verse"
+
+msgid "Nukuu ifuatayo"
+msgstr "Next verse"
+
+msgid "Nukuu %(n)s"
+msgstr "Verse %(n)s"
+
+msgid "Aina ya Kitambulisho"
+msgstr "ID Type"
+
+msgid "NIDA"
+msgstr "NIDA"
+
+msgid "Leseni ya Udereva"
+msgstr "Driving Licence"
+
+msgid "Kadi ya Mpiga Kura"
+msgstr "Voter's Card"
+
+msgid "Pasipoti"
+msgstr "Passport"
+
+msgid "Kitambulisho cha Kazi"
+msgstr "Employee ID"
+
+msgid "Kitambulisho Kingine cha Uanachama"
+msgstr "Other Membership Card"
+
+msgid "DHARURA"
+msgstr "URGENT"
+
+msgid "Soma"
+msgstr "Read"
+
+msgid "Yote"
+msgstr "All"
+
+msgid "Matangazo yote"
+msgstr "All announcements"
+
+msgid "Imeidhinishwa na"
+msgstr "Approved by"
+
+msgid "Matangazo mengine"
+msgstr "Other announcements"
+
+msgid "Hakuna tangazo kwa sasa."
+msgstr "No announcements right now."
+
+msgid "Taarifa rasmi kutoka MUWESTA."
+msgstr "Official notices from MUWESTA."
+
+msgid "Rasimu"
+msgstr "Draft"
+
+msgid "Ni la dharura"
+msgstr "Is urgent"
+
+msgid "Linang'aa juu ya ukurasa wa mwanzo."
+msgstr "Highlighted at the top of the home page."
+
+msgid "Ameandaa"
+msgstr "Prepared by"
+
+msgid "Ameidhinisha"
+msgstr "Approved by"
+
+msgid "Muda wa idhini"
+msgstr "Approval time"
+
+msgid "Sababu"
+msgstr "Reason"
+
+msgid "Tangazo limehifadhiwa na linasubiri idhini ya Msimamizi."
+msgstr "The announcement has been saved and is awaiting the Administrator's approval."
+
+msgid "Makamu Mwenyekiti"
+msgstr "Vice Chairman"
+
+msgid "Katibu"
+msgstr "Secretary"
+
+msgid "Katibu Msaidizi"
+msgstr "Assistant Secretary"
+
+msgid "Mweka Hazina Msaidizi"
+msgstr "Assistant Treasurer"
+
+msgid "Muundo wa jengo la Ofisi Kuu ya MUWESTA, Dodoma"
+msgstr "Design of the MUWESTA Head Office building, Dodoma"
+
+msgid "Muundo wa Ofisi Kuu inayopendekezwa — Dodoma"
+msgstr "Proposed Head Office design — Dodoma"
+
+msgid "SOMA"
+msgstr "READ"
+
+msgid "Ada ya huduma"
+msgstr "Service fee"
+
+msgid "Hakuna"
+msgstr "None"
+
+msgid "Imelindwa kwa SSL"
+msgstr "SSL secured"
+
+msgid "Inakuja"
+msgstr "Coming soon"
+
+msgid "Ingiza kiasi"
+msgstr "Enter amount"
+
+msgid "Kadi na CVV havihifadhiwi hapa"
+msgstr "Card details and CVV are never stored here"
+
+msgid "Lipa kwa njia salama, haraka na rahisi"
+msgstr "Pay securely, quickly and easily"
+
+msgid "Malipo yanapitia Pesapal"
+msgstr "Payments are processed by Pesapal"
+
+msgid "Marudio"
+msgstr "Frequency"
+
+msgid "Muhtasari wa malipo"
+msgstr "Payment summary"
+
+msgid "Ongeza ujumbe au changia bila jina"
+msgstr "Add a message or give anonymously"
+
+msgid "Risiti hutolewa papo hapo"
+msgstr "Receipt issued immediately"
+
+msgid "Taarifa zako"
+msgstr "Your details"
+
+msgid "hiari"
+msgstr "optional"
+
+msgid "njia hii inakuja hivi punde. Kwa sasa tafadhali tumia Pesapal."
+msgstr "this method is coming soon. For now please use Pesapal."
+
+msgid "Njia hii ya malipo inakuja hivi punde. Kwa sasa tafadhali tumia Mobile Money au Kadi kupitia Pesapal."
+msgstr "This payment method is coming soon. For now please use Pesapal."
+
+msgid "Asante — tumepokea ombi lako"
+msgstr "Thank you — we have received your request"
+
+msgid "Barua pepe (hiari)"
+msgstr "Email (optional)"
+
+msgid "Hakuna pesa iliyotolewa kwenye akaunti yako. Unaweza kujaribu tena wakati wowote."
+msgstr "No money was taken from your account. You can try again at any time."
+
+msgid "Kategoria"
+msgstr "Category"
+
+msgid "Malipo hayakukamilika"
+msgstr "Payment did not complete"
+
+msgid "Malipo hayakukamilika. Unaweza kujaribu tena."
+msgstr "The payment did not complete. You can try again."
+
+msgid "Malipo yako yamekamilika. Asante!"
+msgstr "Your payment is complete. Thank you!"
+
+msgid "Malipo yako yanashughulikiwa. Utapata uthibitisho hivi punde."
+msgstr "Your payment is being processed. You will receive confirmation shortly."
+
+msgid "Malipo yamethibitishwa. Hifadhi namba ya risiti hapo juu kwa kumbukumbu zako."
+msgstr "The payment is confirmed. Keep the receipt number above for your records."
+
+msgid "Malipo yanathibitishwa. Ukilipa kwa njia ya mtandaoni, hali hubadilika yenyewe ndani ya dakika chache; ukituma kwa benki, afisa atathibitisha baada ya pesa kuingia. Hifadhi namba ya risiti hapo juu."
+msgstr "The payment is being confirmed. If you paid online, the status updates by itself within a few minutes; if you sent it by bank, an officer will confirm once the money arrives. Keep the receipt number above."
+
+msgid "Mchango"
+msgstr "Donation"
+
+msgid "Muamala haukukamilika. Hakuna kilichokatwa kwenye akaunti yako."
+msgstr "The transaction did not complete. Nothing was charged to your account."
+
+msgid "Namba ya kitambulisho"
+msgstr "Identification number"
+
+msgid "Namba ya uanachama"
+msgstr "Membership number"
+
+msgid "Utapelekwa kwenye ukurasa salama wa Pesapal kukamilisha malipo. Namba ya kadi wala CVV havikusanywi kwenye mfumo huu."
+msgstr "You will be taken to Pesapal's secure page to complete the payment. Neither your card number nor CVV is collected in this system."
+
+msgid "Njia hii ya malipo inakuja hivi punde. Kwa sasa tafadhali tumia Pesapal."
+msgstr "This payment method is coming soon. For now please use Pesapal."
+
+msgid "Namba ya Ombi"
+msgstr "Application Number"
+
+msgid "Namba uliyopewa baada ya kujiunga. Angalia ujumbe wako."
+msgstr "The number you were given after applying. Check your message."
+
+msgid "Ombi %(ref)s limehakikiwa. Sasa linasubiri malipo ya ada."
+msgstr "Application %(ref)s has been verified. It is now awaiting the fee payment."
+
+msgid "Inasubiri Malipo"
+msgstr "Awaiting Payment"
+
+msgid "Weka namba yako ya uanachama."
+msgstr "Enter your membership number."
+
+msgid "Hakuna mwanachama mwenye namba hiyo."
+msgstr "No member has that number."
+
+msgid "Hakuna ombi lenye namba hiyo."
+msgstr "No application has that number."
+
+msgid "Ombi la Uanachama"
+msgstr "Membership Application"
+
+msgid "Ada yako imepokelewa na uanachama wako umeanzishwa rasmi. Kadi yako ya kidijitali iko tayari."
+msgstr "Your fee has been received and your membership is now officially active. Your digital card is ready."
+
+msgid "Angalia Vifurushi"
+msgstr "View Packages"
+
+msgid "Dashibodi Yangu ya Uanachama"
+msgstr "My Membership Dashboard"
+
+msgid "Haki ya kupiga kura kwenye Mkutano Mkuu."
+msgstr "The right to vote at the General Assembly."
+
+msgid "Hakuna haraka. Akaunti yako ya mhisani itaendelea kufanya kazi kama kawaida ukiamua kuachana na hili."
+msgstr "There is no rush. Your donor account keeps working as normal if you decide to leave this."
+
+msgid "Hatua inayofuata, ukitaka"
+msgstr "The next step, if you want it"
+
+msgid "Hii SI akaunti ya uanachama. Ni akaunti ya mhisani — hakuna ada wala masharti, na unaweza kuiacha wakati wowote. Ukitaka uanachama baadaye, utapata njia ndani ya akaunti yako."
+msgstr "This is NOT a membership account. It is a donor account — no fees, no obligations, and you can leave it at any time. If you want membership later, you will find the way inside your account."
+
+msgid "Huduma za ustawi kwako na familia yako."
+msgstr "Welfare services for you and your family."
+
+msgid "Jina la mtumiaji"
+msgstr "Username"
+
+msgid "Kadi ya uanachama yenye QR — utambulisho rasmi wa MUWESTA."
+msgstr "A membership card with a QR code — official MUWESTA identification."
+
+msgid "Kipindi kinaisha"
+msgstr "Term ends"
+
+msgid "Kutoka kwa mhisani hadi mwanachama"
+msgstr "From donor to member"
+
+msgid "Lengo"
+msgstr "Target"
+
+msgid "Liandike sasa — halitaonyeshwa tena. Libadilishe ukiingia mara ya kwanza."
+msgstr "Write it down now — it will not be shown again. Change it when you first log in."
+
+msgid "Nenosiri la muda"
+msgstr "Temporary password"
+
+msgid "Pamoja na ada ya usajili"
+msgstr "Plus a registration fee of"
+
+msgid "Pointi za utambuzi kwa kila mchango unaotoa."
+msgstr "Recognition points for every contribution you make."
+
+msgid "Ripoti za ndani na mialiko ya matukio ya wanachama."
+msgstr "Internal reports and invitations to member events."
+
+msgid "Shughuli Unazoweza Kuchangia"
+msgstr "Causes You Can Support"
+
+msgid "Taarifa za kuingia"
+msgstr "Login details"
+
+msgid "Uanachama hudumu miaka mitatu. Utakumbushwa kabla kipindi hakijaisha."
+msgstr "Membership lasts three years. You will be reminded before the term ends."
+
+msgid "Uanachama wako umeanza"
+msgstr "Your membership has begun"
+
+msgid "Umeshakuwa sehemu ya kazi hii. Uanachama unakuweka ndani zaidi — una sauti kwenye maamuzi, na huduma za ustawi kwako na familia yako."
+msgstr "You are already part of this work. Membership takes you deeper — you get a voice in decisions, and welfare services for you and your family."
+
+msgid "Miaka 3"
+msgstr "3 Years"
+
+msgid "Miaka 6"
+msgstr "6 Years"
+
+msgid "Miaka 9"
+msgstr "9 Years"
+
+msgid "Ada ya Kipindi"
+msgstr "Term Fee"
+
+msgid "Ada ya Kipindi (miaka 3)"
+msgstr "Term Fee (3 years)"
+
+msgid "Kipindi cha miaka 3 kinaisha"
+msgstr "The 3-year term ends"
+
+msgid "Kwa miaka 3"
+msgstr "For 3 years"
+
+msgid "Jina la Mtumiaji, Namba ya Uanachama au Barua Pepe"
+msgstr "Username, Membership Number or Email"
+
+msgid "admin, MUWESTA/B/000123/2026 au barua pepe"
+msgstr "admin, MUWESTA/B/000123/2026 or email"
+
+msgid "Watumishi hutumia jina la mtumiaji; wanachama hutumia namba ya uanachama."
+msgstr "Staff use their username; members use their membership number."
+
+msgid "Jina la Mtumiaji"
+msgstr "Username"
+
+msgid "mfano: admin, usajili, mratibu_kaskazini"
+msgstr "e.g. admin, usajili, mratibu_kaskazini"
+
+msgid "Jina ulilopewa na ofisi, si barua pepe yako."
+msgstr "The name the office gave you, not your email address."
+
+msgid "MUWESTA/B/000123/2026 au barua pepe yako"
+msgstr "MUWESTA/B/000123/2026 or your email"
+
+msgid "Namba iliyo kwenye kadi yako, au barua pepe uliyojisajili nayo."
+msgstr "The number on your card, or the email you signed up with."
+
+msgid "Karibu"
+msgstr "Welcome"
+
+msgid "Ndugu"
+msgstr "Friend"
+
+msgid "Dashboard ya Taifa"
+msgstr "National Dashboard"
+
+msgid "Hakuna malipo"
+msgstr "No payments"
+
+msgid "Hakuna matukio"
+msgstr "No events"
+
+msgid "Hakuna michango"
+msgstr "No contributions"
+
+msgid "Kadi"
+msgstr "Card"
+
+msgid "Mnufaika"
+msgstr "Beneficiary"
+
+msgid "Picha ya 1"
+msgstr "Image 1"
+
+msgid "Picha ya 2"
+msgstr "Image 2"
+
+msgid "Picha ya 3"
+msgstr "Image 3"
+
+msgid "Picha za MUWESTA"
+msgstr "MUWESTA photos"
+
+msgid "Taarifa"
+msgstr "Notices"
+
+msgid "Mshiriki"
+msgstr "Participant"
+
+msgid "Mhudumu"
+msgstr "Servant of the Community"
+
+msgid "Mhimili wa Jamii"
+msgstr "Foundation of the Community"
+
+msgid "Umeanza safari nasi"
+msgstr "You have started the journey with us"
+
+msgid "Mchango wako unaonekana"
+msgstr "Your contribution shows"
+
+msgid "Huduma yako imekuwa ya kawaida"
+msgstr "Your service has become steady"
+
+msgid "Jamii inakutegemea"
+msgstr "The community leans on you"
+
+msgid "Kiwango cha juu kabisa cha ushiriki"
+msgstr "The highest level of participation"
+
+msgid "Kiwango changu"
+msgstr "My level"
+
+msgid "Kiwango"
+msgstr "Level"
+
+msgid "Kiwango Changu"
+msgstr "My Level"
+
+msgid "Kiwango Kinachofuata"
+msgstr "Next Level"
+
+msgid "Kiwango cha Juu Kabisa"
+msgstr "Highest Level"
+
+msgid "Ngazi za MUWESTA"
+msgstr "MUWESTA Levels"
+
+msgid "Pointi za MUWESTA"
+msgstr "MUWESTA Points"
+
+msgid "Pointi za Maisha"
+msgstr "Lifetime Points"
+
+msgid "Hazipungui kamwe"
+msgstr "Never decrease"
+
+msgid "Michango na Ada"
+msgstr "Contributions and Fees"
+
+msgid "Ushiriki"
+msgstr "Participation"
+
+msgid "Bonasi"
+msgstr "Bonus"
+
+msgid "Marekebisho"
+msgstr "Adjustment"
+
+msgid "Umefikia kiwango cha juu kabisa. Asante kwa kuwa nasi."
+msgstr "You have reached the highest level. Thank you for being with us."
+
+msgid "Pointi za michango kwa kipindi hiki"
+msgstr "Contribution points for this period"
+
+msgid "Michango huchangia hadi kikomo hiki kwa kila kipindi. Ushiriki wa shughuli hauna kikomo."
+msgstr "Contributions count up to this limit each period. Participation in activities has no limit."
+
+msgid "Umefikia kikomo cha pointi zinazotokana na michango kwa kipindi hiki. Michango yako inaendelea kupokelewa na kutambuliwa kwenye Orodha ya Heshima ya Wahisani — na unaweza kuendelea kupanda kwa kushiriki shughuli za jumuiya."
+msgstr "You have reached the limit on points from contributions for this period. Your giving is still received and recognised on the Donor Roll of Honour — and you can keep rising by taking part in community activities."
+
+msgid "Michango hutoa pointi 1 kwa kila TSh 1,000, na hujiongeza zenyewe malipo yakithibitishwa. Shughuli hizi hapa chini huthibitishwa na afisa."
+msgstr "Contributions give 1 point per TSh 1,000 and are added automatically once payment is confirmed. The activities below are confirmed by an officer."
+
+msgid "Tazama Pointi Zangu Zote"
+msgstr "View All My Points"
+
+msgid "Ada ya uanachama"
+msgstr "Membership fee"
+
+msgid "Kuhudhuria kikao"
+msgstr "Attending a meeting"
+
+msgid "Kuhudhuria semina"
+msgstr "Attending a seminar"
+
+msgid "Kushiriki tukio la kheri"
+msgstr "Taking part in a charity event"
+
+msgid "Kujitolea (saa 1)"
+msgstr "Volunteering (1 hour)"
+
+msgid "Kushiriki kampeni ya ustawi"
+msgstr "Taking part in a welfare campaign"
+
+msgid "Kusaidia shughuli ya msiba"
+msgstr "Helping at a funeral"
+
+msgid "Kuleta mwanachama mpya"
+msgstr "Bringing in a new member"
+
+msgid "Kuratibu tukio"
+msgstr "Coordinating an event"
+
+msgid "Kutoa huduma ya kitaalamu"
+msgstr "Providing professional service"
+
+msgid "Kuongoza mradi"
+msgstr "Leading a project"
+
+msgid "Bonasi ya Pointi"
+msgstr "Point Boost"
+
+msgid "Bonasi za Pointi"
+msgstr "Point Boosts"
+
+msgid "Dashibodi ya Taifa"
+msgstr "National Dashboard"
+
+msgid "Muhtasari wa wanachama, ada na michango kwa mikoa yote"
+msgstr "An overview of members, fees and contributions across all regions"
+
+msgid "Njia za haraka"
+msgstr "Quick links"
+
+msgid "Inasubiri malipo"
+msgstr "Waiting for payment"
+
+msgid "Angalia simu yako"
+msgstr "Check your phone"
+
+msgid "Tunasubiri uthibitisho..."
+msgstr "Waiting for confirmation..."
+
+msgid "Hukupokea kidokezo?"
+msgstr "Didn't get the prompt?"
+
+msgid "Jaribu tena"
+msgstr "Try again"
+
+msgid "Usifunge ukurasa huu. Utaelekezwa kwenye risiti yako mara malipo yatakapothibitishwa."
+msgstr "Do not close this page. You will be taken to your receipt once the payment is confirmed."
+
+msgid "Lipa kwa Simu"
+msgstr "Pay by Phone"
+
+msgid "Malipo ya simu hayapatikani kwa sasa. Ombi lako limehifadhiwa kwa namba %(risiti)s — tafadhali wasiliana nasi ili likamilishwe."
+msgstr "Phone payments are unavailable right now. Your request has been saved under number %(risiti)s — please contact us so it can be completed."
+
+msgid "Namba ya simu inahitajika kwa malipo ya simu. Mchango wako umehifadhiwa kwa namba %(risiti)s."
+msgstr "A phone number is required for phone payments. Your contribution has been saved under number %(risiti)s."
+
+msgid "Kazi zinazoendelea sasa hivi — mchango wako unaenda hapa"
+msgstr "Work happening right now — this is where your gift goes"
+
+msgid "kati ya"
+msgstr "of"
+
+msgid "Kwa mwezi"
+msgstr "Per month"
+
+msgid "Miezi"
+msgstr "Months"
+
+msgid "Punguzo"
+msgstr "Discount"
+
+msgid "Ingiza kiasi cha mwezi mmoja. Ukichagua miezi zaidi hapo chini, jumla itahesabiwa yenyewe pamoja na punguzo."
+msgstr "Enter the amount for one month. If you choose more months below, the total is worked out for you, discount included."
+
+msgid "Miezi 9"
+msgstr "9 Months"
+
+msgid "Mwaka 1"
+msgstr "1 Year"
+
+msgid "Masharti ya Huduma"
+msgstr "Terms of Service"
+
+msgid "na"
+msgstr "and"
+
+msgid "Nimesoma na ninakubali"
+msgstr "I have read and accept"
+
+msgid "na Katiba ya MUWESTA."
+msgstr "and the MUWESTA Constitution."
+
+msgid "Idadi ya Wanachama"
+msgstr "Number of Members"
+
+msgid "Jumla Aliyotoa"
+msgstr "Total Given"
+
+msgid "Kitambulisho"
+msgstr "ID"
+
+msgid "Kuanza"
+msgstr "Start"
+
+msgid "Washiriki"
+msgstr "Participants"
+
+msgid "Tunatoa huduma katika maeneo makuu yanayolenga kuinua hali ya maisha ya jamii kwa njia endelevu."
+msgstr "We work across key areas aimed at improving community life in a lasting way."
+
+msgid "Plot 4 Block M, Wing A4 — Ghorofa ya Tatu"
+msgstr "Plot 4 Block M, Wing A4 — Third Floor"
+
+msgid "S.L.P 450, Dodoma, Tanzania"
+msgstr "P.O. Box 450, Dodoma, Tanzania"
+
+msgid "Dodoma Mjini, Nyerere Square"
+msgstr "Dodoma City, Nyerere Square"
+
+msgid "Mkoa wa %(r)s"
+msgstr "%(r)s Region"
+
+msgid "Pointi %(n)s kwa %(name)s"
+msgstr "%(n)s points to %(name)s"
+
+msgid "Karibu kwenye dashibodi yako ya uanachama"
+msgstr "Welcome to your membership dashboard"
+
+msgid "pointi za miaka %(y)s"
+msgstr "points over %(y)s years"
+
+msgid "Zimebaki pointi %(n)s kufikia %(name)s"
+msgstr "%(n)s points left to reach %(name)s"
+
+msgid "Kosa la kuingiza"
+msgstr "Data entry error"
+
+msgid "Marekebisho: %s"
+msgstr "Correction: %s"
+
+msgid "Mobile Money na Kadi"
+msgstr "Mobile Money and Card"
+
+msgid "Lipa kwa Simu (kidokezo)"
+msgstr "Pay by Phone (prompt)"
+
+msgid "Utapokea kidokezo simuni bila kuondoka hapa"
+msgstr "You will get a prompt on your phone without leaving this page"
+
+msgid "Pesapal — Mixx by Yas, Airtel Money, Visa, American Express, e-wallet"
+msgstr "Pesapal — Mixx by Yas, Airtel Money, Visa, American Express, e-wallet"
+
+msgid "Kuhusu"
+msgstr "About"
+
+msgid "Lipa"
+msgstr "Pay"
+
+msgid "Wasiliana"
+msgstr "Contact"
+
+msgid "Fungua picha kubwa"
+msgstr "Open the full-size image"
+
+msgid "Kuza"
+msgstr "Zoom"
+
+msgid "Kiwanja Na. 4, Kitalu M — Ghorofa ya Tatu"
+msgstr "Plot No. 4, Block M — Third Floor"
+
+msgid "Mkabala na Viwanja vya Nyerere Square"
+msgstr "Opposite Nyerere Square Grounds"
+
+msgid "Shariff PBZ House, Nyerere Square, Dodoma"
+msgstr "Shariff PBZ House, Nyerere Square, Dodoma"
+
+msgid "Shariff PBZ House, Kiwanja Na. 4, Kitalu M, Ghorofa ya Tatu, S.L.P 450, Dodoma, Tanzania"
+msgstr "Shariff PBZ House, Plot No. 4, Block M, Third Floor, P.O. Box 450, Dodoma, Tanzania"
+
+msgid "Unalipia Miezi Mingapi?"
+msgstr "How Many Months Are You Paying For?"
+
+msgid "miezi"
+msgstr "months"
+
+msgid "Miezi ya kulipia"
+msgstr "Months to pay for"
+
+msgid "Ongeza mwezi"
+msgstr "Add a month"
+
+msgid "Punguza mwezi"
+msgstr "Remove a month"
+
+msgid "Muda"
+msgstr "Duration"
+
+msgid "Ada ya mwezi"
+msgstr "Monthly fee"
+
+msgid "Ada ya muda"
+msgstr "Fee for the period"
+
+msgid "Ada ya Mwaka Mmoja"
+msgstr "One Year Fee"
+
+msgid "Unalipia miezi unayotaka"
+msgstr "Pay for as many months as you want"
+
+msgid "Uanachama unaisha"
+msgstr "Membership expires"
+
+msgid "Kiwango cha chini ni mwezi mmoja."
+msgstr "The minimum is one month."
+
+msgid "Weka idadi ya miezi kwa namba."
+msgstr "Enter the number of months as a figure."
+
+msgid "Unalipa Nini?"
+msgstr "What Are You Paying For?"
+
+msgid "Unachangia Miezi Mingapi?"
+msgstr "How Many Months Are You Contributing?"
+
+msgid "Miezi ya kuchangia"
+msgstr "Months to contribute"
+
+msgid "Weka idadi ya miezi unayochangia."
+msgstr "Enter the number of months you are contributing."
+
+msgid "Aina ya malipo"
+msgstr "Payment type"
+
+msgid "Muda umeisha — huisha uanachama wako"
+msgstr "Expired — renew your membership"
+
+msgid "Muda wa uanachama umeisha"
+msgstr "Your membership has expired"
+
+msgid "Unaisha leo"
+msgstr "Expires today"
+
+msgid "Kuhuisha uanachama"
+msgstr "Membership renewal"
+
+msgid "Mchango wa mwanachama"
+msgstr "Member contribution"
+
+msgid "Umebakiwa na siku %(n)d"
+msgstr "%(n)d days remaining"
+
+msgid "Kipindi cha miaka %(y)d"
+msgstr "A %(y)d-year term"

@@ -1,0 +1,178 @@
+{% extends "public/base.html" %}
+{% load i18n mwst_tags %}
+{% block title %}{% trans "Michango Yangu" %}{% endblock %}
+
+{% block body %}
+<div class="section" style="padding-bottom:0">{% include "base/messages.html" %}</div>
+
+<section class="section">
+  <div class="section__head reveal" style="text-align:left">
+    <span class="section__eyebrow">{% trans "Mhisani" %}</span>
+    <h2 class="section__title" style="text-align:left">
+      {% blocktrans with name=donor.name|default:user.get_full_name %}Karibu, {{ name }}{% endblocktrans %}
+    </h2>
+    <p class="section__text" style="margin-left:0">
+      {% trans "Hapa ni kumbukumbu ya michango yako yote kwa MUWESTA." %}
+    </p>
+  </div>
+
+  <div class="grid grid--3 reveal" style="margin-bottom:22px">
+    <div class="kpi">
+      <span class="kpi__icon tint-green"><svg><use href="#i-hand-heart"></use></svg></span>
+      <div>
+        <div class="kpi__label">{% trans "Jumla Uliyochangia" %}</div>
+        <div class="kpi__value kpi__value--money">TSh {{ total|floatformat:0 }}</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <span class="kpi__icon tint-navy"><svg><use href="#i-receipt"></use></svg></span>
+      <div>
+        <div class="kpi__label">{% trans "Michango Iliyothibitishwa" %}</div>
+        <div class="kpi__value">{{ count }}</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <span class="kpi__icon tint-gold"><svg><use href="#i-clock"></use></svg></span>
+      <div>
+        <div class="kpi__label">{% trans "Inasubiri Uthibitisho" %}</div>
+        <div class="kpi__value">{{ pending }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card reveal">
+    <div class="card__head">
+      <h3>{% trans "Historia ya Michango" %}</h3>
+      <a href="{% url 'core:changia' %}" class="btn btn--gold">
+        <svg><use href="#i-plus"></use></svg> {% trans "Changia Tena" %}
+      </a>
+    </div>
+    <div class="card__body" style="padding:0">
+      {% if gifts %}
+        <div style="overflow-x:auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{% trans "Risiti" %}</th>
+                <th>{% trans "Tarehe" %}</th>
+                <th>{% trans "Mfuko" %}</th>
+                <th>{% trans "Kiasi" %}</th>
+                <th>{% trans "Hali" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for g in gifts %}
+                <tr>
+                  <td><b>{{ g.receipt_no }}</b></td>
+                  <td>{{ g.received_at|date:"d M Y" }}</td>
+                  <td>{{ g.fund.name }}</td>
+                  <td>TSh {{ g.amount|floatformat:0 }}</td>
+                  <td><span class="badge badge--{{ g.badge }}">{{ g.get_status_display }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty" style="padding:36px 20px;text-align:center">
+          <p>{% trans "Bado hujafanya mchango wowote kupitia akaunti hii." %}</p>
+          <a href="{% url 'core:changia' %}" class="btn btn--gold" style="margin-top:14px">
+            <svg><use href="#i-hand-heart"></use></svg> {% trans "Changia Sasa" %}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if by_fund %}
+    <div class="card reveal" style="margin-top:22px">
+      <div class="card__head"><h3>{% trans "Mgawanyo kwa Mfuko" %}</h3></div>
+      <div class="card__body">
+        {% for f in by_fund %}
+          <div class="fundline">
+            <span class="fundline__dot" style="background:{{ f.fund__colour }}"></span>
+            <span class="fundline__name">{{ f.fund__name }}</span>
+            <span class="fundline__amt">TSh {{ f.total|floatformat:0 }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# ---------------- Shughuli za kuchangia ---------------- #}
+  {% if causes %}
+    <div class="card reveal" style="margin-top:22px">
+      <div class="card__head">
+        <h3>{% trans "Shughuli Unazoweza Kuchangia" %}</h3>
+      </div>
+      <div class="card__body">
+        <div class="causes">
+          {% for c in causes %}
+            <a href="{{ c.url }}" class="cause">
+              <span class="cause__bar" style="--c:{{ c.colour }}">
+                <span class="cause__fill" style="width:{{ c.progress }}%"></span>
+              </span>
+              <b class="cause__title">{{ c.title }}</b>
+              {% if c.summary %}<p class="cause__text">{{ c.summary|truncatewords:16 }}</p>{% endif %}
+              <span class="cause__meta">
+                <span>{% trans "Lengo" %}: {{ c.target }}</span>
+                {% if c.days_left %}<span>{% blocktrans with n=c.days_left %}Siku {{ n }} zimebaki{% endblocktrans %}</span>{% endif %}
+              </span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ---------------- Mwaliko wa uanachama ---------------- #}
+  {% if member %}
+    <div class="hstack" style="margin-top:22px;flex-wrap:wrap">
+      <a href="{% url 'core:member_dashboard' %}" class="btn btn--primary">
+        <svg><use href="#i-id-card"></use></svg> {% trans "Dashibodi Yangu ya Uanachama" %}
+      </a>
+      <a href="{% url 'core:logout' %}" class="btn btn--ghost">
+        <svg><use href="#i-logout"></use></svg> {% trans "Toka" %}
+      </a>
+    </div>
+  {% elif membership %}
+    <div class="joincta reveal">
+      <span class="joincta__glow" aria-hidden="true"></span>
+      <div class="joincta__body">
+        <span class="joincta__eyebrow">{% trans "Hatua inayofuata, ukitaka" %}</span>
+        <h3>{% trans "Kutoka kwa mhisani hadi mwanachama" %}</h3>
+        <p>
+          {% trans "Umeshakuwa sehemu ya kazi hii. Uanachama unakuweka ndani zaidi — una sauti kwenye maamuzi, na huduma za ustawi kwako na familia yako." %}
+        </p>
+        <ul class="joincta__list">
+          {% for point in membership.points %}<li>{{ point }}</li>{% endfor %}
+        </ul>
+        <div class="joincta__price">
+          <div>
+            <span class="joincta__amt">{{ membership.price }}</span>
+            <small>{% blocktrans with y=membership.years %}kwa miaka {{ y }} ({{ membership.cheapest }}){% endblocktrans %}</small>
+          </div>
+          {% if membership.registration != "TZS 0" %}
+            <span class="joincta__reg">{% trans "Pamoja na ada ya usajili" %} {{ membership.registration }}</span>
+          {% endif %}
+        </div>
+        <div class="hstack" style="flex-wrap:wrap;margin-top:16px">
+          <a href="{% url 'core:jiunge' %}" class="btn btn--gold">
+            <svg><use href="#i-user-plus"></use></svg> {% trans "Jiunge Kama Mwanachama" %}
+          </a>
+          <a href="{% url 'core:vifurushi' %}" class="btn btn--ghost">{% trans "Angalia Vifurushi" %}</a>
+        </div>
+        <p class="joincta__small">
+          {% trans "Hakuna haraka. Akaunti yako ya mhisani itaendelea kufanya kazi kama kawaida ukiamua kuachana na hili." %}
+        </p>
+      </div>
+    </div>
+
+    <div class="hstack" style="margin-top:18px">
+      <a href="{% url 'core:logout' %}" class="btn btn--ghost">
+        <svg><use href="#i-logout"></use></svg> {% trans "Toka" %}
+      </a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

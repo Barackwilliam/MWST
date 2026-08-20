@@ -1,0 +1,278 @@
+{% extends "public/base.html" %}
+{% load i18n humanize static mwst_tags %}
+{% block title %}{% trans "Lipa Ada ya Uanachama" %}{% endblock %}
+
+{% block body %}
+<div class="section" style="padding-bottom:0">{% include "base/messages.html" %}</div>
+
+<section class="section pay">
+  {# ---------------- Kichwa + hatua ---------------- #}
+  <header class="pay__head reveal">
+    <div>
+      <h1>{% trans "Lipa Ada ya Uanachama" %}</h1>
+      <p>{% trans "Chagua kifurushi, kipindi na njia ya malipo." %}</p>
+    </div>
+    <ol class="pay__steps">
+      {% for s in steps %}
+        <li class="{% if forloop.first %}is-on{% endif %}">
+          <span>{{ s.n }}</span>{{ s.name }}
+        </li>
+      {% endfor %}
+    </ol>
+  </header>
+
+  <form method="post" novalidate class="pay__form" data-pay>
+    {% csrf_token %}
+    {% if form.errors %}
+      <div class="formerr">
+        <svg width="15" height="15"><use href="#i-alert"></use></svg>
+        <span>{% for f in form %}{% for e in f.errors %}{{ f.label }}: {{ e }}<br>{% endfor %}{% endfor %}</span>
+      </div>
+    {% endif %}
+
+    <div class="pay__cols">
+      <div class="pay__main">
+
+        {# ---------------- 1. Vifurushi ---------------- #}
+        <section class="pay__box reveal">
+          <h2><span class="pay__num">1</span>{% trans "Vifurushi vya Uanachama" %}</h2>
+          <div class="pay__packs">
+            {% for p in packages %}
+              <label class="pay__pack{% if p.code == form.package.value %} is-on{% endif %}"
+                     style="--tier:{{ p.colour }}"
+                     data-prices="{% for k, v in p.prices.items %}{{ k }}:{{ v }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                     data-reg="{{ p.registration|floatformat:0 }}"
+                     data-monthly="{{ p.monthly|floatformat:0 }}"
+                     data-name="{{ p.name }}">
+                <input type="radio" name="package" value="{{ p.code }}"
+                       {% if p.code == form.package.value %}checked{% endif %}>
+                {% if p.featured %}<span class="pay__flag">{% trans "Maarufu" %}</span>{% endif %}
+                <span class="pay__shield"><svg><use href="#i-star"></use></svg></span>
+                <b class="pay__packname">{{ p.name }}</b>
+                <span class="pay__packprice">TZS {{ p.monthly|floatformat:0|intcomma:False }}</span>
+                <small>/{% trans "mwezi" %}</small>
+                <ul>
+                  {% for x in p.benefits %}
+                    <li><svg width="12" height="12"><use href="#i-check-circle"></use></svg>{{ x }}</li>
+                  {% endfor %}
+                </ul>
+                <span class="pay__select">
+                  <span class="pay__dot"></span>{% trans "Chagua" %} {{ p.name }}
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+
+          {% comment %}Tofauti hii ni muhimu kwa mwanachama: mchango wa
+          mwezi HAUONGEZI muda wa uanachama, na kuhuisha HAKUNA uhusiano
+          na michango. Vikichanganyika, mtu angeweza kudhani anajinunulia
+          miaka kwa kuchangia.{% endcomment %}
+          <h3 class="pay__sub">{% trans "Unalipa Nini?" %}</h3>
+          <div class="kind" data-kind-wrap>
+            {% for k in pay_kinds %}
+              <label class="kind__opt{% if k.key == form.pay_kind.value %} is-on{% endif %}">
+                <input type="radio" name="pay_kind" value="{{ k.key }}"
+                       {% if k.key == form.pay_kind.value %}checked{% endif %}>
+                <span class="kind__ico"><svg width="18" height="18"><use href="#i-{{ k.icon }}"></use></svg></span>
+                <span class="kind__txt"><b>{{ k.name }}</b><small>{{ k.sub }}</small></span>
+                <span class="kind__ok"><svg width="12" height="12"><use href="#i-check"></use></svg></span>
+              </label>
+            {% endfor %}
+          </div>
+
+          <div data-kind-renew hidden>
+            <p class="kind__note">
+              <svg width="15" height="15"><use href="#i-info"></use></svg>
+              {% blocktrans with y=term_years %}Kuhuisha kunakupa kipindi kingine cha miaka {{ y }} na kadi mpya. Ukihuisha kabla muda haujaisha, siku zilizobaki haziponyeki.{% endblocktrans %}
+            </p>
+          </div>
+
+          <div data-kind-dues>
+          <h3 class="pay__sub">{% trans "Unachangia Miezi Mingapi?" %}</h3>
+          {% comment %}Mchango ni wa mwezi. Mtu anaandika miezi anayoweza
+          kuchangia — hatulazimishi vifurushi. Vifungo ni njia ya mkato tu.{% endcomment %}
+          <div class="mo">
+            <div class="mo__pick">
+              <button type="button" class="mo__step" data-mo-down
+                      aria-label="{% trans 'Punguza mwezi' %}">&minus;</button>
+              <input type="number" name="months" id="id_months" data-mo-input
+                     min="{{ min_months }}" max="{{ max_months }}" step="1" required
+                     value="{{ form.months.value|default:12 }}"
+                     aria-label="{% trans 'Miezi ya kulipia' %}">
+              <span class="mo__unit">{% trans "miezi" %}</span>
+              <button type="button" class="mo__step" data-mo-up
+                      aria-label="{% trans 'Ongeza mwezi' %}">+</button>
+            </div>
+
+            <div class="mo__chips">
+              {% for m in month_shortcuts %}
+                <button type="button" class="mo__chip" data-mo-set="{{ m.months }}">
+                  {{ m.label }}
+                  {% if m.discount %}<em>&minus;{{ m.discount }}%</em>{% endif %}
+                </button>
+              {% endfor %}
+            </div>
+
+            <p class="mo__out">
+              <span data-mo-label>&mdash;</span>
+              <b data-mo-price>&mdash;</b>
+              <em class="pay__save" data-mo-save hidden></em>
+            </p>
+          </div>
+          </div>
+
+          <label class="checkline pay__reg" data-kind-dues>
+            <input type="checkbox" name="include_registration" value="1"
+                   {% if form.include_registration.value %}checked{% endif %}>
+            <span>{% trans "Ongeza ada ya usajili (mwanachama mpya, hulipwa mara moja tu)" %}</span>
+          </label>
+        </section>
+
+        {# ---------------- 2. Taarifa ---------------- #}
+        <section class="pay__box reveal">
+          <h2><span class="pay__num">2</span>{% trans "Taarifa za Mlipaji" %}</h2>
+          <div class="pay__fields">
+            <div class="field">
+              <label class="field__label" for="id_full_name">{% trans "Jina Kamili" %} <em>*</em></label>
+              <input type="text" name="full_name" id="id_full_name" required
+                     value="{{ form.full_name.value|default:'' }}" placeholder="{% trans 'Jina lako' %}">
+            </div>
+            <div class="field">
+              <label class="field__label" for="id_phone">{% trans "Namba ya Simu" %} <em>*</em></label>
+              <input type="tel" name="phone" id="id_phone" required
+                     value="{{ form.phone.value|default:'' }}" placeholder="+255 7XX XXX XXX">
+            </div>
+            <div class="field">
+              <label class="field__label" for="id_email">{% trans "Barua Pepe" %}</label>
+              <input type="email" name="email" id="id_email"
+                     value="{{ form.email.value|default:'' }}" placeholder="example@email.com">
+            </div>
+            <div class="field">
+              <label class="field__label" for="id_payer_type">{% trans "Aina ya Mlipaji" %} <em>*</em></label>
+              <select name="payer_type" id="id_payer_type">
+                {% for k, label in form.fields.payer_type.choices %}
+                  <option value="{{ k }}" {% if k == form.payer_type.value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="field">
+              {% comment %}Lebo hubadilika kufuata aina ya mlipaji: mwanachama mpya
+                 anaandika namba ya OMBI, wa zamani ya UANACHAMA.{% endcomment %}
+              <label class="field__label" for="id_membership_no">
+                <span data-payer-label>{% trans "Namba ya Ombi" %}</span> <em>*</em>
+              </label>
+              <input type="text" name="membership_no" id="id_membership_no" required
+                     value="{{ form.membership_no.value|default:'' }}"
+                     data-ph-new="APP/MUWESTA/2026/0001"
+                     data-ph-member="MUWESTA/G/000123/2026"
+                     placeholder="APP/MUWESTA/2026/0001">
+              <small class="field__hint" data-payer-hint>
+                {% trans "Namba uliyopewa baada ya kujiunga. Angalia ujumbe wako." %}
+              </small>
+            </div>
+            <div class="field">
+              <label class="field__label" for="id_national_id">{% trans "Namba ya Kitambulisho" %}</label>
+              <input type="text" name="national_id" id="id_national_id"
+                     value="{{ form.national_id.value|default:'' }}">
+            </div>
+            <div class="field" style="grid-column:1/-1">
+              <label class="field__label" for="id_address">{% trans "Anwani" %}</label>
+              <input type="text" name="address" id="id_address"
+                     value="{{ form.address.value|default:'' }}">
+            </div>
+            <div class="field" style="grid-column:1/-1">
+              <label class="field__label" for="id_note">{% trans "Maelezo (Hiari)" %}</label>
+              <textarea name="note" id="id_note" rows="2">{{ form.note.value|default:'' }}</textarea>
+            </div>
+          </div>
+        </section>
+
+        {# ---------------- 3. Njia ya malipo ---------------- #}
+        <section class="pay__box reveal">
+          <h2><span class="pay__num">3</span>{% trans "Njia ya Malipo" %}</h2>
+          <div class="gv__pays">
+            {% for p in providers %}
+              {% if p.soon %}
+                <button type="button" class="gv__pay is-soon" data-soon="{{ p.name }}">
+                  <span class="gv__payico"><svg width="18" height="18"><use href="#i-{{ p.icon }}"></use></svg></span>
+                  <span class="gv__paytxt"><b>{{ p.name }}</b><small>{{ p.sub }}</small></span>
+                  <span class="gv__soon">{% trans "Inakuja" %}</span>
+                </button>
+              {% else %}
+                <label class="gv__pay{% if p.key == form.provider.value %} is-on{% endif %}">
+                  <input type="radio" name="provider" value="{{ p.key }}"
+                         {% if p.key == form.provider.value %}checked{% endif %}>
+                  <span class="gv__payico"><svg width="18" height="18"><use href="#i-{{ p.icon }}"></use></svg></span>
+                  <span class="gv__paytxt"><b>{{ p.name }}</b><small>{{ p.sub }}</small></span>
+                  <span class="gv__payok"><svg width="12" height="12"><use href="#i-check"></use></svg></span>
+                </label>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <p class="gv__soonmsg" data-soon-msg hidden
+             data-text="{% trans 'njia hii inakuja hivi punde. Kwa sasa tafadhali tumia Pesapal.' %}"></p>
+
+          {% comment %}Beji rasmi ya Pesapal. Inaonyesha mitandao halisi
+          inayokubalika, jambo linalomtoa mtu wasiwasi kabla ya kubofya
+          "Lipa Sasa" — hasa anayelipa mtandaoni kwa mara ya kwanza.{% endcomment %}
+          <div class="paybadge">
+            <picture>
+              <source media="(max-width: 560px)" srcset="{% static 'img/pesapal-sm.webp' %}">
+              <img src="{% static 'img/pesapal.webp' %}" width="640" height="332" loading="lazy"
+                   alt="{% trans 'Pesapal — Mixx by Yas, Airtel Money, Visa, American Express, e-wallet' %}">
+            </picture>
+          </div>
+
+          <p class="pay__note">
+            <svg width="14" height="14"><use href="#i-shield"></use></svg>
+            {% trans "Utapelekwa kwenye ukurasa salama wa Pesapal kukamilisha malipo. Namba ya kadi wala CVV havikusanywi kwenye mfumo huu." %}
+          </p>
+        </section>
+      </div>
+
+      {# ---------------- Muhtasari ---------------- #}
+      <aside class="pay__side reveal">
+        <div class="gv__sum">
+          <h2>{% trans "Muhtasari wa Malipo" %}</h2>
+          <dl>
+            <div><dt>{% trans "Kifurushi" %}</dt><dd data-sum-pack>&mdash;</dd></div>
+            <div><dt>{% trans "Muda" %}</dt><dd data-sum-period>&mdash;</dd></div>
+            <div><dt>{% trans "Ada ya mwezi" %}</dt><dd data-sum-monthly>&mdash;</dd></div>
+            <div><dt>{% trans "Ada ya muda" %}</dt><dd data-sum-fee>&mdash;</dd></div>
+            <div><dt>{% trans "Ada ya usajili" %}</dt><dd data-sum-reg>TZS 0</dd></div>
+            <div><dt>{% trans "Ada ya Huduma" %}</dt><dd>TZS 0</dd></div>
+          </dl>
+          <div class="gv__total">
+            <span>{% trans "Jumla ya Kulipa" %}</span>
+            <b data-sum-total>&mdash;</b>
+          </div>
+          <button type="submit" class="gv__go">
+            <span>{% trans "LIPA SASA" %}</span>
+            <svg width="16" height="16"><use href="#i-arrow-right"></use></svg>
+          </button>
+          <p class="gv__terms">
+            {% trans "Kwa kubofya Lipa Sasa, unakubali" %}
+            <a href="{% url 'core:masharti' %}">{% trans "Masharti ya Huduma" %}</a>
+            {% trans "na" %}
+            <a href="{% url 'core:faragha' %}">{% trans "Sera ya Faragha" %}</a>.
+          </p>
+        </div>
+
+        <div class="pay__safe">
+          <svg width="18" height="18"><use href="#i-shield"></use></svg>
+          <p>{% trans "Malipo yako yanalindwa. Hatuhifadhi taarifa za kadi yako." %}</p>
+        </div>
+      </aside>
+    </div>
+  </form>
+
+  <footer class="pay__trust reveal">
+    {% for t in trust %}
+      <span>
+        <svg width="17" height="17"><use href="#i-{{ t.icon }}"></use></svg>
+        <span><b>{{ t.title|tr }}</b><small>{{ t.text|tr }}</small></span>
+      </span>
+    {% endfor %}
+  </footer>
+</section>
+{% endblock %}

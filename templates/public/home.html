@@ -1,0 +1,423 @@
+{% extends "public/base.html" %}
+{% load static i18n mwst_tags %}
+{% block title %}{% trans "Nyumbani" %}{% endblock %}
+
+{% block head %}
+{% comment %}Preload picha YA KWANZA pekee — nyingine zinapakiwa baada ya ukurasa
+   kuwa tayari, kwa hiyo slideshow haichelewishi kuonekana kwa mara ya kwanza.{% endcomment %}
+<link rel="preload" as="image" media="(min-width: 1025px)"
+      href="{% static 'img/hero-mosque.webp' %}" type="image/webp">
+<link rel="preload" as="image" media="(max-width: 1024px)"
+      href="{% static 'img/hero-mosque-sm.webp' %}" type="image/webp">
+<style>
+  /* Slideshow ya picha tatu za MUWESTA. Kila picha ni tabaka lake;
+     yanabadilishana kwa `opacity` badala ya kubadilisha `background-image`,
+     kwa sababu kubadilisha URL husababisha mwangaza (flash) picha mpya
+     ikiwa bado inapakia. */
+  .hero__slide { background-position: center 62%; }
+  .hero__slide--1 {
+    background-image: image-set(url("{% static 'img/hero-mosque.webp' %}") type("image/webp"),
+                                url("{% static 'img/hero-mosque.jpg' %}") type("image/jpeg"));
+  }
+  .hero__slide--2 {
+    background-image: image-set(url("{% static 'img/hero-mkutano.webp' %}") type("image/webp"),
+                                url("{% static 'img/hero-mkutano.jpg' %}") type("image/jpeg"));
+    background-position: center 40%;
+  }
+  .hero__slide--3 {
+    background-image: image-set(url("{% static 'img/hero-seminar.webp' %}") type("image/webp"),
+                                url("{% static 'img/hero-seminar.jpg' %}") type("image/jpeg"));
+    background-position: center 45%;
+  }
+
+  @media (max-width: 1024px) {
+    .hero__slide { background-position: center 45%; }
+    .hero__slide--1 {
+      background-image: image-set(url("{% static 'img/hero-mosque-sm.webp' %}") type("image/webp"),
+                                  url("{% static 'img/hero-mosque-sm.jpg' %}") type("image/jpeg"));
+    }
+    .hero__slide--2 {
+      background-image: image-set(url("{% static 'img/hero-mkutano-sm.webp' %}") type("image/webp"),
+                                  url("{% static 'img/hero-mkutano-sm.jpg' %}") type("image/jpeg"));
+    }
+    .hero__slide--3 {
+      background-image: image-set(url("{% static 'img/hero-seminar-sm.webp' %}") type("image/webp"),
+                                  url("{% static 'img/hero-seminar-sm.jpg' %}") type("image/jpeg"));
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+
+{# ---------------- Hero + Login ---------------- #}
+{# ---------------- Ukanda wa matangazo ---------------- #}
+{% if alerts %}
+<div class="alertbar" data-alertbar role="region" aria-label="{% trans 'Matangazo' %}">
+  <span class="alertbar__tag">
+    <span class="alertbar__pulse" aria-hidden="true"></span>
+    <svg width="14" height="14"><use href="#i-megaphone"></use></svg>
+    <b>{% trans "Matangazo" %}</b>
+  </span>
+
+  <div class="alertbar__view">
+    {% for a in alerts %}
+      <a class="alertbar__item{% if forloop.first %} is-on{% endif %}"
+         href="{% url 'core:tangazo' a.pk %}"
+         {% if not forloop.first %}aria-hidden="true" tabindex="-1"{% endif %}>
+        {% if a.is_urgent %}
+          <span class="alertbar__urgent">{% trans "DHARURA" %}</span>
+        {% endif %}
+        <span class="alertbar__title">{{ a|tx:"title" }}</span>
+        <span class="alertbar__go">{% trans "SOMA" %}
+          <svg width="12" height="12"><use href="#i-arrow-right"></use></svg></span>
+      </a>
+    {% endfor %}
+  </div>
+
+  <div class="alertbar__side">
+    <span class="alertbar__count" data-alert-count>1/{{ alerts|length }}</span>
+    <a href="{% url 'core:matangazo' %}" class="alertbar__all">{% trans "Yote" %}</a>
+  </div>
+</div>
+{% endif %}
+
+<section class="hero hero--home" id="login" data-hero-slides>
+  {% comment %}Tabaka za picha. `aria-hidden` kwa sababu ni mapambo — msomaji wa
+     skrini asome maandishi ya hero, si orodha ya picha zisizo na maana.{% endcomment %}
+  <div class="hero__slides" aria-hidden="true">
+    <div class="hero__slide hero__slide--1 is-on"></div>
+    <div class="hero__slide hero__slide--2"></div>
+    <div class="hero__slide hero__slide--3"></div>
+  </div>
+  <span class="hero__veil" aria-hidden="true"></span>
+
+  <div class="hero__dots" role="tablist" aria-label="{% trans 'Picha za MUWESTA' %}">
+    <button type="button" class="hero__dot is-on" data-slide="0"
+            aria-label="{% trans 'Picha ya 1' %}"></button>
+    <button type="button" class="hero__dot" data-slide="1"
+            aria-label="{% trans 'Picha ya 2' %}"></button>
+    <button type="button" class="hero__dot" data-slide="2"
+            aria-label="{% trans 'Picha ya 3' %}"></button>
+  </div>
+
+  <div class="reveal">
+    <p class="hero__eyebrow">{{ hero.eyebrow|tr }}</p>
+    <h1>{{ hero.title|tr|safe }}</h1>
+    <p>{{ hero.text|tr }}</p>
+    <div class="hero__cta">
+      {% if can_join %}
+        <a href="{% url 'core:jiunge' %}" class="hero-btn">
+          <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-user-plus"></use></svg></span>
+          <span><b>{% trans "Jiunge Sasa" %}</b><small>{% trans "Usajili wa Uanachama" %}</small></span>
+        </a>
+      {% else %}
+        <a href="{% url user.home_url_name %}" class="hero-btn">
+          <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-dashboard"></use></svg></span>
+          <span><b>{% trans "Dashibodi Yangu" %}</b><small>{% trans "Endelea Ulipoishia" %}</small></span>
+        </a>
+      {% endif %}
+      <a class="hero-btn" href="{% url 'core:picha' %}">
+        <span class="hero-btn__ico"><svg width="17" height="17"><use href="#i-video"></use></svg></span>
+        <span><b>{% trans "Tazama Video" %}</b><small>{% trans "Jifunze Zaidi Kuhusu MUWESTA" %}</small></span>
+      </a>
+    </div>
+  </div>
+
+  {% if is_authed %}
+  <div class="loginpanel loginpanel--welcome reveal">
+    <span class="welcome__avatar">{{ user.initials }}</span>
+    <h3>{% trans "Karibu tena" %}, {{ user.first_name|default:user.username }}!</h3>
+    <p>{{ user.get_role_display }}</p>
+    <a href="{% url user.home_url_name %}" class="btn btn--gold btn--block" style="margin-top:18px">
+      <svg><use href="#i-dashboard"></use></svg> {% trans "Nenda Kwenye Dashibodi" %}
+    </a>
+    {% if can_join %}
+      <a href="{% url 'core:jiunge' %}" class="btn btn--block"
+         style="margin-top:10px;border:1px solid rgba(255,255,255,.25);color:#fff">
+        <svg><use href="#i-user-plus"></use></svg> {% trans "Jiunge Kama Mwanachama" %}
+      </a>
+    {% endif %}
+    <p class="loginpanel__sep">— {% trans "Si wewe?" %} —</p>
+    <a href="{% url 'core:logout' %}" class="btn btn--block"
+       style="border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8)">
+      <svg><use href="#i-logout"></use></svg> {% trans "Toka" %}
+    </a>
+  </div>
+  {% else %}
+  <div class="loginpanel reveal">
+    <h3>{% trans "Ingia Mfumo" %}</h3>
+    <p>{% trans "Access your account" %}</p>
+
+    <form method="post" action="{% url 'core:login' %}">
+    {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="formerr">
+            <svg width="15" height="15"><use href="#i-alert"></use></svg>
+            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+          </div>
+        {% endif %}
+            <label class="loginfield">
+      <svg width="16" height="16"><use href="#i-user"></use></svg>
+      <input type="text" name="username" required autocapitalize="none"
+           autocorrect="off" spellcheck="false" autocomplete="username" placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}">
+    </label>
+    <label class="loginfield">
+      <svg width="16" height="16"><use href="#i-lock"></use></svg>
+      <input type="password" name="password" required autocomplete="current-password" placeholder="{% trans 'Nenosiri' %}">
+      <button type="button" data-toggle-pw aria-label="{% trans 'Kuonyesha nenosiri' %}">
+        <svg width="16" height="16"><use href="#i-eye"></use></svg>
+      </button>
+    </label>
+
+    <div class="loginpanel__row">
+      <label><input type="checkbox" style="accent-color:var(--gold-500)"> {% trans "Kumbuka mimi" %}</label>
+      <a href="/nenosiri/sahau/">{% trans "Umesahau nywila?" %}</a>
+    </div>
+
+    <button type="submit" class="btn btn--gold btn--block">{% trans "Ingia" %}</button>
+    </form>
+
+    <p class="loginpanel__sep">— {% trans "Au ingia kama" %} —</p>
+    <div class="rolegrid">
+      {% for r in roles %}
+        <a href="{{ r.url }}" class="rolebtn">
+          <span class="rolebtn__ico tint-{{ r.tint }}"><svg><use href="#i-{{ r.icon }}"></use></svg></span>
+          <span>{{ r.label|tr }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+{% comment %}Njia za haraka. Zimewekwa MARA TU baada ya hero — ndipo mtu
+anapotafuta mahali pa kwenda. Zilipokuwa chini ya nukuu, mgeni alilazimika
+kupita sehemu nzima ya nukuu kabla ya kuona menyu ya tovuti.{% endcomment %}
+<nav class="servicebar reveal" aria-label="{% trans 'Njia za haraka' %}">
+  {% for s in services %}
+    <a href="{{ s.url }}">
+      <span class="servicebar__ico"><svg width="19" height="19"><use href="#i-{{ s.icon }}"></use></svg></span>
+      <span class="servicebar__txt">{{ s.label|tr }}</span>
+    </a>
+  {% endfor %}
+</nav>
+
+{# ---------------- Nukuu zinazoteleza ---------------- #}
+<section class="verses" aria-roledescription="carousel"
+         aria-label="{% trans 'Nukuu kuhusu kutoa' %}" data-verses>
+  {% comment %}Tao la mihrab ni alama ya kudumu ya tovuti hii — linatumika
+  kwenye hero za kurasa za ndani pia. Hapa linazunguka nukuu ili sehemu
+  hii isome kama ukurasa wa msahafu, si kadi ya tovuti.{% endcomment %}
+  <span class="verses__arch" aria-hidden="true"></span>
+  <span class="verses__corner verses__corner--tl" aria-hidden="true"></span>
+  <span class="verses__corner verses__corner--br" aria-hidden="true"></span>
+
+  <div class="verses__inner">
+    <span class="verses__mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0 15 9l9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+    </span>
+    <div class="verses__track">
+      {% for v in verses %}
+        <article class="verse{% if v.image %} verse--img{% endif %}{% if forloop.first %} is-on{% endif %}"
+                 role="group" aria-roledescription="slide"
+                 aria-label="{{ forloop.counter }} / {{ verses|length }}"
+                 {% if not forloop.first %}aria-hidden="true"{% endif %}>
+          <div class="verse__body">
+            <span class="verse__label verse__label--{{ v.kind }}">{{ v.label }}</span>
+            {% if v.source %}<span class="verse__source">{{ v.source }}</span>{% endif %}
+
+            {% if v.arabic %}
+              <p class="verse__ar" dir="rtl" lang="ar">{{ v.arabic }}</p>
+            {% endif %}
+            {% if v.intro %}<p class="verse__intro">{{ v.intro }}</p>{% endif %}
+            <blockquote class="verse__text">&ldquo;{{ v.text }}&rdquo;</blockquote>
+            {% if v.ref %}<cite class="verse__ref">{{ v.ref }}</cite>{% endif %}
+          </div>
+
+          {% if v.image %}
+            {% comment %}Poster ina maandishi yote ndani yake, lakini
+            hayasomeki ikiwa ndogo hivi. Kwa hiyo hapa ni kionjo tu —
+            ikibofywa inafunguka skrini nzima ambapo inasomeka kweli.
+            Ya kwanza pekee ndiyo inapakiwa mara moja; nyingine
+            zinasubiri hadi mtu azifikie.{% endcomment %}
+            <button type="button" class="verse__shot"
+                    data-verse-open="{% static 'img/nukuu/'|add:v.image|add:'.webp' %}"
+                    data-verse-alt="{{ v.alt }}"
+                    aria-label="{% trans 'Fungua picha kubwa' %}">
+              <picture>
+                <source type="image/webp"
+                        srcset="{% static 'img/nukuu/'|add:v.image|add:'-sm.webp' %}">
+                <img src="{% static 'img/nukuu/'|add:v.image|add:'-sm.jpg' %}"
+                     alt="{{ v.alt }}" width="760" height="506"
+                     {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
+                     decoding="async">
+              </picture>
+              <span class="verse__zoom" aria-hidden="true">
+                <svg width="15" height="15"><use href="#i-search"></use></svg>
+                {% trans "Kuza" %}
+              </span>
+            </button>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+
+    <div class="verses__nav">
+      <button type="button" class="verses__arrow" data-verse-prev
+              aria-label="{% trans 'Nukuu iliyopita' %}">
+        <svg width="16" height="16" style="transform:scaleX(-1)"><use href="#i-chevron-right"></use></svg>
+      </button>
+      <div class="verses__dots" role="tablist">
+        {% for v in verses %}
+          <button type="button" class="verses__dot{% if forloop.first %} is-on{% endif %}"
+                  data-verse-go="{{ forloop.counter0 }}" role="tab"
+                  aria-label="{% blocktrans with n=forloop.counter %}Nukuu {{ n }}{% endblocktrans %}"
+                  {% if forloop.first %}aria-selected="true"{% endif %}></button>
+        {% endfor %}
+      </div>
+      <button type="button" class="verses__arrow" data-verse-next
+              aria-label="{% trans 'Nukuu ifuatayo' %}">
+        <svg width="16" height="16"><use href="#i-chevron-right"></use></svg>
+      </button>
+    </div>
+  </div>
+
+  {# Dirisha la picha kubwa. Tupu hadi mtu abofye. #}
+  <div class="vlb" data-verse-lightbox hidden>
+    <button type="button" class="vlb__close" data-verse-close
+            aria-label="{% trans 'Funga' %}">
+      <svg width="22" height="22"><use href="#i-x-circle"></use></svg>
+    </button>
+    <img class="vlb__img" data-verse-lightbox-img src="" alt="">
+  </div>
+</section>
+
+{% comment %}Miradi inayoendelea. Imewekwa mara tu baada ya nukuu: nukuu
+inaeleza KWA NINI mtu atoe, hii inaonyesha PALIPO na haja. Mitatu tu —
+ukurasa wa nyumbani si orodha, ni mwaliko.{% endcomment %}
+{% if projects %}
+<section class="section homeproj">
+  <div class="section__head">
+    <div>
+      <h2 class="section__title">{% trans "Miradi Inayoendelea" %}</h2>
+      <p class="section__sub">{% trans "Kazi zinazoendelea sasa hivi — mchango wako unaenda hapa" %}</p>
+    </div>
+    <a href="{% url 'core:huduma' %}" class="link-more">
+      {% trans "Tazama Yote" %} ({{ projects_total }})
+    </a>
+  </div>
+
+  <div class="grid grid--3">
+    {% for p in projects %}
+      <article class="proj reveal">
+        <span class="illus illus--card proj__pic">
+          {% include "components/illus.html" with scene=p.scene|default:"ujenzi" %}
+        </span>
+        <div class="proj__body">
+          {% if p.place %}
+            <span class="proj__place">
+              <svg width="12" height="12"><use href="#i-map-pin"></use></svg> {{ p.place }}
+            </span>
+          {% endif %}
+          <h3>{{ p.title }}</h3>
+          {% if p.text %}<p>{{ p.text|truncatewords:18 }}</p>{% endif %}
+
+          <div class="proj__bar"><span style="width:{{ p.bar }}%"></span></div>
+          <div class="proj__figs">
+            <b>{{ p.raised }}</b>
+            <span>{% trans "kati ya" %} {{ p.goal }}</span>
+          </div>
+
+          <a href="{% url 'core:changia' %}?aina={{ p.purpose }}&mradi={{ p.title|urlencode }}"
+             class="btn btn--gold btn--block">
+            <svg><use href="#i-heart"></use></svg> {% trans "Changia Mradi Huu" %}
+          </a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# ---------------- Matukio | Habari | Picha ---------------- #}
+<div class="grid grid--3" style="padding:0 26px 22px">
+
+  <section class="card reveal">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Matukio ya Hivi Karibuni" %}</h3>
+      <a href="{% url 'core:matukio_umma' %}" class="link-more">{% trans "Tazama Yote" %}</a>
+    </div>
+    <div class="card__body">
+      {% for e in events %}
+        <div class="evrow">
+          <span class="evdate"><b>{{ e.d }}</b><span>{{ e.m }}</span><small>{{ e.y }}</small></span>
+          <span class="evrow__body">
+            <span class="evrow__title">{{ e.title|tr }}</span>
+            <span class="evrow__meta">{{ e.venue|tr }}</span>
+            <span class="evrow__meta">{{ e.time }}</span>
+          </span>
+          <span class="badge badge--{{ e.badge }}">{{ e.status|tr }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="card__foot"><a href="{% url 'core:matukio_umma' %}" class="link-more">{% trans "Tazama Matukio Yote" %} <svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
+  </section>
+
+  <section class="card reveal">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Habari Mpya" %}</h3>
+      <a href="{% url 'core:habari' %}" class="link-more">{% trans "Tazama Yote" %}</a>
+    </div>
+    <div class="card__body">
+      {% for n in news %}
+        <div class="newsrow">
+          <span class="illus illus--thumb">{% include "components/illus.html" with scene=n.scene %}</span>
+          <span class="newsrow__body">
+            <span class="newsrow__title">{{ n.title|tr }}</span>
+            <span class="newsrow__date">{{ n.date }}</span>
+            <span class="newsrow__text">{{ n.text|tr }}</span>
+          </span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="card__foot"><a href="{% url 'core:habari' %}" class="link-more">{% trans "Tazama Habari Zote" %} <svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
+  </section>
+
+  <section class="card reveal">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Picha Zilizohudumiwa Kila Mwezi" %}</h3>
+      <a href="{% url 'core:habari' %}" class="link-more">{% trans "Tazama Galeria Yote" %}</a>
+    </div>
+    <div class="card__body">
+      <div class="gallery">
+        {% for g in gallery %}
+          <a class="gallery__item" href="{% url 'core:picha' %}">
+            <span class="illus" style="height:92px;border-radius:var(--r)">{% include "components/illus.html" with scene=g.scene %}</span>
+            <span class="gallery__cap">{{ g.cap|tr }}</span>
+            <span class="gallery__meta"><svg width="12" height="12"><use href="#i-image"></use></svg>{{ g.count|tr }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card__foot"><a href="{% url 'core:habari' %}" class="link-more">{% trans "Tazama Picha Zote" %} <svg width="14" height="14"><use href="#i-arrow-right"></use></svg></a></div>
+  </section>
+</div>
+
+{# ---------------- Takwimu za chini ---------------- #}
+<div class="grid grid--4" style="padding:0 26px 26px">
+  {% for b in bottom_stats %}
+    <div class="kpi reveal">
+      <span class="kpi__icon tint-{{ b.tint }}"><svg><use href="#i-{{ b.icon }}"></use></svg></span>
+      <span class="kpi__body">
+        <span class="kpi__label">{{ b.label|tr }}</span>
+        <span class="kpi__value" style="font-size:18px">{{ b.value|tr }}</span>
+        <span class="kpi__meta"><span class="kpi__note" style="color:var(--ok);font-weight:600">{{ b.delta|tr }}</span></span>
+      </span>
+    </div>
+  {% endfor %}
+</div>
+
+
+{% include "public/_cta.html" %}
+{% endblock %}

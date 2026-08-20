@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: mwiso
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: PYTHON_VERSION
+        value: "3.12.4"
+
+      # --- Database -------------------------------------------------------
+      # Anwani kamili ya Supabase. Nywila iliyokuwa kwenye settings.py
+      # imeondolewa; ni LAZIMA ibadilishwe Supabase kwa sababu ipo kwenye
+      # git history. `sync: false` inamaanisha thamani inawekwa kwa mkono
+      # kwenye dashibodi, hairudi kwenye repo.
+      - key: DATABASE_URL
+        sync: false
+
+      # --- Pesapal --------------------------------------------------------
+      - key: SITE_URL
+        value: "https://mwiso.onrender.com"
+      - key: PESAPAL_ENV
+        value: "live"
+      - key: PESAPAL_CONSUMER_KEY
+        sync: false
+      - key: PESAPAL_CONSUMER_SECRET
+        sync: false
+      # Inapatikana kwa `python manage.py pesapal_ipn` baada ya deploy ya
+      # kwanza. Bila hiyo, malipo ya mtandaoni hayataanza.
+      - key: PESAPAL_IPN_ID
+        sync: false

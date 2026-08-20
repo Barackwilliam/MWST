@@ -1,0 +1,50 @@
+{% extends "public/base.html" %}
+{% load i18n mwst_tags %}
+{% block title %}{% trans "Inasubiri malipo" %}{% endblock %}
+
+{% block body %}
+<section class="section wait">
+  <div class="wait__card" data-wait
+       data-url="{% url 'core:selcom_hali' gift.receipt_no %}"
+       data-done="{% url 'core:changia_asante' gift.receipt_no %}">
+
+    <span class="wait__ring" aria-hidden="true">
+      <svg width="30" height="30"><use href="#i-phone"></use></svg>
+    </span>
+
+    <h1>{% trans "Angalia simu yako" %}</h1>
+    <p class="wait__lead">
+      {% blocktrans with n=phone %}Tumetuma kidokezo cha malipo kwenye <b>{{ n }}</b>. Ingiza PIN yako ya mtandao ili kukamilisha.{% endblocktrans %}
+    </p>
+
+    <dl class="wait__facts">
+      <div>
+        <dt>{% trans "Kiasi" %}</dt>
+        <dd>{{ gift.currency }} {{ gift.amount|floatformat:0 }}</dd>
+      </div>
+      <div>
+        <dt>{% trans "Namba ya risiti" %}</dt>
+        <dd class="t-mono">{{ gift.receipt_no }}</dd>
+      </div>
+    </dl>
+
+    <div class="wait__bar"><span></span></div>
+    <p class="wait__status" data-wait-msg>{% trans "Tunasubiri uthibitisho..." %}</p>
+
+    {% comment %}Kidokezo hakifiki mara moja kila wakati — mtandao huchelewa.
+    Kitufe hiki kinaonekana baada ya sekunde 45 tu, ili mtu asikibofye
+    mapema na kuanzisha malipo mawili.{% endcomment %}
+    <div class="wait__retry" data-wait-retry hidden>
+      <p>{% trans "Hukupokea kidokezo?" %}</p>
+      <a href="{% url 'core:changia' %}" class="btn btn--ghost">
+        {% trans "Jaribu tena" %}
+      </a>
+    </div>
+
+    <p class="wait__note">
+      <svg width="13" height="13"><use href="#i-shield"></use></svg>
+      {% trans "Usifunge ukurasa huu. Utaelekezwa kwenye risiti yako mara malipo yatakapothibitishwa." %}
+    </p>
+  </div>
+</section>
+{% endblock %}

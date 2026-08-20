@@ -1,0 +1,32 @@
+{% extends "public/base.html" %}
+{% load i18n mwst_tags %}
+{% block title %}{% trans "Matangazo" %}{% endblock %}
+
+{% block body %}
+<section class="section">
+  <div class="section__head reveal">
+    <span class="section__eyebrow">{% trans "Taarifa" %}</span>
+    {% include "public/_ornament.html" %}
+    <h2 class="section__title">{% trans "Matangazo" %}</h2>
+    <p class="section__text">{% trans "Taarifa rasmi kutoka MUWESTA." %}</p>
+  </div>
+
+  <div class="anc__wrap">
+    {% for a in items %}
+      <a href="{% url 'core:tangazo' a.pk %}" class="anc__row reveal">
+        <span class="anc__ico tint-{{ a.tint }}">
+          <svg width="19" height="19"><use href="#i-{{ a.icon }}"></use></svg>
+        </span>
+        <span class="anc__rowbody">
+          {% if a.is_urgent %}<span class="anc__urgent">{% trans "DHARURA" %}</span>{% endif %}
+          <b>{{ a|tx:"title" }}</b>
+          <small>{{ a|tx:"body"|truncatewords:24 }}</small>
+        </span>
+        <span class="anc__rowdate">{{ a.published_on|date:"d M Y" }}</span>
+      </a>
+    {% empty %}
+      <p class="section__text">{% trans "Hakuna tangazo kwa sasa." %}</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
