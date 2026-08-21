@@ -13,7 +13,10 @@
   <link rel="stylesheet" href="{% static 'css/mwst.css' %}">
   {% block head %}{% endblock %}
 </head>
-<body class="pub">
+{% comment %}`page_key` inaruhusu CSS kutambua ukurasa. Inatumika
+kuweka rangi za awali kwenye Changia, Lipa Ada na Ingia — kurasa
+ambazo rangi zake hazibadiliki.{% endcomment %}
+<body class="pub{% if page_key %} pg-{{ page_key }}{% endif %}">
 {% include "base/icons.html" %}
 
 {# ---------------- Utility bar ---------------- #}

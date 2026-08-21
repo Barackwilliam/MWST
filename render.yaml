@@ -23,6 +23,21 @@ services:
       - key: DATABASE_URL
         sync: false
 
+      # --- Barua pepe (Gmail SMTP) ----------------------------------------
+      # EMAIL_HOST_PASSWORD ni "App Password" ya Google, SI nenosiri la
+      # akaunti. Iundwe kwenye myaccount.google.com > Security >
+      # 2-Step Verification > App passwords.
+      - key: EMAIL_HOST
+        value: "smtp.gmail.com"
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        value: "MUWESTA <info@muslimwelfare.or.tz>"
+
       # --- Pesapal --------------------------------------------------------
       - key: SITE_URL
         value: "https://mwiso.onrender.com"

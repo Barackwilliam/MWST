@@ -6,19 +6,30 @@
 
 /* --------------------------------------------------------------------------
    1. DESIGN TOKENS
+
+   Rangi rasmi za MUWESTA:
+     Emerald Green  #0F8A5F  — rangi kuu; vitufe, menyu, vichwa
+     Royal Blue     #1B3B6F  — uaminifu; header, footer, sehemu za taarifa
+     Gold           #D4AF37  — hadhi; aikoni, mipaka, Tanzanite
+     White          #FFFFFF  — mandharinyuma kuu
+     Dark Charcoal  #17202A  — maandishi
+     Soft Green     #F1F8F5  — sehemu za huduma na faida za wanachama
+
+   Ngazi nyingine (--g-400, --g-700 n.k.) zimehesabiwa kuizunguka rangi
+   kuu ili vivuli, hover na mipaka vibaki na uhusiano ule ule.
    -------------------------------------------------------------------------- */
 :root {
   /* Brand — Kijani (Imani na Maendeleo) */
-  --g-950: #042318;
-  --g-900: #06301f;
-  --g-800: #0a4028;
-  --g-700: #0d5433;
-  --g-600: #106b40;
-  --g-500: #12864a;
-  --g-400: #1ba05a;
-  --g-300: #4cbd83;
-  --g-100: #d6f0e1;
-  --g-50:  #eef9f2;
+  --g-950: #04241a;
+  --g-900: #063122;
+  --g-800: #0a422d;
+  --g-700: #0c563a;
+  --g-600: #0e6f4a;
+  --g-500: #0f8a5f;
+  --g-400: #17a674;
+  --g-300: #48c295;
+  --g-100: #d3f0e3;
+  --g-50:  #f1f8f5;
 
   /* Brand — Bluu (Uaminifu) */
   --n-900: #0d2350;
@@ -37,8 +48,8 @@
   --gold-100: #faf1d6;
 
   /* Neutrals */
-  --ink:        #0f172a;
-  --ink-2:      #334155;
+  --ink:        #17202a;
+  --ink-2:      #3a4552;
   --muted:      #64748b;
   --muted-2:    #94a3b8;
   --line:       #e2e8f0;
@@ -47,7 +58,7 @@
   --canvas:     #f4f6f9;
 
   /* Semantic */
-  --ok:      #12864a;
+  --ok:      #0f8a5f;
   --ok-bg:   #e7f6ed;
   --warn:    #d97706;
   --warn-bg: #fef3e2;
@@ -4935,3 +4946,32 @@ html { overflow-x: clip; }
 }
 .kind__note svg { flex: none; margin-top: 2px; color: var(--g-600); }
 [data-kind-renew][hidden], [data-kind-dues][hidden] { display: none !important; }
+
+/* ==========================================================================
+   RANGI ZA AWALI — Changia, Lipa Ada na Ingia
+   --------------------------------------------------------------------------
+   Kurasa hizi tatu zinabaki na rangi zilizokuwepo kabla ya palette mpya.
+   Badala ya kuandika upya kila sheria, tunaweka thamani za zamani kwenye
+   `<body>` — kila sheria ndani ya ukurasa inazitumia zenyewe.
+
+   Faida ya kufanya hivi kwa `--variables` badala ya kunakili sheria:
+   marekebisho yoyote ya baadaye kwenye muundo yanaenea kurasa zote,
+   na rangi pekee ndizo zinatofautiana.
+   ========================================================================== */
+.pg-changia,
+.pg-lipa,
+.pg-ingia {
+  --g-950: #042318;
+  --g-900: #06301f;
+  --g-800: #0a4028;
+  --g-700: #0d5433;
+  --g-600: #106b40;
+  --g-500: #12864a;
+  --g-400: #1ba05a;
+  --g-300: #4cbd83;
+  --g-100: #d6f0e1;
+  --g-50:  #eef9f2;
+  --ink:   #0f172a;
+  --ink-2: #334155;
+  --ok:    #12864a;
+}

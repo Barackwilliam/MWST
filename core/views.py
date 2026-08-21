@@ -178,9 +178,44 @@ LOGIN_LOCKOUT_SECONDS = 15 * 60
 
 
 def _client_ip(request):
+    """
+    Anwani ya IP ya mteja.
+
+    ONYO LILILOREKEBISHWA: awali tulichukua thamani ya KWANZA ya
+    `X-Forwarded-For`. Header hiyo inatumwa na KIVINJARI; proxy ya Render
+    inaongeza IP halisi MWISHONI. Kwa hiyo mtu angeweza kubandika IP ya
+    uongo mwanzoni na kupita kizuizi cha majaribio kwa kuibadilisha kila
+    ombi. Sasa tunachukua ya mwisho — ndiyo pekee anayoiandika proxy.
+    """
     forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
-    return (forwarded.split(",")[0].strip() if forwarded
-            else request.META.get("REMOTE_ADDR", "")) or "?"
+    if forwarded:
+        parts = [p.strip() for p in forwarded.split(",") if p.strip()]
+        if parts:
+            return parts[-1]
+    return request.META.get("REMOTE_ADDR", "") or "?"
+
+
+def _alert_login(user, request, ok=True):
+    """
+    Mjulishe mtu kwamba akaunti yake imeguswa.
+
+    Arifa za kushindwa zina kikomo cha moja kwa saa. Bila kikomo, mtu
+    angeweza kujaza sanduku la barua pepe la mwanachama kwa kubandika
+    nenosiri lisilo sahihi mara elfu — kinga ingegeuka silaha.
+    """
+    from django.core.cache import cache
+    from . import mailer
+
+    if not (user.email or "").strip():
+        return
+    if not ok:
+        key = f"alert-fail:{user.pk}"
+        if cache.get(key):
+            return
+        cache.set(key, 1, 3600)
+    mailer.send_login_alert(
+        user.email, user.get_full_name() or user.username,
+        _client_ip(request), request.META.get("HTTP_USER_AGENT", ""), ok=ok)
 
 
 def _safe_next(request, fallback):
@@ -303,7 +338,52 @@ def _login_ctx(request, extra=None):
     }
     if extra:
         ctx.update(extra)
-    return _pub(request, "", ctx)
+    return _pub(request, "ingia", ctx)
+
+
+def _safe_detail(identifier):
+    """
+    Kitambulisho cha kuhifadhi kwenye kumbukumbu ya jaribio lililoshindwa.
+
+    Watu HUANDIKA nenosiri lao kwenye sehemu ya jina kwa bahati mbaya —
+    ni kosa la kawaida sana. Likihifadhiwa wazi, nenosiri halisi la mtu
+    linakaa kwenye database milele. Tunahifadhi mwanzo tu.
+    """
+    ident = (identifier or "").strip()
+    if len(ident) <= 4:
+        return ident
+    return f"{ident[:4]}\u2026({len(ident)})"
+
+
+def _alert_failed(identifier, request):
+    """Tafuta mwenye akaunti hii na umjulishe kuhusu jaribio."""
+    if not identifier:
+        return
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    user = User.objects.filter(
+        Q(username__iexact=identifier) | Q(email__iexact=identifier)).first()
+    if user is None:
+        member = Member.objects.filter(
+            Q(membership_no__iexact=identifier) | Q(email__iexact=identifier)
+        ).select_related("user").first()
+        user = member.user if member else None
+    if user is not None:
+        _alert_login(user, request, ok=False)
+
+
+def _finish_login(request, user):
+    """Kamilisha kuingia: session, kumbukumbu, arifa."""
+    auth_login(request, user)
+    # "Kumbuka mimi": bila hiyo, kipindi kinaisha kivinjari kikifungwa.
+    if not request.POST.get("remember"):
+        request.session.set_expiry(0)
+    AuditLog.record(request, "login")
+    _alert_login(user, request, ok=True)
+    messages.success(request, _("Karibu, %(name)s!") % {
+        "name": user.get_full_name() or user.username})
+
+    return redirect(_safe_next(request, reverse(user.home_url_name())))
 
 
 def login_view(request):
@@ -327,17 +407,13 @@ def login_view(request):
 
         if user is not None:
             cache.delete(cache_key)
-            auth_login(request, user)
-            # "Kumbuka mimi": bila hiyo, kipindi kinaisha kivinjari kikifungwa.
-            if not request.POST.get("remember"):
-                request.session.set_expiry(0)
-            AuditLog.record(request, "login")
-            messages.success(request, _("Karibu, %(name)s!") % {
-                "name": user.get_full_name() or user.username})
-            return redirect(_safe_next(request, reverse(user.home_url_name())))
+
+            return _finish_login(request, user)
 
         cache.set(cache_key, attempts + 1, LOGIN_LOCKOUT_SECONDS)
-        AuditLog.record(request, "login_failed", detail=identifier[:60])
+        AuditLog.record(request, "login_failed", detail=_safe_detail(identifier))
+        # Mwambie mwenye akaunti kwamba mtu anajaribu nenosiri lake.
+        _alert_failed(identifier, request)
         remaining = LOGIN_MAX_ATTEMPTS - attempts - 1
         if 0 < remaining <= 3:
             messages.warning(request, _(
@@ -1101,12 +1177,14 @@ def jiunge(request):
                 "utapigiwa simu na kupewa namba yako ya uanachama pamoja na "
                 "nenosiri la kuingia kwenye mfumo."
             ) % {"ref": app.reference})
+
             return redirect("core:jiunge")
         messages.error(request, _("Tafadhali sahihisha makosa hapa chini."))
     else:
         form = ApplicationForm()
     ctx["form"] = form
     return render(request, "public/jiunge.html", _pub(request, "uanachama", ctx))
+
 
 
 @require_POST

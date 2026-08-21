@@ -6,19 +6,21 @@ def menu():
     """Menyu ya header na drawer."""
     return [
         {"key": "home",        "label": "Nyumbani",    "icon": "dashboard", "url": "/"},
-        {"key": "uanachama",   "label": "Uanachama",   "icon": "id-card",   "url": "/uanachama/"},
-        {"key": "huduma",      "label": "Huduma",      "icon": "hand-heart", "url": "/huduma/"},
-        {"key": "vifurushi",   "label": "Vifurushi",   "icon": "wallet",    "url": "/vifurushi/"},
         #: Ukurasa wa nyaraka ndio unaoeleza MUWESTA ni nini, katiba yake
         #: na jinsi mfumo huu unavyofanya kazi — kwa hiyo "Kuhusu Sisi"
         #: inaelekeza hapo badala ya kuwa na ukurasa wa pili unaorudia.
-        {"key": "kuhusu",      "label": "Kuhusu",      "icon": "info",      "url": "/kuhusu/"},
+        #: Umewekwa wa pili kwa sababu mgeni anataka kujua "ni nani hawa"
+        #: kabla ya kujua huduma zao.
+        {"key": "kuhusu",      "label": "Kuhusu Sisi", "icon": "info",      "url": "/kuhusu/"},
+        {"key": "uanachama",   "label": "Uanachama",   "icon": "id-card",   "url": "/uanachama/"},
+        {"key": "huduma",      "label": "Huduma",      "icon": "hand-heart", "url": "/huduma/"},
+        {"key": "vifurushi",   "label": "Vifurushi",   "icon": "wallet",    "url": "/vifurushi/"},
         {"key": "mawasiliano", "label": "Wasiliana",  "icon": "phone",     "url": "/mawasiliano/"},
         #: `cta` inavifanya vionekane kama vitufe vya dhahabu, si viungo
         #: vya kawaida. Hivi ndivyo tunavyotaka mtu abofye.
         {"key": "changia",     "label": "Changia",     "icon": "heart",     "url": "/changia/",
          "cta": True},
-        {"key": "lipa",        "label": "Lipa",        "icon": "coins",     "url": "/lipa/",
+        {"key": "lipa",        "label": "Lipa Ada",    "icon": "coins",     "url": "/lipa/",
          "cta": True},
     ]
 

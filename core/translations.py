@@ -470,7 +470,7 @@ CATALOG = {
     "Huduma Zetu": "Our Services",
     "Habari": "News",
     "Ingia / Login": "Sign In / Login",
-    "Ingia Mfumo": "Sign In",
+    "Ingia kwenye Mfumo": "Sign In",
     "Ingia": "Sign In",
     "Namba ya Uanachama / Barua pepe": "Membership Number / Email",
     "Nenosiri": "Password",
@@ -1335,4 +1335,7 @@ CATALOG = {
     'Mkabala na Viwanja vya Nyerere Square': 'Opposite Nyerere Square Grounds',
     'S.L.P 450, Dodoma, Tanzania': 'P.O. Box 450, Dodoma, Tanzania',
     'Shariff PBZ House': 'Shariff PBZ House',
+    'Ada ya mwezi hulipwa kwa kila mwezi.': 'The monthly fee is paid every month.',
+    'Uanachama hudumu miaka mitatu, kisha huhuishwa.': 'Membership lasts three years, then it is renewed.',
+    'Chagua kifurushi kinachokufaa. Ada ya usajili hulipwa mara moja tu; ada ya mwezi hulipwa kwa kila mwezi.': 'Choose the package that suits you. The registration fee is paid once; the monthly fee is paid every month.',
 }

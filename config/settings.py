@@ -1,4 +1,13 @@
+"""
+MUWESTA MMS — Django settings
 
+Mfumo huu uko PRODUCTION. Malipo yanapitia Pesapal (API 3.0) na hakuna
+hali ya majaribio iliyobaki kwenye kodi — kitu kinachoonekana kwa mtumiaji
+ni kitu kinachofanya kazi kweli.
+
+Siri zote (database, Pesapal, barua pepe) zinatoka kwenye environment
+variables. Hakuna nywila inayoandikwa kwenye faili hii.
+"""
 import os
 from pathlib import Path
 
@@ -6,7 +15,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def _load_env_file(path=BASE_DIR / ".env"):
-    
+    """Soma `.env` ya kompyuta yako (haipo kwenye git, wala kwenye Render).
+
+    Environment halisi HUSHINDA daima — kwa hiyo `.env` haiwezi kubadilisha
+    thamani zilizowekwa kwenye Render, wala zile ulizoweka kwa `set` kwenye
+    CMD. Hii inaruhusu kufanya development bila kugusa setting za production.
+    """
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
     except OSError:
@@ -88,7 +102,15 @@ TEMPLATES = [{
     ]},
 }]
 
+# --- Database ---------------------------------------------------------------
+# Anwani nzima ya database inatoka kwenye DATABASE_URL, mfano:
+#
+#   postgresql://USER:NYWILA@aws-0-eu-west-3.pooler.supabase.com:5432/postgres
+#
 
+
+# Ikiwa DATABASE_URL imewekwa (Render, au `.env` yako ya ndani) inatumika.
+# Kwa development, weka kwenye `.env`:  DATABASE_URL=sqlite:///db.sqlite3
 _DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
 
 if _DATABASE_URL:
@@ -146,7 +168,10 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
+# ===========================================================================
+#  USALAMA (production tu)
+# ===========================================================================
+# Vinawaka pale DEBUG=False. Ndani ya kompyuta yako (DEBUG=True) havisumbui.
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -173,7 +198,11 @@ if not DEBUG and SECRET_KEY.startswith("django-insecure-"):
     )
 
 
-
+# ===========================================================================
+#  BARUA PEPE
+# ===========================================================================
+# Bila SMTP, barua pepe zinachapishwa kwenye console (nzuri kwa maendeleo).
+# Production: weka EMAIL_HOST na wenzake kwenye environment variables.
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
 if EMAIL_HOST:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -186,8 +215,36 @@ else:
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "info@muslimwelfare.or.tz")
 
 
+# --- Malipo -----------------------------------------------------------------
+# Hakuna tena hali ya majaribio. Kila njia inayoonekana kwenye fomu ni njia
+# inayofanya kazi kweli — ama inapitia Pesapal, ama ni uhamisho wa benki
+# unaothibitishwa na afisa kwa mkono.
+#
+# MUHIMU: mfumo huu HAUKUSANYI namba za kadi wala CVV popote, na hautazikusanya.
+# Malipo ya kadi yanafanyika kwenye ukurasa wa Pesapal — namba haigusi seva
+# zetu hata kidogo (PCI-DSS).
+
+
+# --- Kianzio cha vitambulisho ------------------------------------------------
+# Namba za uanachama, kadi, maombi na risiti ZINAZOTOLEWA KUANZIA SASA
+# zinaanza na kianzio hiki.
+#
+# Vitambulisho vya zamani (MWST/...) havibadilishwi. Vimechapishwa kwenye
+# kadi na kutumwa kwa wanachama; vikibadilika, kilicho mkononi mwa mtu
+# hakitalingana na kilicho kwenye mfumo. Kwa hiyo mfumo utakuwa na miundo
+# miwili — hiyo ni sahihi na inatarajiwa.
 ID_PREFIX = os.environ.get("ID_PREFIX", "MUWESTA")
 
+
+# --- Kumbukumbu (logging) ---------------------------------------------------
+# Kwa chaguo-msingi, Django hupeleka makosa ya `django.request` kwa
+# `mail_admins` pekee pale DEBUG=False. Bila barua pepe iliyowekwa, hiyo
+# inamaanisha error ya 500 haionekani POPOTE — unaona "Server Error (500)"
+# kwenye kivinjari na mstari mmoja tu kwenye log ya Render, bila traceback.
+#
+# Hii inapeleka traceback kamili kwenye console, ambayo Render huiweka
+# kwenye Logs. Hakuna taarifa nyeti inayovuja: traceback haina nywila,
+# na tayari ni ya seva yetu wenyewe.
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -206,6 +263,24 @@ LOGGING = {
         "django.db.backends": {"level": "WARNING"},
     },
 }
+
+
+# --- Selcom -----------------------------------------------------------------
+# SIRI HAZIANDIKWI HAPA. Weka kwenye environment ya Render:
+#
+#   SELCOM_API_KEY      = <kutoka Selcom>
+#   SELCOM_API_SECRET   = <kutoka Selcom>
+#   SELCOM_VENDOR_ID    = <namba ya mfanyabiashara>
+#
+# Selcom hutumia HMAC-SHA256, si bearer token: `SELCOM_API_SECRET`
+# HAIENDI kwenye mtandao kamwe — inayoenda ni saini pekee. Kwa hiyo hata
+# ombi likinaswa njiani, siri haipatikani.
+#
+# Faida kuu ya Selcom ni USSD push: mtu anapokea kidokezo simuni na
+# analipa bila kuondoka kwenye tovuti. Pesapal inabaki kwa kadi za benki.
+SELCOM_API_KEY = os.environ.get("SELCOM_API_KEY", "").strip()
+SELCOM_API_SECRET = os.environ.get("SELCOM_API_SECRET", "").strip()
+SELCOM_VENDOR_ID = os.environ.get("SELCOM_VENDOR_ID", "").strip()
 
 
 # --- Pesapal ----------------------------------------------------------------
@@ -227,8 +302,10 @@ PESAPAL_CONSUMER_KEY = os.environ.get("PESAPAL_CONSUMER_KEY", "").strip()
 PESAPAL_CONSUMER_SECRET = os.environ.get("PESAPAL_CONSUMER_SECRET", "").strip()
 PESAPAL_ENV = os.environ.get("PESAPAL_ENV", "live").strip().lower()
 PESAPAL_IPN_ID = os.environ.get("PESAPAL_IPN_ID", "").strip()
-
-
+#: Anwani ya tovuti — inahitajika kujenga callback/IPN URL kamili.
+#: Render huweka RENDER_EXTERNAL_URL yenyewe (mf. https://mwiso.onrender.com),
+#: kwa hiyo tunaitumia kama SITE_URL haijawekwa kwa mkono. Hii inazuia deploy
+#: kugoma pale env var moja imesahaulika kwenye dashibodi.
 SITE_URL = (
     os.environ.get("SITE_URL")
     or os.environ.get("RENDER_EXTERNAL_URL")
@@ -249,7 +326,8 @@ if not DEBUG:
     if SITE_URL not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(SITE_URL)
 
-
+#: Token ya Pesapal huisha kila dakika 5 na huhifadhiwa hapa. LocMemCache
+#: inatosha — kila process huomba token yake, ambayo ni ombi moja dogo.
 CACHES = {"default": {
     "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
     "LOCATION": "muwesta",

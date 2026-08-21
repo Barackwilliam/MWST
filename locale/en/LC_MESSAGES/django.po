@@ -5383,3 +5383,51 @@ msgstr "%(n)d days remaining"
 
 msgid "Kipindi cha miaka %(y)d"
 msgstr "A %(y)d-year term"
+
+msgid "Ingia kwenye Mfumo"
+msgstr "Sign In"
+
+msgid "Thibitisha ni wewe"
+msgstr "Verify it's you"
+
+msgid "Thibitisha barua pepe yako"
+msgstr "Verify your email"
+
+msgid "Tumekutumia code ya tarakimu sita kwenye barua pepe yako."
+msgstr "We sent a six-digit code to your email."
+
+msgid "Nitumie code nyingine"
+msgstr "Send me another code"
+
+msgid "Angalia pia kwenye spam."
+msgstr "Check your spam folder too."
+
+msgid "Code si sahihi. Jaribu tena."
+msgstr "That code is not correct. Try again."
+
+msgid "Code hii imeisha muda. Omba nyingine."
+msgstr "This code has expired. Request another."
+
+msgid "Umejaribu mara nyingi mno. Omba code nyingine."
+msgstr "Too many attempts. Request another code."
+
+msgid "Rudi kuingia"
+msgstr "Back to sign in"
+
+msgid "Nitafanya baadaye"
+msgstr "I'll do this later"
+
+msgid "Barua pepe yako imethibitishwa. Asante!"
+msgstr "Your email is verified. Thank you!"
+
+msgid "Code ya tarakimu sita"
+msgstr "Six-digit code"
+
+msgid "Ada ya mwezi hulipwa kwa kila mwezi."
+msgstr "The monthly fee is paid every month."
+
+msgid "Uanachama hudumu miaka mitatu, kisha huhuishwa."
+msgstr "Membership lasts three years, then it is renewed."
+
+msgid "Chagua kifurushi kinachokufaa. Ada ya usajili hulipwa mara moja tu; ada ya mwezi hulipwa kwa kila mwezi."
+msgstr "Choose the package that suits you. The registration fee is paid once; the monthly fee is paid every month."

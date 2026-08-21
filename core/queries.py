@@ -2296,7 +2296,7 @@ def public_vifurushi():
         "hero": {"eyebrow": "Vifurushi na Ada", "scene": "sadaka",
                  "title": "Mpangilio wa Kifurushi cha Malipo ya Mwanachama",
                  "text": "Chagua kifurushi kinachokufaa. Ada ya usajili hulipwa "
-                         "mara moja tu; ada ya mwaka hulipwa kila mwaka."},
+                         "mara moja tu; ada ya mwezi hulipwa kwa kila mwezi."},
         "tiers": [{"obj": t, "name": t.tx("name"), "colour": t.colour,
                    "featured": t.is_featured, "benefits": t.benefit_list()}
                   for t in tiers],
@@ -2310,7 +2310,8 @@ def public_vifurushi():
         ],
         "notes": [
             "Ada ya usajili hulipwa mara moja tu.",
-            "Ada ya mwaka hulipwa kila mwaka.",
+            "Ada ya mwezi hulipwa kwa kila mwezi.",
+            "Uanachama hudumu miaka mitatu, kisha huhuishwa.",
             "Mwanachama ana haki zote kulingana na kifurushi alichochagua.",
             "Malipo yote ni kwa shilingi za Kitanzania (TSh).",
         ],
