@@ -1338,4 +1338,11 @@ CATALOG = {
     'Ada ya mwezi hulipwa kwa kila mwezi.': 'The monthly fee is paid every month.',
     'Uanachama hudumu miaka mitatu, kisha huhuishwa.': 'Membership lasts three years, then it is renewed.',
     'Chagua kifurushi kinachokufaa. Ada ya usajili hulipwa mara moja tu; ada ya mwezi hulipwa kwa kila mwezi.': 'Choose the package that suits you. The registration fee is paid once; the monthly fee is paid every month.',
+    'Kimataifa': 'International',
+    'Vodacom': 'Vodacom',
+    'Airtel': 'Airtel',
+    'Yas': 'Yas',
+    'Halotel': 'Halotel',
+    'TTCL': 'TTCL',
+    'Azam': 'Azam',
 }

@@ -1314,3 +1314,28 @@
     if (!document.hidden && timer) check();
   });
 })();
+
+/* ==========================================================================
+   HUDUMA ZA NDANI YA MTOA HUDUMA
+   Mtu akichagua Selcom au Pesapal, paneli yake inafunguka na nyingine
+   zinafungwa. Inatumika kwenye Changia na Lipa Ada kwa pamoja.
+   ========================================================================== */
+(function () {
+  "use strict";
+  var panels = document.querySelectorAll("[data-pay-panel]");
+  if (!panels.length) return;
+
+  function paint() {
+    var picked = document.querySelector("input[name='provider']:checked");
+    var key = picked ? picked.value : "";
+    Array.prototype.forEach.call(panels, function (el) {
+      el.hidden = el.getAttribute("data-pay-panel") !== key;
+    });
+  }
+
+  document.addEventListener("change", function (e) {
+    if (e.target && e.target.name === "provider") paint();
+  });
+
+  paint();
+})();

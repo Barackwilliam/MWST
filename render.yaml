@@ -38,6 +38,16 @@ services:
       - key: DEFAULT_FROM_EMAIL
         value: "MUWESTA <info@muslimwelfare.or.tz>"
 
+      # --- Selcom ---------------------------------------------------------
+      # SELCOM_API_SECRET haiendi kwenye mtandao kamwe — inayoenda ni
+      # saini ya HMAC-SHA256 pekee. Angalia finance/gateways/selcom.py.
+      - key: SELCOM_VENDOR_ID
+        sync: false
+      - key: SELCOM_API_KEY
+        sync: false
+      - key: SELCOM_API_SECRET
+        sync: false
+
       # --- Pesapal --------------------------------------------------------
       - key: SITE_URL
         value: "https://mwiso.onrender.com"

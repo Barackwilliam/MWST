@@ -167,37 +167,70 @@ PRESETS = [5000, 10000, 20000, 50000, 100000, 200000, 500000]
 #: kuificha kabisa: mtu anayeitafuta anajua ipo njiani badala ya kudhani
 #: MUWESTA haipokei kabisa. Fomu inakataa `soon` upande wa seva pia,
 #: kwa hiyo hakuna anayeweza kuipitisha kwa kuhariri HTML.
+#:
+#: `methods` ni huduma zinazopatikana ndani ya mtoa huduma husika.
+#: Zinaonekana mtu akishamchagua. Ni za KUELEZA, si za kuchagua — kwa
+#: sababu:
+#:   * Selcom hutambua mtandao kutoka kwenye NAMBA YA SIMU yenyewe
+#:     (`push_ussd` inatuma msisdn pekee), kwa hiyo kumtaka mtu achague
+#:     mtandao kungekuwa ni kazi ya bure yenye uwezekano wa kukosea.
+#:   * Pesapal humpa mtu orodha yake mwenyewe kwenye ukurasa wake.
+#: Zinasaidia mtu kujua ni nini kinachomsubiri kabla hajaendelea.
 PROVIDERS = [
-    #: Pesapal inashughulikia mitandao YOTE ya simu na kadi kwa mara moja.
-    #: Mtu anachagua mtandao wake akiwa kwenye ukurasa wa Pesapal, hivyo
-    #: hakuna sababu ya kumtaka achague mara mbili hapa.
-    {"key": "pesapal",  "name": "Mobile Money na Kadi",
-     "name_en": "Mobile Money and Card",
-     "sub": "M-Pesa, Airtel, Mixx, HaloPesa, Visa, Mastercard",
-     "sub_en": "M-Pesa, Airtel, Mixx, HaloPesa, Visa, Mastercard",
-     "group": "online", "gateway": "pesapal", "icon": "wallet"},
+    #: Selcom hutuma kidokezo moja kwa moja kwenye simu — mtu haondoki
+    #: kwenye tovuti yetu. Ndiyo maana imewekwa ya kwanza: kwa mtandao
+    #: wa Tanzania, kutokuondoka ni faida kubwa kuliko kila kitu.
+    {"key": "selcom", "name": "Selcom", "name_en": "Selcom",
+     "sub": "Lipa hapa hapa kwa simu yako",
+     "sub_en": "Pay right here with your phone",
+     "note": "Utapokea kidokezo simuni. Ingiza PIN yako na malipo "
+             "yanakamilika bila kuondoka kwenye ukurasa huu.",
+     "note_en": "You will get a prompt on your phone. Enter your PIN and "
+                "the payment completes without leaving this page.",
+     "group": "online", "gateway": "selcom", "icon": "phone",
+     "methods": [
+         {"key": "mpesa",    "name": "M-Pesa",       "sub": "Vodacom"},
+         {"key": "airtel",   "name": "Airtel Money", "sub": "Airtel"},
+         {"key": "mixx",     "name": "Mixx by Yas",  "sub": "Yas"},
+         {"key": "halopesa", "name": "HaloPesa",     "sub": "Halotel"},
+         {"key": "tpesa",    "name": "T-Pesa",       "sub": "TTCL"},
+         {"key": "azampesa", "name": "AzamPesa",     "sub": "Azam"},
+     ]},
 
-    #: Selcom ina faida ya kutuma kidokezo moja kwa moja kwenye simu —
-    #: mtu haondoki kwenye tovuti. Code yake iko tayari
-    #: (`finance/gateways/selcom.py`), lakini funguo bado hazijakamilika.
-    #: Ondoa `"soon": True` na ubadilishe `gateway` kuwa `"selcom"`
-    #: zitakapokuwa tayari; hakuna kingine cha kubadilisha.
-    {"key": "selcom",   "name": "Lipa kwa Simu (kidokezo)",
-     "name_en": "Pay by Phone (prompt)",
-     "sub": "Utapokea kidokezo simuni bila kuondoka hapa",
-     "sub_en": "You will get a prompt on your phone without leaving this page",
-     "group": "bank", "gateway": "", "icon": "phone", "soon": True},
+    #: Pesapal humpeleka mtu kwenye ukurasa wake. Ina faida ya kadi za
+    #: kimataifa — ndiyo njia pekee kwa anayechangia kutoka nje.
+    {"key": "pesapal", "name": "Pesapal", "name_en": "Pesapal",
+     "sub": "Kadi za benki na mitandao ya simu",
+     "sub_en": "Bank cards and mobile networks",
+     "note": "Utapelekwa kwenye ukurasa salama wa Pesapal kuchagua njia "
+             "na kukamilisha malipo. Namba ya kadi wala CVV havihifadhiwi "
+             "kwenye mfumo huu.",
+     "note_en": "You will be taken to Pesapal's secure page to choose a "
+                "method and complete payment. Neither your card number nor "
+                "CVV is stored in this system.",
+     "group": "online", "gateway": "pesapal", "icon": "wallet",
+     "methods": [
+         {"key": "visa",     "name": "Visa",         "sub": "Kimataifa"},
+         {"key": "master",   "name": "Mastercard",   "sub": "Kimataifa"},
+         {"key": "mpesa",    "name": "M-Pesa",       "sub": "Vodacom"},
+         {"key": "airtel",   "name": "Airtel Money", "sub": "Airtel"},
+         {"key": "mixx",     "name": "Mixx by Yas",  "sub": "Yas"},
+         {"key": "halopesa", "name": "HaloPesa",     "sub": "Halotel"},
+     ]},
 
-    {"key": "bank",     "name": "Uhamisho wa Benki", "name_en": "Bank Transfer",
+    {"key": "bank", "name": "Uhamisho wa Benki", "name_en": "Bank Transfer",
      "sub": "CRDB, NMB, NBC, TPB, Exim",
      "sub_en": "CRDB, NMB, NBC, TPB, Exim",
-     "group": "bank", "gateway": "manual", "icon": "building", "soon": True},
+     "group": "bank", "gateway": "manual", "icon": "building",
+     "soon": True, "methods": []},
 
-    {"key": "paypal",   "name": "PayPal", "name_en": "PayPal",
+    {"key": "paypal", "name": "PayPal", "name_en": "PayPal",
      "sub": "Kwa wachangiaji wa nje ya nchi",
      "sub_en": "For donors outside Tanzania",
-     "group": "bank", "gateway": "", "icon": "globe", "soon": True},
+     "group": "bank", "gateway": "", "icon": "globe",
+     "soon": True, "methods": []},
 ]
+
 
 PROVIDER_GROUPS = [
     {"key": "online", "name": "Inapatikana sasa",  "name_en": "Available now", "icon": "wallet"},

@@ -150,6 +150,11 @@
         {# ---- 5. Njia ya malipo ---- #}
         <div class="gv__step">
           <span class="gv__label"><span class="gv__n">5</span>{% trans "Njia ya malipo" %}</span>
+          {% comment %}Ngazi mbili: mtu anachagua mtoa huduma, kisha anaona
+          huduma zinazopatikana ndani yake. Orodha ya ndani ni ya KUELEZA —
+          Selcom hutambua mtandao kutoka kwenye namba ya simu, na Pesapal
+          humpa orodha yake mwenyewe. Kumtaka achague mara mbili
+          kungekuwa kazi ya bure yenye uwezekano wa kukosea.{% endcomment %}
           <div class="gv__pays">
             {% for p in providers %}
               {% if p.soon %}
@@ -166,6 +171,21 @@
                   <span class="gv__paytxt"><b>{{ p.name }}</b><small>{{ p.sub }}</small></span>
                   <span class="gv__payok"><svg width="12" height="12"><use href="#i-check"></use></svg></span>
                 </label>
+
+                {% if p.methods %}
+                  <div class="gv__inner" data-pay-panel="{{ p.key }}"
+                       {% if p.key != form.provider.value %}hidden{% endif %}>
+                    <p class="gv__innernote">
+                      <svg width="14" height="14"><use href="#i-info"></use></svg>
+                      {{ p.note }}
+                    </p>
+                    <ul class="gv__methods">
+                      {% for m in p.methods %}
+                        <li><b>{{ m.name }}</b><small>{{ m.sub }}</small></li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% endif %}
               {% endif %}
             {% endfor %}
           </div>

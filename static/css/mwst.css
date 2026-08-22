@@ -4975,3 +4975,52 @@ html { overflow-x: clip; }
   --ink-2: #334155;
   --ok:    #12864a;
 }
+
+/* ==========================================================================
+   HUDUMA ZA NDANI YA MTOA HUDUMA
+   Mtu akichagua Selcom au Pesapal, anaona kinachomsubiri ndani yake.
+   Orodha ni ya kueleza, si ya kuchagua — ndiyo maana ni <ul>, si radio.
+   ========================================================================== */
+.gv__inner {
+  margin: -2px 0 2px; padding: 13px 15px;
+  border: 1.5px solid var(--g-500); border-top: 0;
+  border-radius: 0 0 14px 14px;
+  background: linear-gradient(180deg, var(--g-50), var(--surface));
+  animation: gvInner .18s ease-out;
+}
+.gv__inner[hidden] { display: none; }
+@keyframes gvInner {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.gv__innernote {
+  display: flex; gap: 8px; align-items: flex-start; margin-bottom: 11px;
+  font-size: 12px; color: var(--ink-2); line-height: 1.55;
+}
+.gv__innernote svg { flex: none; margin-top: 2px; color: var(--g-600); }
+
+.gv__methods {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px;
+}
+.gv__methods li {
+  display: flex; flex-direction: column; gap: 1px; min-width: 0;
+  padding: 8px 10px; border-radius: 9px;
+  background: var(--surface); border: 1px solid var(--line);
+}
+.gv__methods b {
+  font-size: 12px; font-weight: 700; color: var(--ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.gv__methods small { font-size: 10.5px; color: var(--muted-2); }
+
+/* Kadi ya mtoa huduma iliyochaguliwa inaungana na paneli yake */
+.gv__pay.is-on:has(+ .gv__inner:not([hidden])) {
+  border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+  box-shadow: none;
+}
+
+@media (max-width: 560px) {
+  .gv__methods { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

@@ -5431,3 +5431,15 @@ msgstr "Membership lasts three years, then it is renewed."
 
 msgid "Chagua kifurushi kinachokufaa. Ada ya usajili hulipwa mara moja tu; ada ya mwezi hulipwa kwa kila mwezi."
 msgstr "Choose the package that suits you. The registration fee is paid once; the monthly fee is paid every month."
+
+msgid "Lipa hapa hapa kwa simu yako"
+msgstr "Pay right here with your phone"
+
+msgid "Kadi za benki na mitandao ya simu"
+msgstr "Bank cards and mobile networks"
+
+msgid "Utapokea kidokezo simuni. Ingiza PIN yako na malipo yanakamilika bila kuondoka kwenye ukurasa huu."
+msgstr "You will get a prompt on your phone. Enter your PIN and the payment completes without leaving this page."
+
+msgid "Utapelekwa kwenye ukurasa salama wa Pesapal kuchagua njia na kukamilisha malipo. Namba ya kadi wala CVV havihifadhiwi kwenye mfumo huu."
+msgstr "You will be taken to Pesapal's secure page to choose a method and complete payment. Neither your card number nor CVV is stored in this system."
