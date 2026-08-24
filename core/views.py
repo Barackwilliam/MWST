@@ -434,10 +434,15 @@ def _mask_phone(phone):
     aliyeiba nenosiri lake.
     """
     from . import sms
-    digits = sms.msisdn(phone)
+    # `effective` — SMS ikielekezwa kwa msanidi (SMS_REDIRECT_TO),
+    # ukurasa uonyeshe namba itakayopokea kweli. Vinginevyo mtu
+    # angesubiri SMS kwenye namba isiyopokea chochote.
+    digits = sms.effective(phone)
     if len(digits) < 7:
         return digits
-    return f"{digits[:4]} *** *** {digits[-3:]}"
+    # `digits[:4]` ilitoa "2557 *** *** 102" — inasomeka kama kosa la
+    # kuandika. Msimbo wa nchi peke yake ni wazi zaidi.
+    return f"+{digits[:3]} *** *** {digits[-3:]}"
 
 
 def _finish_login(request, user, trust_device=False):

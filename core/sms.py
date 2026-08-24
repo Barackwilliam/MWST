@@ -83,6 +83,29 @@ def msisdn(phone):
     return digits
 
 
+def effective(phone):
+    """
+    Namba itakayopokea SMS kweli.
+
+    Kwa kawaida ni ile ile ya mhusika. Lakini `SMS_REDIRECT_TO` ikiwekwa
+    (wakati wa matengenezo), kila SMS inaelekezwa huko — msanidi anaweza
+    kuingia kwenye akaunti yoyote bila kubadilisha namba za watu.
+
+    Kuelekeza kunaandikwa kwenye log kila mara kwa makusudi: ikiachwa
+    ikiwaka, log itakuwa imejaa onyo na mtu ataigundua.
+    """
+    to = msisdn(phone)
+    redirect = getattr(settings, "SMS_REDIRECT_TO", "")
+    if not redirect:
+        return to
+    target = msisdn(redirect)
+    if target != to:
+        log.warning("SMS_REDIRECT_TO inatumika: %s -> %s "
+                    "(MATENGENEZO — izime kabla ya kuachia wanachama)",
+                    to, target)
+    return target
+
+
 def _auth_header():
     token = getattr(settings, "NEXTSMS_TOKEN", "")
     if token:
@@ -112,7 +135,7 @@ def send(phone, text, reference="", queue=True):
     ujumbe uliokataliwa ungejiongeza kwenye foleni tena kila jaribio na
     foleni isingeisha kamwe.
     """
-    to = msisdn(phone)
+    to = effective(phone)
 
     # Namba inakaguliwa KWANZA. Namba mbovu haitengenezeki kwa kujaribu
     # tena, kwa hiyo haiingii kwenye foleni — ingekaa pale milele
@@ -421,7 +444,7 @@ def send_expiry_notice(phone, expires_on, days_left, url):
 def send_application_rejected(phone, reference):
     """Ombi la uanachama halikukubaliwa."""
     text = (f"MUWESTA: Samahani, ombi {reference} halikukubaliwa. "
-            f"Wasiliana nasi kwa maelezo zaidi: 0769600102")
+            f"Wasiliana nasi kwa maelezo zaidi: {settings.SUPPORT_PHONE}")
     return send(phone, text, reference="ombi-limekataliwa")
 
 
@@ -439,7 +462,7 @@ def send_assistance_decision(phone, reference, approved):
                 f"Wasiliana na afisa wa ustawi kwa hatua zinazofuata.")
     else:
         text = (f"MUWESTA: Ombi lako la msaada {reference} halikukubaliwa "
-                f"kwa sasa. Wasiliana nasi kwa maelezo: 0769600102")
+                f"kwa sasa. Wasiliana nasi kwa maelezo: {settings.SUPPORT_PHONE}")
     return send(phone, text, reference="msaada-jibu")
 
 

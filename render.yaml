@@ -48,6 +48,14 @@ services:
         sync: false
       # "True" hutumia njia ya majaribio: jibu la kweli, bila kutuma
       # wala kupunguza salio. Iwe "False" kwenye production.
+      # Namba inayoonekana ndani ya ujumbe wa SMS ("wasiliana nasi").
+      # Wakati wa ujenzi ni ya msanidi; ikikamilika, weka ya ofisi.
+      - key: SUPPORT_PHONE
+        value: "0629712678"
+      # KWA MATENGENEZO PEKEE: ikiwekwa, SMS ZOTE zinaenda kwenye namba
+      # hii badala ya za wahusika. IFUTE kabla ya kuachia wanachama.
+      - key: SMS_REDIRECT_TO
+        sync: false
       - key: NEXTSMS_TEST_MODE
         value: "False"
       # Kifungo cha dharura: "False" huzima code za kuingia.

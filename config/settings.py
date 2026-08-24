@@ -229,6 +229,23 @@ NEXTSMS_PASSWORD = os.environ.get("NEXTSMS_PASSWORD", "").strip()
 NEXTSMS_SENDER = os.environ.get("NEXTSMS_SENDER", "").strip()
 NEXTSMS_TEST_MODE = os.environ.get("NEXTSMS_TEST_MODE", "False").lower() == "true"
 
+#: Namba inayoonekana NDANI YA UJUMBE wa SMS pale mtu anapoambiwa
+#: "wasiliana nasi". Ni tofauti na namba ya tovuti (`SiteSetting.phone`)
+#: kwa makusudi: wakati wa ujenzi, msanidi anataka majibu yaje kwake,
+#: si kwa ofisi. Ikishakamilika, iwekwe namba ya ofisi kwenye Render.
+SUPPORT_PHONE = os.environ.get("SUPPORT_PHONE", "0629712678").strip()
+
+#: KWA MATENGENEZO PEKEE. Ikiwekwa, SMS ZOTE zinaelekezwa kwenye namba
+#: hii badala ya ile ya mhusika. Msanidi anaweza kuingia kwenye akaunti
+#: yoyote na kujaribu mtiririko wowote bila kugusa data ya wanachama.
+#:
+#: Ni bora kuliko kubadilisha namba kwenye database: hakuna kinachopotea,
+#: hakuna cha kukumbuka kurudisha, na kuizima ni kufuta env var moja.
+#:
+#: ONYO: ikiachwa ikiwaka, HAKUNA mwanachama atakayepokea SMS yake —
+#: zote zitakuja kwako. Ifute ukishamaliza.
+SMS_REDIRECT_TO = os.environ.get("SMS_REDIRECT_TO", "").strip()
+
 #: Kifungo cha dharura cha code za kuingia. SMS zikiisha au NextSMS
 #: ikizimika, badilisha hii kuwa "False" kwenye Render na deploy — ni
 #: haraka kuliko kusubiri huduma irudi. Nenosiri pekee linatosha wakati
