@@ -97,10 +97,20 @@ class Command(BaseCommand):
             made = Notification.once(
                 key, member=m, user_id=m.user_id,
                 url="/lipa/?huisha=1", **data)
-            if made:
-                sent += 1
-            else:
+            if not made:
                 skipped += 1
+                continue
+
+            sent += 1
+            # SMS pia — mtu asiyeingia kwenye mfumo mara kwa mara ndiye
+            # anayehitaji kukumbushwa zaidi, na ndiye anayekosa arifa ya
+            # ndani. `Notification.once` ndiyo inayozuia kurudia.
+            if m.phone:
+                from django.conf import settings
+                from core import sms
+                sms.send_expiry_notice(
+                    m.phone, m.expires_on, days,
+                    f"{settings.SITE_URL}/lipa/?huisha=1")
 
         note = " (dry-run, hakuna kilichotumwa)" if dry else ""
         self.stdout.write(self.style.SUCCESS(

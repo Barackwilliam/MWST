@@ -38,6 +38,22 @@ services:
       - key: DEFAULT_FROM_EMAIL
         value: "MUWESTA <info@muslimwelfare.or.tz>"
 
+      # --- SMS (NextSMS) --------------------------------------------------
+      # NEXTSMS_TOKEN: dashibodi -> Customer Info -> Customization -> API Keys
+      # NEXTSMS_SENDER: jina lililosajiliwa NextSMS. Lisilosajiliwa
+      # linarudisha FAILED_SENDER bila SMS kutumwa.
+      - key: NEXTSMS_TOKEN
+        sync: false
+      - key: NEXTSMS_SENDER
+        sync: false
+      # "True" hutumia njia ya majaribio: jibu la kweli, bila kutuma
+      # wala kupunguza salio. Iwe "False" kwenye production.
+      - key: NEXTSMS_TEST_MODE
+        value: "False"
+      # Kifungo cha dharura: "False" huzima code za kuingia.
+      - key: LOGIN_OTP_ENABLED
+        value: "True"
+
       # --- Selcom ---------------------------------------------------------
       # SELCOM_API_SECRET haiendi kwenye mtandao kamwe — inayoenda ni
       # saini ya HMAC-SHA256 pekee. Angalia finance/gateways/selcom.py.

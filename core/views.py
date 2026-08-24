@@ -177,6 +177,13 @@ LOGIN_MAX_ATTEMPTS = 8
 LOGIN_LOCKOUT_SECONDS = 15 * 60
 
 
+#: Siku ambazo kifaa cha MWANACHAMA kinakumbukwa. Maafisa hawakumbukwi —
+#: paneli ina taarifa binafsi za wanachama wote, kwa hiyo wanaulizwa code
+#: kila mara.
+DEVICE_COOKIE = "mwst_dev"
+DEVICE_TRUST_DAYS = 30
+
+
 def _client_ip(request):
     """
     Anwani ya IP ya mteja.
@@ -341,6 +348,222 @@ def _login_ctx(request, extra=None):
     return _pub(request, "ingia", ctx)
 
 
+def _needs_code(user, request):
+    """
+    Je, mtu huyu anatakiwa kuthibitisha kwa code?
+
+    Maafisa: KILA MARA. Paneli ya usimamizi ina majina, namba za simu,
+    namba za vitambulisho na anwani za wanachama wote — nenosiri pekee
+    halitoshi kulinda hiyo.
+
+    Wanachama: kifaa kipya tu, kisha siku 30. Wanaoingia mara kwa mara
+    wasipokee SMS kila siku; usalama ungegeuka kero, na kero husababisha
+    watu kutafuta njia za kuzunguka.
+    """
+    from django.conf import settings as _s
+
+    if not getattr(_s, "LOGIN_OTP_ENABLED", True):
+        return False
+    # Bila namba ya simu hakuna pa kupeleka code. Tunamruhusu aingie
+    # badala ya kumfungia nje milele — angalia `_start_login_code`.
+    if not _phone_for(user):
+        return False
+    if user.is_staff:
+        return True
+    return not _device_trusted(request, user)
+
+
+def _phone_for(user):
+    """Namba ya simu ya mtumiaji — yake mwenyewe au ya rekodi ya uanachama."""
+    phone = (getattr(user, "phone", "") or "").strip()
+    if not phone:
+        member = getattr(user, "member", None)
+        phone = (getattr(member, "phone", "") or "").strip() if member else ""
+    return phone
+
+
+def _device_trusted(request, user):
+    from django.core import signing
+    raw = request.COOKIES.get(DEVICE_COOKIE, "")
+    if not raw:
+        return False
+    try:
+        data = signing.loads(raw, salt="mwst-device",
+                             max_age=DEVICE_TRUST_DAYS * 24 * 3600)
+    except signing.BadSignature:
+        return False
+    return data.get("u") == user.pk
+
+
+def _remember_device(response, user):
+    from django.conf import settings as _s
+    from django.core import signing
+    response.set_cookie(
+        DEVICE_COOKIE, signing.dumps({"u": user.pk}, salt="mwst-device"),
+        max_age=DEVICE_TRUST_DAYS * 24 * 3600,
+        secure=not _s.DEBUG, httponly=True, samesite="Lax")
+    return response
+
+
+def _alert_login(user, request, ok=True):
+    """
+    Mjulishe mtu kwa SMS kwamba akaunti yake imeguswa.
+
+    Arifa za kushindwa zina kikomo cha moja kwa saa. Bila kikomo, mtu
+    angeweza kujaza simu ya mwanachama kwa SMS kwa kubandika nenosiri
+    lisilo sahihi mara elfu — kinga ingegeuka silaha, na kila SMS
+    ingelipiwa na MUWESTA.
+    """
+    from django.core.cache import cache
+    from . import sms
+
+    phone = _phone_for(user)
+    if not phone:
+        return
+    if not ok:
+        key = f"alert-fail:{user.pk}"
+        if cache.get(key):
+            return
+        cache.set(key, 1, 3600)
+    sms.send_login_alert(phone, user.get_full_name() or user.username, ok=ok)
+
+
+def _mask_phone(phone):
+    """
+    255 7** *** 102 — inamsaidia mtu kutambua namba bila kuifichua kwa
+    aliyeiba nenosiri lake.
+    """
+    from . import sms
+    digits = sms.msisdn(phone)
+    if len(digits) < 7:
+        return digits
+    return f"{digits[:4]} *** *** {digits[-3:]}"
+
+
+def _finish_login(request, user, trust_device=False):
+    """Kamilisha kuingia: session, kumbukumbu, arifa."""
+    auth_login(request, user)
+    # "Kumbuka mimi": bila hiyo, kipindi kinaisha kivinjari kikifungwa.
+    if not request.session.pop("mwst_remember", False):
+        request.session.set_expiry(0)
+    AuditLog.record(request, "login")
+    _alert_login(user, request, ok=True)
+    messages.success(request, _("Karibu, %(name)s!") % {
+        "name": user.get_full_name() or user.username})
+
+    target = request.session.pop("mwst_next", "") or reverse(user.home_url_name())
+    response = redirect(_safe_next(request, target))
+    if trust_device and not user.is_staff:
+        _remember_device(response, user)
+    return response
+
+
+def _start_login_code(request, user):
+    """Tuma code na mpeleke mtu kwenye ukurasa wa kuithibitisha."""
+    from accounts.models import CodePurpose, VerificationCode
+    from . import sms
+
+    phone = _phone_for(user)
+    if VerificationCode.too_many(sms.msisdn(phone)):
+        messages.error(request, _(
+            "Umeomba code nyingi mno kwa saa moja. Subiri kidogo kisha "
+            "ujaribu tena."))
+        return redirect("core:login")
+
+    row, code = VerificationCode.issue(
+        sms.msisdn(phone), CodePurpose.LOGIN, user=user, ip=_client_ip(request))
+    sent = sms.send_code(phone, code, "login", VerificationCode.TTL_MINUTES)
+
+    if not sent:
+        # SMS imeshindwa. Kumfungia nje mtu mwenye nenosiri sahihi kwa
+        # sababu ya hitilafu ya mtandao au salio lililoisha ni kumuadhibu
+        # kwa kosa letu. Tunaandika kwenye kumbukumbu badala yake.
+        log.error("Code ya kuingia haikutumwa kwa %s — ameruhusiwa kuingia",
+                  user.username)
+        AuditLog.record(request, "login_code_failed", detail=user.username)
+        messages.warning(request, _(
+            "Hatukuweza kutuma code kwenye simu yako, kwa hiyo tumekuruhusu "
+            "kuingia. Tafadhali mjulishe msimamizi."))
+        return _finish_login(request, user)
+
+    request.session["mwst_pending_user"] = user.pk
+    request.session["mwst_pending_at"] = timezone.now().isoformat()
+    request.session["mwst_remember"] = bool(request.POST.get("remember"))
+    request.session["mwst_next"] = _safe_next(request, "")
+    AuditLog.record(request, "login_code_sent", detail=user.username)
+    return redirect("core:login_code")
+
+
+def _clear_pending(request):
+    for k in ("mwst_pending_user", "mwst_pending_at", "mwst_remember", "mwst_next"):
+        request.session.pop(k, None)
+
+
+def login_code_view(request):
+    """
+    Hatua ya pili ya kuingia: code iliyotumwa kwa SMS.
+
+    Mtu bado HAJAINGIA hapa. Nia yake ipo kwenye session pekee — si
+    kwenye URL wala fomu, ambako angeweza kuibadilisha na kuwa mtu
+    mwingine — na inaisha baada ya dakika 15.
+    """
+    from accounts.models import CodePurpose, VerificationCode
+    from datetime import timedelta
+    from . import sms
+
+    pk = request.session.get("mwst_pending_user")
+    started = request.session.get("mwst_pending_at")
+    if not pk or not started:
+        return redirect("core:login")
+
+    if timezone.now() - timezone.datetime.fromisoformat(started) > timedelta(minutes=15):
+        _clear_pending(request)
+        messages.error(request, _("Muda umeisha. Tafadhali ingia tena."))
+        return redirect("core:login")
+
+    from django.contrib.auth import get_user_model
+    user = get_user_model().objects.filter(pk=pk).first()
+    if user is None:
+        _clear_pending(request)
+        return redirect("core:login")
+
+    phone = _phone_for(user)
+    if request.method == "POST":
+        if request.POST.get("resend"):
+            if VerificationCode.too_many(sms.msisdn(phone)):
+                messages.error(request, _("Umeomba code nyingi mno. Subiri kidogo."))
+            else:
+                row, code = VerificationCode.issue(
+                    sms.msisdn(phone), CodePurpose.LOGIN, user=user,
+                    ip=_client_ip(request))
+                sms.send_code(phone, code, "login", VerificationCode.TTL_MINUTES)
+                messages.info(request, _("Tumekutumia code nyingine."))
+            return redirect("core:login_code")
+
+        row, err = VerificationCode.verify(
+            sms.msisdn(phone), CodePurpose.LOGIN, request.POST.get("code", ""))
+        if err is None:
+            _clear_pending(request)
+            return _finish_login(request, user, trust_device=True)
+
+        AuditLog.record(request, "login_code_failed", detail=user.username)
+        messages.error(request, {
+            "none": _("Hakuna code inayosubiri. Tafadhali ingia tena."),
+            "expired": _("Code hii imeisha muda. Omba nyingine."),
+            "attempts": _("Umejaribu mara nyingi mno. Omba code nyingine."),
+        }.get(err, _("Code si sahihi. Jaribu tena.")))
+
+    return render(request, "public/otp.html", {
+        "page_title": _("Thibitisha ni wewe"),
+        "page_lead": _("Tumekutumia code ya tarakimu sita kwenye simu yako."),
+        "submit_label": _("Ingia"),
+        "back_url": reverse("core:login"),
+        "back_label": _("Rudi kuingia"),
+        "target": _mask_phone(phone),
+        "minutes": VerificationCode.TTL_MINUTES,
+    })
+
+
 def _safe_detail(identifier):
     """
     Kitambulisho cha kuhifadhi kwenye kumbukumbu ya jaribio lililoshindwa.
@@ -372,20 +595,6 @@ def _alert_failed(identifier, request):
         _alert_login(user, request, ok=False)
 
 
-def _finish_login(request, user):
-    """Kamilisha kuingia: session, kumbukumbu, arifa."""
-    auth_login(request, user)
-    # "Kumbuka mimi": bila hiyo, kipindi kinaisha kivinjari kikifungwa.
-    if not request.POST.get("remember"):
-        request.session.set_expiry(0)
-    AuditLog.record(request, "login")
-    _alert_login(user, request, ok=True)
-    messages.success(request, _("Karibu, %(name)s!") % {
-        "name": user.get_full_name() or user.username})
-
-    return redirect(_safe_next(request, reverse(user.home_url_name())))
-
-
 def login_view(request):
     if request.user.is_authenticated:
         return redirect(request.user.home_url_name())
@@ -407,7 +616,9 @@ def login_view(request):
 
         if user is not None:
             cache.delete(cache_key)
-
+            if _needs_code(user, request):
+                # Nenosiri ni sahihi, lakini bado hajaingia.
+                return _start_login_code(request, user)
             return _finish_login(request, user)
 
         cache.set(cache_key, attempts + 1, LOGIN_LOCKOUT_SECONDS)
@@ -949,7 +1160,8 @@ def lipa(request):
                 method="pesapal" if data["provider"] == "pesapal" else data["provider"][:20],
                 note=(data.get("note") or "")[:200],
                 status=PaymentStatus.PENDING,
-                donor_name=data["full_name"])
+                donor_name=data["full_name"],
+                donor_phone=data.get("phone", ""))
             AuditLog.record(request, "membership_payment", gift)
             request.session["mwst_last_gift"] = gift.receipt_no
             return _finish_payment(
@@ -1169,6 +1381,8 @@ def jiunge(request):
     if request.method == "POST":
         form = ApplicationForm(request.POST, request.FILES)
         if form.is_valid():
+            from . import sms
+
             app = form.save()
             AuditLog.record(request, "application_submitted", app)
             messages.success(request, _(
@@ -1178,13 +1392,105 @@ def jiunge(request):
                 "nenosiri la kuingia kwenye mfumo."
             ) % {"ref": app.reference})
 
-            return redirect("core:jiunge")
+            # Hongera kwanza — inampa namba ya kumbukumbu na kumweleza
+            # hatua inayofuata. Kisha code ya kuthibitisha namba.
+            sms.send_application_received(app.phone, app.reference)
+
+            # Namba ya simu inathibitishwa sasa hivi — ndipo mtu bado
+            # yupo mbele ya skrini. Ikisubiri hadi afisa amhakiki, namba
+            # yenye kosa inagundulika baada ya siku, na afisa anapiga
+            # simu isiyopatikana.
+            return _start_phone_check(request, app)
         messages.error(request, _("Tafadhali sahihisha makosa hapa chini."))
     else:
         form = ApplicationForm()
     ctx["form"] = form
     return render(request, "public/jiunge.html", _pub(request, "uanachama", ctx))
 
+
+
+
+def _start_phone_check(request, app):
+    """Tuma code ya kuthibitisha namba ya ombi jipya."""
+    from accounts.models import CodePurpose, VerificationCode
+    from . import sms
+
+    to = sms.msisdn(app.phone)
+    if VerificationCode.too_many(to):
+        return redirect("core:jiunge")
+
+    row, code = VerificationCode.issue(to, CodePurpose.PHONE,
+                                       reference=app.reference,
+                                       ip=_client_ip(request))
+    if not sms.send_code(app.phone, code, "phone", VerificationCode.TTL_MINUTES):
+        log.error("Code ya kuthibitisha haikutumwa kwa %s", to)
+        messages.info(request, _(
+            "Hatukuweza kutuma code kwenye simu yako sasa hivi. Ombi lako "
+            "limehifadhiwa \u2014 afisa atawasiliana nawe."))
+        return redirect("core:jiunge")
+
+    request.session["mwst_verify_ref"] = app.reference
+    return redirect("core:thibitisha_simu")
+
+
+def thibitisha_simu(request):
+    """
+    Kuthibitisha namba ya simu ya mwombaji.
+
+    Kukosa kuthibitisha HAKUZUII ombi. Ombi tayari limehifadhiwa; hii
+    inaongeza uhakika tu kwamba namba ni sahihi na inapatikana. Mtu
+    asiye na simu mkononi sasa hivi asizuiwe kujiunga.
+    """
+    from accounts.models import CodePurpose, VerificationCode
+    from . import sms
+
+    ref = request.session.get("mwst_verify_ref")
+    if not ref:
+        return redirect("core:jiunge")
+    app = Application.objects.filter(reference=ref).first()
+    if app is None:
+        request.session.pop("mwst_verify_ref", None)
+        return redirect("core:jiunge")
+
+    to = sms.msisdn(app.phone)
+    if request.method == "POST":
+        if request.POST.get("resend"):
+            if VerificationCode.too_many(to):
+                messages.error(request, _("Umeomba code nyingi mno. Subiri kidogo."))
+            else:
+                row, code = VerificationCode.issue(
+                    to, CodePurpose.PHONE, reference=app.reference,
+                    ip=_client_ip(request))
+                sms.send_code(app.phone, code, "phone", VerificationCode.TTL_MINUTES)
+                messages.info(request, _("Tumekutumia code nyingine."))
+            return redirect("core:thibitisha_simu")
+
+        row, err = VerificationCode.verify(to, CodePurpose.PHONE,
+                                           request.POST.get("code", ""))
+        if err is None:
+            app.phone_verified = True
+            app.save(update_fields=["phone_verified", "updated_at"])
+            AuditLog.record(request, "phone_verified", app)
+            request.session.pop("mwst_verify_ref", None)
+            messages.success(request, _("Namba yako imethibitishwa. Asante!"))
+            return redirect("core:jiunge")
+
+        messages.error(request, {
+            "none": _("Hakuna code inayosubiri. Omba nyingine."),
+            "expired": _("Code hii imeisha muda. Omba nyingine."),
+            "attempts": _("Umejaribu mara nyingi mno. Omba code nyingine."),
+        }.get(err, _("Code si sahihi. Jaribu tena.")))
+
+    return render(request, "public/otp.html", {
+        "page_title": _("Thibitisha namba yako"),
+        "page_lead": _("Tumekutumia code ya tarakimu sita. Iweke hapa "
+                       "kuthibitisha kuwa namba hii ni yako."),
+        "submit_label": _("Thibitisha"),
+        "back_url": reverse("core:jiunge"),
+        "back_label": _("Nitafanya baadaye"),
+        "target": _mask_phone(app.phone),
+        "minutes": VerificationCode.TTL_MINUTES,
+    })
 
 
 @require_POST
@@ -1433,15 +1739,34 @@ def maombi_action(request, pk, action):
         ) % {"ref": app.reference})
         # Namba ya uanachama, kadi na nenosiri hutolewa malipo
         # yakithibitishwa — si hapa.
+        # Mwombaji naye ajulishwe. Awali afisa pekee ndiye aliyekuwa
+        # anapata kiungo — mwombaji alibaki akisubiri simu ambayo huenda
+        # isipigwe.
+        from . import sms
+
+        due = app.amount_due()
+        told = sms.send_application_approved(app.phone, app.reference, due, pay_url)
+
         messages.info(request, _(
             "Mpe mwombaji kiungo hiki cha kulipia: %(url)s — kiasi "
             "kinachotakiwa ni TZS %(amount)s. Atapata namba ya uanachama, "
             "kadi na nenosiri la kuingia mara malipo yatakapothibitishwa."
-        ) % {"url": pay_url, "amount": f"{app.amount_due():,}"})
+        ) % {"url": pay_url, "amount": f"{due:,}"})
+        if told:
+            messages.info(request, _(
+                "Tumemtumia mwombaji SMS yenye kiungo hicho."))
+        else:
+            messages.warning(request, _(
+                "SMS haikumfikia mwombaji. Mpigie simu."))
     elif action == "reject":
+        from . import sms
+
         app.status = ApplicationStatus.REJECTED
         app.reviewed_by = request.user
         app.reviewed_at = timezone.now()
+        # Mwombaji ajulishwe. Kumwacha akisubiri milele ni mbaya kuliko
+        # kumwambia hakukubaliwa.
+        sms.send_application_rejected(app.phone, app.reference)
         app.save(update_fields=["status", "reviewed_by", "reviewed_at", "updated_at"])
         AuditLog.record(request, "application_rejected", app)
         messages.info(request, _("Ombi limekataliwa."))
@@ -1633,6 +1958,9 @@ def member_assistance(request):
                 amount_requested=form.cleaned_data["amount_requested"],
                 description=form.cleaned_data["description"])
             AuditLog.record(request, "assistance_requested", req)
+            from . import sms
+
+            sms.send_assistance_received(member.phone, req.reference)
             messages.success(request, _(
                 "Ombi lako la msaada limepokelewa. Kumbukumbu: %(ref)s") % {
                     "ref": req.reference})
@@ -1827,8 +2155,11 @@ def member_detail(request, pk):
         elif action == "activate":
             member.status = MemberStatus.ACTIVE
         elif action == "issue_card":
-            Card.issue(member)
+            from . import sms
+
+            card = Card.issue(member, expires_on=member.expires_on)
             AuditLog.record(request, "card_issued", member)
+            sms.send_card_issued(member.phone, card.serial, card.expires_on)
             messages.success(request, _("Kadi mpya imetolewa."))
             return redirect("core:member_detail", pk=pk)
         elif action == "grant_special":
@@ -1871,6 +2202,9 @@ def member_detail(request, pk):
                 member.user.is_active = True
                 member.user.save()
                 AuditLog.record(request, "member_password_reset", member)
+                from . import sms
+
+                sms.send_password_reset(member.phone, member.user.username)
             messages.success(request, _(
                 "Taarifa mpya za kuingia: jina la mtumiaji %(user)s, "
                 "nenosiri la muda %(pw)s"
@@ -1907,6 +2241,8 @@ def assistance_review(request):
         qs = qs.filter(assistance_type_id=f["type"])
 
     if request.method == "POST":
+        from . import sms
+
         req = get_object_or_404(AssistanceRequest, pk=request.POST.get("pk"))
         action = request.POST.get("action")
         if action == "approve":
@@ -1916,12 +2252,14 @@ def assistance_review(request):
             req.approved_at = timezone.now()
             req.save()
             AuditLog.record(request, "assistance_approved", req)
+            sms.send_assistance_decision(req.member.phone, req.reference, True)
             messages.success(request, _("Ombi %(ref)s limeidhinishwa.") % {"ref": req.reference})
         elif action == "reject":
             req.status = "rejected"
             req.approved_by = request.user
             req.save(update_fields=["status", "approved_by", "updated_at"])
             AuditLog.record(request, "assistance_rejected", req)
+            sms.send_assistance_decision(req.member.phone, req.reference, False)
             messages.info(request, _("Ombi %(ref)s limekataliwa.") % {"ref": req.reference})
         return redirect("core:assistance_review")
 

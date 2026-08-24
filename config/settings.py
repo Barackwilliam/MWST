@@ -214,6 +214,27 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "info@muslimwelfare.or.tz")
 
+# --- SMS (NextSMS) ----------------------------------------------------------
+# Token inapatikana: dashibodi -> Customer Info -> Customization -> API Keys.
+# Njia mbadala ni username/password ya portal (Basic auth).
+#
+# NEXTSMS_SENDER lazima liwe jina lililosajiliwa NextSMS. Lisilosajiliwa
+# linarudisha FAILED_SENDER bila SMS kutumwa.
+#
+# NEXTSMS_TEST_MODE=True inatumia njia ya majaribio: jibu la kweli, bila
+# kutuma SMS wala kupunguza salio. Ndiyo ya development.
+NEXTSMS_TOKEN = os.environ.get("NEXTSMS_TOKEN", "").strip()
+NEXTSMS_USERNAME = os.environ.get("NEXTSMS_USERNAME", "").strip()
+NEXTSMS_PASSWORD = os.environ.get("NEXTSMS_PASSWORD", "").strip()
+NEXTSMS_SENDER = os.environ.get("NEXTSMS_SENDER", "").strip()
+NEXTSMS_TEST_MODE = os.environ.get("NEXTSMS_TEST_MODE", "False").lower() == "true"
+
+#: Kifungo cha dharura cha code za kuingia. SMS zikiisha au NextSMS
+#: ikizimika, badilisha hii kuwa "False" kwenye Render na deploy — ni
+#: haraka kuliko kusubiri huduma irudi. Nenosiri pekee linatosha wakati
+#: huo, na arifa za kuingia zinaendelea kufanya kazi.
+LOGIN_OTP_ENABLED = os.environ.get("LOGIN_OTP_ENABLED", "True").lower() == "true"
+
 
 # --- Malipo -----------------------------------------------------------------
 # Hakuna tena hali ya majaribio. Kila njia inayoonekana kwenye fomu ni njia

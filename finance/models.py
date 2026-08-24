@@ -319,6 +319,10 @@ class Contribution(TimeStamped):
                                     related_name="payments",
                                     verbose_name=_("Ombi la Uanachama"))
     donor_name = models.CharField(_("Jina la Mchangiaji"), max_length=160, blank=True)
+    #: Namba ya mchangiaji wa umma. Fomu ilikuwa ikiiuliza lakini
+    #: haihifadhi — hivyo mtu aliyechangia TZS 200,000 hakuwa na njia ya
+    #: kupata risiti wala sisi ya kumfuatilia.
+    donor_phone = models.CharField(_("Simu ya Mchangiaji"), max_length=20, blank=True)
     project = models.ForeignKey(Project, null=True, blank=True,
                                 on_delete=models.SET_NULL, related_name="contributions")
     campaign = models.ForeignKey(Campaign, null=True, blank=True,
@@ -354,6 +358,10 @@ class Contribution(TimeStamped):
     #: yoyote — hakuna orodha ya kuiangalia. Rekodi za zamani zina sifuri
     #: hapa; `apply_membership` inarudi kwenye `recurrence` kwa hizo.
     months = models.PositiveSmallIntegerField(_("Miezi Iliyolipiwa"), default=0)
+    #: Kizuizi cha kutotuma risiti mara mbili. Pesapal huweza kupiga IPN
+    #: zaidi ya mara moja, na kila mara ingekuwa SMS nyingine — mtu
+    #: angepokea risiti tatu za malipo yale yale, na MUWESTA ingelipia.
+    sms_sent = models.BooleanField(default=False, editable=False)
     #: Kizuizi cha kutosogeza tarehe ya kuisha mara mbili. Pesapal huweza
     #: kupiga IPN zaidi ya mara moja kwa muamala mmoja; bila hii mwanachama
     #: angepata miezi ya ziada bure.

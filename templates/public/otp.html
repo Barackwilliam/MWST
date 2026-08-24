@@ -1,0 +1,40 @@
+{% extends "public/base.html" %}
+{% load static i18n %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+<div class="section" style="padding-bottom:0">{% include "base/messages.html" %}</div>
+
+<section class="section otp">
+  <form method="post" class="otp__card" novalidate>
+    {% csrf_token %}
+
+    <span class="otp__ico"><svg width="24" height="24"><use href="#i-phone"></use></svg></span>
+    <h1>{{ page_title }}</h1>
+    <p class="otp__lead">{{ page_lead }}</p>
+    <p class="otp__to">{{ target }}</p>
+
+    {% comment %}`inputmode` inaleta kibodi ya namba kwenye simu, na
+    `autocomplete="one-time-code"` inaruhusu Android na iOS kubandika
+    code yenyewe kutoka kwenye SMS bila mtu kuiandika.{% endcomment %}
+    <input type="text" name="code" class="otp__code" required autofocus
+           inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
+           autocomplete="one-time-code" placeholder="000000"
+           aria-label="{% trans 'Code ya tarakimu sita' %}">
+
+    <button type="submit" class="btn btn--primary btn--block otp__go">
+      {{ submit_label }}
+    </button>
+
+    <p class="otp__hint">
+      {% blocktrans %}Code inaisha baada ya dakika {{ minutes }}.{% endblocktrans %}
+    </p>
+
+    <button type="submit" name="resend" value="1" class="otp__resend">
+      {% trans "Nitumie code nyingine" %}
+    </button>
+
+    <a href="{{ back_url }}" class="otp__back">{{ back_label }}</a>
+  </form>
+</section>
+{% endblock %}

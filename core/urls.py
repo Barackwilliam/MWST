@@ -40,6 +40,10 @@ urlpatterns = [
     path("toka/", views.logout_view, name="logout"),
 
     # ---- Kurejesha nenosiri (views za Django) ----
+    #: Hatua ya pili ya kuingia — code ya SMS.
+    path("ingia/code/", views.login_code_view, name="login_code"),
+    #: Kuthibitisha namba ya simu ya ombi jipya la uanachama.
+    path("jiunge/thibitisha/", views.thibitisha_simu, name="thibitisha_simu"),
     path("nenosiri/sahau/", auth_views.PasswordResetView.as_view(
         template_name="public/password_reset.html",
         email_template_name="public/password_reset_email.txt",

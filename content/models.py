@@ -384,3 +384,45 @@ class MessageLog(TimeStamped):
 
     def __str__(self):
         return f"{self.get_channel_display()} — {self.subject or self.body[:40]}"
+
+
+class SmsOutbox(TimeStamped):
+    """
+    Foleni ya SMS zilizoshindwa kutumwa.
+
+    SABABU: mtu akilipa TZS 100,000 na risiti isifike kwa sababu salio
+    limeisha au mtandao umekatika, hatajua kama malipo yamekamilika.
+    Atapiga simu ofisini — na hiyo nayo ni gharama. Bila foleni, ujumbe
+    ungepotea kimya kimya na hakuna angejua.
+
+    Ujumbe unaoshindwa unahifadhiwa hapa, na amri `tuma_sms_foleni`
+    inajaribu tena. Salio likirudi, kila kilichoshindwa kinatumwa.
+    """
+    MAX_ATTEMPTS = 5
+
+    STATUS = [("queued", _("Kwenye foleni")), ("sent", _("Imetumwa")),
+              ("failed", _("Imekata tamaa"))]
+
+    phone = models.CharField(_("Namba"), max_length=20, db_index=True)
+    text = models.TextField(_("Ujumbe"))
+    reference = models.CharField(max_length=60, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS, default="queued",
+                              db_index=True)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    last_error = models.CharField(max_length=200, blank=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["created_at"]          # ya zamani kwanza
+        verbose_name = _("SMS ya Foleni")
+        verbose_name_plural = _("SMS za Foleni")
+
+    def __str__(self):
+        return f"{self.phone} — {self.get_status_display()}"
+
+    @classmethod
+    def enqueue(cls, phone, text, reference="", error=""):
+        """Hifadhi ujumbe uliokataliwa ili ujaribiwe tena baadaye."""
+        return cls.objects.create(phone=phone, text=text,
+                                  reference=reference[:60], attempts=1,
+                                  last_error=error[:200])

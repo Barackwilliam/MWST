@@ -5443,3 +5443,30 @@ msgstr "You will get a prompt on your phone. Enter your PIN and the payment comp
 
 msgid "Utapelekwa kwenye ukurasa salama wa Pesapal kuchagua njia na kukamilisha malipo. Namba ya kadi wala CVV havihifadhiwi kwenye mfumo huu."
 msgstr "You will be taken to Pesapal's secure page to choose a method and complete payment. Neither your card number nor CVV is stored in this system."
+
+msgid "Thibitisha namba yako"
+msgstr "Verify your number"
+
+msgid "Tumekutumia code ya tarakimu sita kwenye simu yako."
+msgstr "We sent a six-digit code to your phone."
+
+msgid "Tumekutumia code ya tarakimu sita. Iweke hapa kuthibitisha kuwa namba hii ni yako."
+msgstr "We sent a six-digit code. Enter it here to confirm this number is yours."
+
+msgid "Hakuna code inayosubiri. Omba nyingine."
+msgstr "There is no code pending. Request another."
+
+msgid "Hakuna code inayosubiri. Tafadhali ingia tena."
+msgstr "There is no code pending. Please sign in again."
+
+msgid "Umeomba code nyingi mno. Subiri kidogo."
+msgstr "You have requested too many codes. Please wait a while."
+
+msgid "Muda umeisha. Tafadhali ingia tena."
+msgstr "Time ran out. Please sign in again."
+
+msgid "Tumekutumia code nyingine."
+msgstr "We have sent you another code."
+
+msgid "Namba yako imethibitishwa. Asante!"
+msgstr "Your number is verified. Thank you!"

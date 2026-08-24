@@ -317,6 +317,10 @@ class Application(TimeStamped):
                               blank=True, null=True)
     category = models.ForeignKey(Category, verbose_name=_("Aina ya Uanachama"),
                                  on_delete=models.PROTECT, related_name="applications")
+    #: Je, mwombaji amethibitisha namba yake kwa code ya SMS? Si lazima —
+    #: ombi linakubalika bila hiyo — lakini afisa anajua namba ipi ni ya
+    #: uhakika kabla ya kupiga simu.
+    phone_verified = models.BooleanField(_("Namba Imethibitishwa"), default=False)
     status = models.CharField(max_length=20, choices=ApplicationStatus.choices,
                               default=ApplicationStatus.PENDING)
     note = models.TextField(_("Maelezo"), blank=True)
@@ -428,6 +432,22 @@ class Application(TimeStamped):
         if not self.reviewed_at:
             self.reviewed_at = timezone.now()
         self.save(update_fields=["member", "status", "reviewed_at", "updated_at"])
+
+        # Mjulishe kwamba uanachama umeanza. NENOSIRI HALIPELEKWI kwa
+        # SMS — SMS haifutiki kwenye simu, na simu hupotea au
+        # hukopeshwa. Afisa ndiye anayempa nenosiri la muda.
+        #
+        # SMS ikishindwa, uanachama unabaki ulivyo. Kutupa kosa hapa
+        # kungerudisha nyuma (`atomic`) kila kitu — mtu angelipa,
+        # asipate uanachama, kwa sababu mtandao ulikatika.
+        try:
+            from core import sms
+            sms.send_membership_ready(member.phone, member.membership_no)
+        except Exception:
+            import logging
+            logging.getLogger(__name__).exception(
+                "SMS ya kukaribisha %s haikutumwa", member.membership_no)
+
         return member
 
 
