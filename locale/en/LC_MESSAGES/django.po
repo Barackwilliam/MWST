@@ -5470,3 +5470,30 @@ msgstr "We have sent you another code."
 
 msgid "Namba yako imethibitishwa. Asante!"
 msgstr "Your number is verified. Thank you!"
+
+msgid "Nakili kiungo"
+msgstr "Copy link"
+
+msgid "Anasubiri kulipa"
+msgstr "Awaiting payment"
+
+msgid "Maelezo ya Ombi"
+msgstr "Application Details"
+
+msgid "Ombi Jipya"
+msgstr "New Application"
+
+msgid "Namba imethibitishwa"
+msgstr "Number verified"
+
+msgid "imethibitishwa"
+msgstr "verified"
+
+msgid "Jina, namba ya simu, barua pepe..."
+msgstr "Name, phone number, email..."
+
+msgid "Kutoka"
+msgstr "From"
+
+msgid "Hadi"
+msgstr "To"

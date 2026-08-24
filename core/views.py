@@ -1702,20 +1702,38 @@ def maombi(request):
     if f["to"]:
         qs = qs.filter(created_at__date__lte=f["to"])
 
+    from django.conf import settings as _s
+
     rows = [{
         "id": a.pk, "ref": a.reference, "name": a.full_name, "category": a.category.name,
+        "region": a.region.name if a.region else "—",
+        "district": a.district.name if a.district else "—",
         "place": f"{a.region.name if a.region else '—'} / {a.district.name if a.district else '—'}",
         "date": a.created_at.strftime("%d/%m/%Y"), "phone": a.phone, "email": a.email,
         "status": a.get_status_display(), "badge": a.badge,
-        "initials": q._initials(a.full_name), "pending": a.status in ("pending", "review"),
+        "initials": q._initials(a.full_name),
+        "pending": a.status in ("pending", "review"),
+        #: Ombi lililohakikiwa linasubiri malipo. Afisa anahitaji kiungo
+        #: cha kumpa mwombaji, na kiasi anachotakiwa kulipa.
+        "awaiting": a.status == ApplicationStatus.AWAITING_PAYMENT,
+        "pay_url": f"{_s.SITE_URL}{reverse('core:lipa')}?ombi={a.reference}",
+        "due": a.amount_due() if a.status == ApplicationStatus.AWAITING_PAYMENT else 0,
+        "phone_verified": a.phone_verified,
     } for a in qs[:50]]
+
+    # Ombi linalochaguliwa kwa `?ombi=<id>`. Awali `detail` ilikuwa
+    # `rows[0]` daima — maandishi yalisema "chagua ombi" lakini hakukuwa
+    # na cha kubofya.
+    picked = request.GET.get("ombi", "")
+    detail = next((r for r in rows if str(r["id"]) == picked), None)
 
     ctx = {
         "rows": rows, "filters": f, "total": qs.count(),
         "statuses": ApplicationStatus.choices,
         "categories": Category.objects.all(),
         "regions_list": Region.objects.all(),
-        "detail": rows[0] if rows else None,
+        "detail": detail or (rows[0] if rows else None),
+        "picked": picked,
         "kpis": q.usajili()["kpis"],
     }
     ctx.update(_chrome(request, nav=navs.usajili("maombi"),

@@ -9,22 +9,26 @@
     {% for k in kpis %}{% include "components/kpi.html" %}{% endfor %}
   </div>
 
-  <section class="card mt">
-    <div class="card__head">
-      <h3 class="card__title">{% trans "Kichujio cha Maombi" %}</h3>
-      <a href="{% url 'core:usajili' %}" class="btn btn--primary btn--sm">
-        <svg><use href="#i-plus"></use></svg> {% trans "Maombi Mapya" %}
-      </a>
-    </div>
+  {% comment %}Kichujio kimefungwa kwenye simu. Kilikuwa kikichukua
+  skrini nzima kabla mtu hajaona ombi hata moja.{% endcomment %}
+  <details class="card mt appf" {% if filters.q or filters.status or filters.category or filters.region or filters.from or filters.to %}open{% endif %}>
+    <summary class="appf__head">
+      <span class="card__title">
+        <svg width="16" height="16"><use href="#i-search"></use></svg>
+        {% trans "Kichujio cha Maombi" %}
+      </span>
+      <span class="appf__count">{{ total }} {% trans "maombi" %}</span>
+    </summary>
     <div class="card__body">
-      <form method="get" class="filters">
-        <div class="field">
-          <label class="field__label">{% trans "Tafuta jina, namba ya simu, email, n.k" %}</label>
-          <input class="input" name="q" value="{{ filters.q }}" placeholder="{% trans 'Tafuta hapa...' %}">
+      <form method="get" class="appf__grid">
+        <div class="field field--wide">
+          <label class="field__label" for="f-q">{% trans "Tafuta" %}</label>
+          <input class="input" id="f-q" name="q" value="{{ filters.q }}"
+                 placeholder="{% trans 'Jina, namba ya simu, barua pepe...' %}">
         </div>
         <div class="field">
-          <label class="field__label">{% trans "Hali ya Maombi" %}</label>
-          <select class="select" name="status">
+          <label class="field__label" for="f-status">{% trans "Hali" %}</label>
+          <select class="select" id="f-status" name="status">
             <option value="">{% trans "Zote" %}</option>
             {% for v, label in statuses %}
               <option value="{{ v }}" {% if filters.status == v %}selected{% endif %}>{{ label }}</option>
@@ -32,8 +36,8 @@
           </select>
         </div>
         <div class="field">
-          <label class="field__label">{% trans "Aina ya Uanachama" %}</label>
-          <select class="select" name="category">
+          <label class="field__label" for="f-cat">{% trans "Kifurushi" %}</label>
+          <select class="select" id="f-cat" name="category">
             <option value="">{% trans "Zote" %}</option>
             {% for c in categories %}
               <option value="{{ c.pk }}" {% if filters.category == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
@@ -41,8 +45,8 @@
           </select>
         </div>
         <div class="field">
-          <label class="field__label">{% trans "Mkoa" %}</label>
-          <select class="select" name="region">
+          <label class="field__label" for="f-reg">{% trans "Mkoa" %}</label>
+          <select class="select" id="f-reg" name="region">
             <option value="">{% trans "Zote" %}</option>
             {% for r in regions_list %}
               <option value="{{ r.pk }}" {% if filters.region == r.pk|stringformat:"s" %}selected{% endif %}>{{ r.name }}</option>
@@ -50,90 +54,125 @@
           </select>
         </div>
         <div class="field">
-          <label class="field__label">{% trans "Tarehe Kutoka" %}</label>
-          <input class="input" type="date" name="from" value="{{ filters.from }}">
+          <label class="field__label" for="f-from">{% trans "Kutoka" %}</label>
+          <input class="input" type="date" id="f-from" name="from" value="{{ filters.from }}">
         </div>
         <div class="field">
-          <label class="field__label">{% trans "Tarehe Hadi" %}</label>
-          <input class="input" type="date" name="to" value="{{ filters.to }}">
+          <label class="field__label" for="f-to">{% trans "Hadi" %}</label>
+          <input class="input" type="date" id="f-to" name="to" value="{{ filters.to }}">
         </div>
-        <div class="hstack">
-          <button class="btn btn--primary"><svg><use href="#i-search"></use></svg> {% trans "Tafuta" %}</button>
-          <a href="{% url 'core:maombi' %}" class="btn btn--ghost"><svg><use href="#i-x-circle"></use></svg> {% trans "Futa" %}</a>
+        <div class="appf__go">
+          <button class="btn btn--primary">
+            <svg><use href="#i-search"></use></svg> {% trans "Tafuta" %}
+          </button>
+          <a href="{% url 'core:maombi' %}" class="btn btn--ghost">
+            <svg><use href="#i-x-circle"></use></svg> {% trans "Futa" %}
+          </a>
         </div>
       </form>
     </div>
-  </section>
+  </details>
 
-  <div class="grid grid--2-1 mt">
+  <div class="applayout mt">
+    {# ---------------- Orodha ---------------- #}
     <section class="card">
       <div class="card__head">
-        <h3 class="card__title">{% trans "Orodha ya Maombi ya Uanachama" %}</h3>
-        <span class="rowlist__meta">{{ total }} {% trans "maombi" %}</span>
+        <h3 class="card__title">{% trans "Maombi" %}</h3>
+        <a href="{% url 'core:usajili' %}" class="btn btn--primary btn--sm">
+          <svg><use href="#i-plus"></use></svg> {% trans "Ombi Jipya" %}
+        </a>
       </div>
+
       <div class="card__body card__body--flush">
-        <div class="tablewrap">
-          <table class="table">
-            <thead><tr>
-              <th>#</th><th>{% trans "Namba ya Maombi" %}</th><th>{% trans "Jina Kamili" %}</th>
-              <th>{% trans "Aina ya Uanachama" %}</th><th>{% trans "Mkoa / Wilaya" %}</th>
-              <th>{% trans "Tarehe ya Maombi" %}</th><th>{% trans "Namba ya Simu" %}</th>
-              <th>{% trans "Hali ya Maombi" %}</th><th>{% trans "Hatua" %}</th>
-            </tr></thead>
-            <tbody>
-              {% for r in rows %}
-                <tr>
-                  <td>{{ forloop.counter }}</td>
-                  <td class="t-mono">{{ r.ref }}</td>
-                  <td class="t-name">{{ r.name }}</td>
-                  <td><span class="badge badge--{{ r.category|lower }}">{{ r.category }}</span></td>
-                  <td>{{ r.place }}</td>
-                  <td class="t-mono">{{ r.date }}</td>
-                  <td class="t-mono">{{ r.phone }}</td>
-                  <td><span class="badge badge--{{ r.badge }}">{{ r.status }}</span></td>
-                  <td>
-                    <span class="table__actions">
-                      {% if r.pending %}
-                        <a class="table__act" href="{% url 'core:application_edit' r.id %}" title="{% trans 'Hariri' %}">
-                          <svg width="15" height="15"><use href="#i-settings"></use></svg></a>
-                        <form method="post" action="{% url 'core:maombi_action' r.id 'approve' %}" style="display:inline">
-                          {% csrf_token %}
-        {% if form.non_field_errors %}
-          <div class="formerr">
-            <svg width="15" height="15"><use href="#i-alert"></use></svg>
-            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
-          </div>
-        {% endif %}
-                                  <button class="table__act" title="{% trans 'Idhinisha' %}"><svg width="15" height="15"><use href="#i-check-circle"></use></svg></button>
-                        </form>
-                        <form method="post" action="{% url 'core:maombi_action' r.id 'reject' %}" style="display:inline">
-                          {% csrf_token %}
-                          <button class="table__act table__act--danger" title="{% trans 'Kataa' %}"><svg width="15" height="15"><use href="#i-x-circle"></use></svg></button>
-                        </form>
-                      {% else %}
-                        <span class="rowlist__meta">—</span>
-                      {% endif %}
-                    </span>
-                  </td>
-                </tr>
-              {% empty %}
-                <tr><td colspan="9">
-                  <div class="empty">
-                    <span class="empty__icon"><svg width="22" height="22"><use href="#i-file"></use></svg></span>
-                    <span class="empty__title">{% trans "Hakuna maombi" %}</span>
-                    <span class="empty__text">{% trans "Hakuna maombi yanayolingana na kichujio hiki." %}</span>
-                  </div>
-                </td></tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+        {% comment %}Kadi badala ya jedwali. Jedwali lilikuwa na safu
+        tisa; safu ya "Hatua" ikiwa ya mwisho, ilitoka nje ya skrini na
+        vitufe vya kuidhinisha vilijificha. Kadi hazitelezi kando —
+        kila kitu kinaonekana kwenye upana wowote.{% endcomment %}
+        <ul class="applist">
+          {% for r in rows %}
+            <li class="appcard{% if r.id|stringformat:'s' == picked %} is-on{% endif %}">
+              <a class="appcard__main"
+                 href="?{% if filters.q %}q={{ filters.q|urlencode }}&{% endif %}{% if filters.status %}status={{ filters.status }}&{% endif %}{% if filters.category %}category={{ filters.category }}&{% endif %}{% if filters.region %}region={{ filters.region }}&{% endif %}ombi={{ r.id }}">
+                <span class="appcard__av">{{ r.initials }}</span>
+                <span class="appcard__body">
+                  <span class="appcard__top">
+                    <b class="appcard__name">{{ r.name }}</b>
+                    <span class="badge badge--{{ r.badge }}">{{ r.status }}</span>
+                  </span>
+                  <span class="appcard__meta">
+                    <span class="t-mono">{{ r.ref }}</span>
+                    <span class="appcard__dot">&middot;</span>
+                    <span>{{ r.category }}</span>
+                  </span>
+                  <span class="appcard__meta">
+                    <span><svg width="12" height="12"><use href="#i-map-pin"></use></svg> {{ r.region }}</span>
+                    <span class="appcard__dot">&middot;</span>
+                    <span class="t-mono">{{ r.phone }}</span>
+                    {% if r.phone_verified %}
+                      <svg class="appcard__ok" width="12" height="12"
+                           aria-label="{% trans 'Namba imethibitishwa' %}"><use href="#i-check-circle"></use></svg>
+                    {% endif %}
+                    <span class="appcard__dot">&middot;</span>
+                    <span class="t-mono">{{ r.date }}</span>
+                  </span>
+                </span>
+              </a>
+
+              {% comment %}Vitufe vina MAANDISHI, si aikoni pekee.
+              Aikoni ya 15px isiyo na maandishi haijulikani ni ya nini,
+              na "kataa" ni hatua isiyorudishwa nyuma.{% endcomment %}
+              <div class="appcard__acts">
+                {% if r.pending %}
+                  <form method="post" action="{% url 'core:maombi_action' r.id 'approve' %}">
+                    {% csrf_token %}
+                    <button class="btn btn--sm btn--primary">
+                      <svg><use href="#i-check-circle"></use></svg> {% trans "Hakiki" %}
+                    </button>
+                  </form>
+                  <form method="post" action="{% url 'core:maombi_action' r.id 'reject' %}"
+                        data-confirm="{% blocktrans with name=r.name %}Kataa ombi la {{ name }}? Hatua hii hairudishwi nyuma.{% endblocktrans %}">
+                    {% csrf_token %}
+                    <button class="btn btn--sm btn--danger">
+                      <svg><use href="#i-x-circle"></use></svg> {% trans "Kataa" %}
+                    </button>
+                  </form>
+                  <a class="btn btn--sm btn--ghost" href="{% url 'core:application_edit' r.id %}">
+                    <svg><use href="#i-settings"></use></svg> {% trans "Hariri" %}
+                  </a>
+                {% elif r.awaiting %}
+                  <span class="appcard__due">
+                    <svg width="13" height="13"><use href="#i-clock"></use></svg>
+                    {% trans "Anasubiri kulipa" %} TZS {{ r.due|floatformat:0 }}
+                  </span>
+                  <button type="button" class="btn btn--sm btn--ghost"
+                          data-copy="{{ r.pay_url }}">
+                    <svg><use href="#i-file"></use></svg> {% trans "Nakili kiungo" %}
+                  </button>
+                {% else %}
+                  <span class="appcard__done">{{ r.status }}</span>
+                {% endif %}
+              </div>
+            </li>
+          {% empty %}
+            <li class="appcard appcard--empty">
+              <div class="empty">
+                <span class="empty__icon"><svg width="22" height="22"><use href="#i-file"></use></svg></span>
+                <span class="empty__title">{% trans "Hakuna maombi" %}</span>
+                <span class="empty__text">{% trans "Hakuna maombi yanayolingana na kichujio hiki." %}</span>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
       </div>
     </section>
 
-    <section class="card">
+    {# ---------------- Maelezo ---------------- #}
+    <section class="card appdet">
       <div class="card__head">
-        <h3 class="card__title"><svg width="17" height="17" style="vertical-align:-3px"><use href="#i-user"></use></svg> {% trans "Maelezo ya Maombi" %}</h3>
+        <h3 class="card__title">
+          <svg width="17" height="17" style="vertical-align:-3px"><use href="#i-user"></use></svg>
+          {% trans "Maelezo ya Ombi" %}
+        </h3>
       </div>
       <div class="card__body">
         {% if detail %}
@@ -145,17 +184,33 @@
             </span>
           </div>
           <div class="detail__row"><svg><use href="#i-file"></use></svg>
-            <span><span class="detail__lbl">{% trans "Namba ya Maombi" %}</span><span class="detail__val">{{ detail.ref }}</span></span></div>
+            <span><span class="detail__lbl">{% trans "Namba ya Ombi" %}</span><span class="detail__val t-mono">{{ detail.ref }}</span></span></div>
           <div class="detail__row"><svg><use href="#i-star"></use></svg>
-            <span><span class="detail__lbl">{% trans "Aina ya Uanachama" %}</span><span class="detail__val">{{ detail.category }}</span></span></div>
+            <span><span class="detail__lbl">{% trans "Kifurushi" %}</span><span class="detail__val">{{ detail.category }}</span></span></div>
           <div class="detail__row"><svg><use href="#i-map-pin"></use></svg>
             <span><span class="detail__lbl">{% trans "Mkoa / Wilaya" %}</span><span class="detail__val">{{ detail.place }}</span></span></div>
           <div class="detail__row"><svg><use href="#i-phone"></use></svg>
-            <span><span class="detail__lbl">{% trans "Namba ya Simu" %}</span><span class="detail__val">{{ detail.phone }}</span></span></div>
+            <span><span class="detail__lbl">{% trans "Namba ya Simu" %}</span>
+              <span class="detail__val t-mono">
+                <a href="tel:{{ detail.phone }}">{{ detail.phone }}</a>
+                {% if detail.phone_verified %}
+                  <span class="appdet__ok">{% trans "imethibitishwa" %}</span>
+                {% endif %}
+              </span></span></div>
           <div class="detail__row"><svg><use href="#i-mail"></use></svg>
-            <span><span class="detail__lbl">{% trans "Barua Pepe" %}</span><span class="detail__val">{{ detail.email }}</span></span></div>
+            <span><span class="detail__lbl">{% trans "Barua Pepe" %}</span><span class="detail__val">{{ detail.email|default:"—" }}</span></span></div>
           <div class="detail__row"><svg><use href="#i-calendar"></use></svg>
-            <span><span class="detail__lbl">{% trans "Tarehe ya Maombi" %}</span><span class="detail__val">{{ detail.date }}</span></span></div>
+            <span><span class="detail__lbl">{% trans "Tarehe ya Ombi" %}</span><span class="detail__val t-mono">{{ detail.date }}</span></span></div>
+
+          {% if detail.awaiting %}
+            <div class="appdet__pay">
+              <b>{% trans "Anasubiri kulipa" %} TZS {{ detail.due|floatformat:0 }}</b>
+              <code>{{ detail.pay_url }}</code>
+              <button type="button" class="btn btn--sm btn--primary" data-copy="{{ detail.pay_url }}">
+                <svg><use href="#i-file"></use></svg> {% trans "Nakili kiungo" %}
+              </button>
+            </div>
+          {% endif %}
         {% else %}
           <div class="empty">
             <span class="empty__icon"><svg width="22" height="22"><use href="#i-user"></use></svg></span>

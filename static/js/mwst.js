@@ -1339,3 +1339,61 @@
 
   paint();
 })();
+
+/* ==========================================================================
+   UTHIBITISHO NA KUNAKILI
+   Vinatumika kwenye paneli ya usimamizi. Vimeandikwa kwa `document`
+   badala ya kila ukurasa, ili viwe tayari popote pale zinapoongezwa.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  /* Fomu yenye `data-confirm` inauliza kabla ya kutuma. "Kataa ombi" ni
+     hatua isiyorudishwa nyuma — kubofya kwa bahati mbaya kunagharimu. */
+  document.addEventListener("submit", function (e) {
+    var form = e.target.closest("[data-confirm]");
+    if (!form) return;
+    if (!window.confirm(form.getAttribute("data-confirm"))) {
+      e.preventDefault();
+    }
+  });
+
+  /* Kitufe chenye `data-copy` kinanakili maandishi na kuonyesha
+     kilichofanyika. Bila dalili, mtu hajui kama imefanya kazi na
+     anabofya tena. */
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-copy]");
+    if (!btn) return;
+    e.preventDefault();
+
+    var text = btn.getAttribute("data-copy");
+    var done = function () {
+      var old = btn.innerHTML;
+      btn.innerHTML = "\u2713 Imenakiliwa";
+      btn.disabled = true;
+      setTimeout(function () {
+        btn.innerHTML = old;
+        btn.disabled = false;
+      }, 1600);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
+    } else {
+      // http:// au vivinjari vya zamani hawana clipboard API
+      fallback(text, done);
+    }
+  });
+
+  function fallback(text, done) {
+    var box = document.createElement("textarea");
+    box.value = text;
+    box.setAttribute("readonly", "");
+    box.style.position = "fixed";
+    box.style.left = "-9999px";
+    document.body.appendChild(box);
+    box.select();
+    try { document.execCommand("copy"); done(); } catch (err) { window.prompt("Nakili:", text); }
+    document.body.removeChild(box);
+  }
+})();

@@ -5078,3 +5078,139 @@ html { overflow-x: clip; }
   .otp__card { padding: 26px 18px 22px; }
   .otp__code { font-size: 26px; letter-spacing: .26em; text-indent: .26em; }
 }
+
+/* ==========================================================================
+   MAOMBI YA UANACHAMA
+   --------------------------------------------------------------------------
+   Ukurasa huu ulikuwa na jedwali la safu tisa. Safu ya "Hatua" ikiwa ya
+   mwisho, ilitoka nje ya skrini kwenye upana wowote usio mkubwa, na
+   vitufe vya kuidhinisha vilijificha. Kadi hazitelezi kando — kila kitu
+   kinaonekana kwenye upana wowote.
+   ========================================================================== */
+.applayout {
+  display: grid; grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px; align-items: start;
+}
+
+/* --- Kichujio kinachokunjwa --- */
+.appf { padding: 0; }
+.appf__head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 14px 18px; cursor: pointer; list-style: none;
+  user-select: none;
+}
+.appf__head::-webkit-details-marker { display: none; }
+.appf__head::after {
+  content: ""; flex: none; width: 8px; height: 8px; margin-left: 4px;
+  border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg); transition: transform .2s;
+}
+.appf[open] .appf__head::after { transform: rotate(-135deg); }
+.appf__head .card__title { display: flex; align-items: center; gap: 8px; }
+.appf__count {
+  margin-left: auto; font-size: 12px; font-weight: 700; color: var(--muted);
+}
+.appf__grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px; align-items: end;
+}
+.appf__grid .field--wide { grid-column: span 2; }
+.appf__go { display: flex; gap: 8px; align-items: center; }
+
+/* --- Orodha ya kadi --- */
+.applist { list-style: none; margin: 0; padding: 0; }
+.appcard {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 13px 18px; border-bottom: 1px solid var(--line-soft);
+  transition: background .14s;
+}
+.appcard:last-child { border-bottom: 0; }
+.appcard:hover { background: var(--canvas); }
+.appcard.is-on {
+  background: var(--g-50);
+  box-shadow: inset 3px 0 0 var(--g-500);
+}
+.appcard--empty { display: block; padding: 8px; }
+
+.appcard__main {
+  display: flex; align-items: center; gap: 12px;
+  flex: 1 1 320px; min-width: 0; color: inherit;
+}
+.appcard__av {
+  width: 40px; height: 40px; flex: none; border-radius: 50%;
+  display: grid; place-items: center;
+  background: linear-gradient(150deg, var(--g-100), var(--g-50));
+  color: var(--g-700); font-size: 13px; font-weight: 800;
+}
+.appcard__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.appcard__top { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.appcard__name {
+  font-size: 14px; font-weight: 700; color: var(--ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.appcard__meta {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 11.5px; color: var(--muted);
+}
+.appcard__meta svg { color: var(--muted-2); vertical-align: -1px; }
+.appcard__dot { color: var(--line); }
+.appcard__ok { color: var(--ok); }
+
+/* --- Hatua: daima zinaonekana --- */
+.appcard__acts {
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  flex: 0 0 auto; margin-left: auto;
+}
+.appcard__acts form { display: inline; }
+.appcard__due {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 11px; border-radius: var(--r-full);
+  background: var(--warn-bg); color: var(--warn);
+  font-size: 11.5px; font-weight: 700; white-space: nowrap;
+}
+.appcard__done { font-size: 12px; color: var(--muted-2); }
+
+/* --- Paneli ya maelezo --- */
+.appdet { position: sticky; top: 84px; }
+.appdet__ok {
+  margin-left: 6px; padding: 2px 7px; border-radius: var(--r-full);
+  background: var(--g-50); color: var(--g-700);
+  font-family: var(--font); font-size: 9.5px; font-weight: 800;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.appdet__pay {
+  display: grid; gap: 9px; margin-top: 14px; padding: 13px;
+  border-radius: var(--r); background: var(--warn-bg);
+  border: 1px solid color-mix(in srgb, var(--warn) 22%, transparent);
+}
+.appdet__pay b { font-size: 12.5px; color: var(--warn); }
+.appdet__pay code {
+  font-size: 10.5px; color: var(--ink-2); overflow-wrap: anywhere;
+  background: var(--surface); padding: 7px 9px; border-radius: 7px;
+  border: 1px solid var(--line);
+}
+
+/* --- Tableti --- */
+@media (max-width: 1100px) {
+  .applayout { grid-template-columns: minmax(0, 1fr); }
+  .appdet { position: static; }
+}
+
+/* --- Simu --- */
+@media (max-width: 640px) {
+  .appcard { padding: 13px 14px; }
+  .appcard__main { flex: 1 1 100%; }
+  .appcard__acts {
+    margin-left: 0; width: 100%;
+    padding-top: 11px; border-top: 1px dashed var(--line);
+  }
+  /* Vitufe vinajaza upana — kidole kinalenga rahisi kuliko kitufe
+     kidogo kilichobanwa pembeni. */
+  .appcard__acts .btn { flex: 1 1 auto; justify-content: center; }
+  .appcard__acts form { flex: 1 1 auto; display: flex; }
+  .appcard__acts form .btn { width: 100%; }
+  .appf__grid { grid-template-columns: minmax(0, 1fr); }
+  .appf__grid .field--wide { grid-column: span 1; }
+  .appf__go .btn { flex: 1 1 auto; justify-content: center; }
+  .appf__head { padding: 13px 14px; }
+}
