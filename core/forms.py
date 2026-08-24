@@ -606,6 +606,10 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
             status=PaymentStatus.PENDING,
             donor_name=(str(_("Mchangiaji asiyetajwa")) if data.get("anonymous")
                         else data["full_name"]),
+            #: Namba inahifadhiwa hata kwa anayechangia bila jina. "Bila
+            #: jina" ni kuhusu kuonekana hadharani, si kuhusu risiti —
+            #: aliyetoa TZS 200,000 anastahili uthibitisho.
+            donor_phone=data.get("phone", ""),
         )
 
 
