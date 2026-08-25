@@ -619,6 +619,17 @@ def login_view(request):
         password = request.POST.get("password") or ""
         user = _find_user(identifier, password, request) if identifier else None
 
+        if user is not None and user.is_superuser:
+            # Msimamizi mkuu hatumii ukurasa huu. Akaunti yake ni ya
+            # Django admin pekee, kwenye njia yake ya siri — kwa hiyo
+            # hata mtu aliyeiba nenosiri lake hawezi kuitumia hapa,
+            # wala hawezi kujua kama nenosiri ni sahihi.
+            cache.set(cache_key, attempts + 1, LOGIN_LOCKOUT_SECONDS)
+            AuditLog.record(request, "superuser_public_login_blocked",
+                            detail=user.username)
+            messages.error(request, _("Jina la mtumiaji au nenosiri si sahihi."))
+            return render(request, "public/login.html", _login_ctx(request))
+
         if user is not None:
             cache.delete(cache_key)
             if _needs_code(user, request):
