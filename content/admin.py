@@ -1,8 +1,9 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from .models import (Album, Announcement, ContactMessage, Faq, Leader, MediaItem,
                      MessageLog, Milestone, News, NewsCategory, Notification,
-                     Pillar, Service, SiteSetting, Verse)
+                     Pillar, Service, SiteSetting, SmsOutbox, Verse)
 
 
 @admin.register(SiteSetting)
@@ -98,3 +99,29 @@ class NotificationAdmin(admin.ModelAdmin):
 class MessageLogAdmin(admin.ModelAdmin):
     list_display = ("created_at", "channel", "subject", "recipients", "status")
     list_filter = ("channel", "status")
+
+
+@admin.register(SmsOutbox)
+class SmsOutboxAdmin(admin.ModelAdmin):
+    """
+    Foleni ya SMS zilizoshindwa.
+
+    Ipo hapa kwa sababu ni mahali pa kwanza pa kuangalia mtu akisema
+    "sikupata risiti". `last_error` inaeleza kwa nini — salio limeisha,
+    namba imezuiwa, au mtandao ulikatika.
+    """
+    list_display = ("phone", "status", "attempts", "reference",
+                    "last_error", "created_at", "sent_at")
+    list_filter = ("status", "created_at")
+    search_fields = ("phone", "text", "reference")
+    readonly_fields = ("created_at", "updated_at", "sent_at")
+    date_hierarchy = "created_at"
+    actions = ["rudia"]
+
+    @admin.action(description=_("Rudisha kwenye foleni (jaribu tena)"))
+    def rudia(self, request, queryset):
+        n = queryset.update(status="queued", attempts=0, last_error="")
+        self.message_user(request, _(
+            "Ujumbe %(n)d umerudishwa kwenye foleni. Endesha "
+            "`tuma_sms_foleni` kuutuma."
+        ) % {"n": n})

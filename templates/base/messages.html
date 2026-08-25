@@ -1,12 +1,25 @@
+{% load i18n %}
+{% comment %}
+Ujumbe wa mfumo.
+
+Ulikuwa umeandikwa kwa `style="..."` ndani ya HTML — kila ujumbe ukiwa
+`.card` kamili yenye padding kubwa. Ujumbe mitatu ilichukua sehemu kubwa
+ya skrini kabla mtu hajaona kazi yenyewe.
+
+Sasa ni `.msg`, ndogo zaidi, na inaweza kufungwa. Maandishi marefu
+(mfano kiungo cha malipo) yanakatika vizuri badala ya kusukuma ukurasa.
+{% endcomment %}
 {% if messages %}
-  <div class="vstack" style="margin-bottom:16px">
+  <div class="msgs">
     {% for m in messages %}
-      <div class="card" style="flex-direction:row;align-items:flex-start;gap:11px;padding:13px 15px;
-           border-left:4px solid var(--{% if m.tags == 'error' %}danger{% elif m.tags == 'warning' %}warn{% elif m.tags == 'info' %}n-700{% else %}ok{% endif %})">
-        <span class="fund__ico tint-{% if m.tags == 'error' %}red{% elif m.tags == 'warning' %}gold{% elif m.tags == 'info' %}navy{% else %}green{% endif %}" style="width:28px;height:28px">
+      <div class="msg msg--{% if m.tags == 'error' %}danger{% elif m.tags == 'warning' %}warn{% elif m.tags == 'info' %}info{% else %}ok{% endif %}"
+           role="{% if m.tags == 'error' %}alert{% else %}status{% endif %}">
+        <span class="msg__ico">
           <svg width="15" height="15"><use href="#i-{% if m.tags == 'error' %}x-circle{% elif m.tags == 'warning' %}alert{% elif m.tags == 'info' %}info{% else %}check-circle{% endif %}"></use></svg>
         </span>
-        <span style="flex:1;font-size:13px;line-height:1.6">{{ m }}</span>
+        <span class="msg__text">{{ m }}</span>
+        <button type="button" class="msg__x" data-msg-close
+                aria-label="{% trans 'Funga' %}">&times;</button>
       </div>
     {% endfor %}
   </div>

@@ -49,7 +49,9 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    #: `config.apps.AdminConfig` inabadilisha `admin.site` iwe yetu
+    #: (msimamizi mkuu pekee) kabla apps hazijasajili chochote.
+    "config.apps.AdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",

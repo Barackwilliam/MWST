@@ -79,6 +79,23 @@ class User(AbstractUser):
         return ROLE_HOME.get(self.role, "core:member_dashboard")
 
 
+def _client_ip(request):
+    """
+    Anwani ya IP ya mteja.
+
+    `X-Forwarded-For` inatumwa na KIVINJARI; proxy huongeza IP halisi
+    MWISHONI. Kuchukua ya kwanza kunamruhusu mtu kubandika IP ya uongo,
+    na kumbukumbu ya usalama ingekuwa ya kudanganya — ndiyo hasa
+    kumbukumbu isiyotakiwa kuwa hivyo.
+    """
+    forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    if forwarded:
+        parts = [p.strip() for p in forwarded.split(",") if p.strip()]
+        if parts:
+            return parts[-1]
+    return request.META.get("REMOTE_ADDR")
+
+
 class AuditLog(TimeStamped):
     """Kumbukumbu ya kila kitendo muhimu kwenye mfumo."""
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL,
@@ -107,8 +124,7 @@ class AuditLog(TimeStamped):
             table_affected=obj._meta.db_table if obj is not None else "",
             record_id=str(getattr(obj, "pk", "")) if obj is not None else "",
             detail=detail,
-            ip_address=(request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0].strip()
-                        or request.META.get("REMOTE_ADDR")),
+            ip_address=_client_ip(request),
             device=request.META.get("HTTP_USER_AGENT", "")[:200],
         )
 

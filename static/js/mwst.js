@@ -1397,3 +1397,24 @@
     document.body.removeChild(box);
   }
 })();
+
+/* Kufunga ujumbe wa mfumo. Ujumbe wa mafanikio unajifunga wenyewe baada
+   ya sekunde nane — wa hitilafu unabaki hadi mtu auondoe. */
+(function () {
+  "use strict";
+  var box = document.querySelector(".msgs");
+  if (!box) return;
+
+  box.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-msg-close]");
+    if (btn) btn.closest(".msg").remove();
+  });
+
+  box.querySelectorAll(".msg--ok").forEach(function (el) {
+    setTimeout(function () {
+      el.style.transition = "opacity .3s";
+      el.style.opacity = "0";
+      setTimeout(function () { el.remove(); }, 320);
+    }, 8000);
+  });
+})();

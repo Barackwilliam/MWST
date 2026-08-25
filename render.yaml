@@ -38,6 +38,14 @@ services:
       - key: DEFAULT_FROM_EMAIL
         value: "MUWESTA <info@muslimwelfare.or.tz>"
 
+      # --- Django admin ---------------------------------------------------
+      # Njia ya Django admin. MSIMAMIZI MKUU pekee (`is_superuser`)
+      # anaruhusiwa — angalia config/admin.py. Iache tupu kabisa
+      # kuizima. Njia ya siri huondoa mashambulizi ya kubahatisha
+      # yanayolenga /admin/, lakini si mbadala wa nenosiri imara.
+      - key: DJANGO_ADMIN_URL
+        sync: false
+
       # --- SMS (NextSMS) --------------------------------------------------
       # NEXTSMS_TOKEN: dashibodi -> Customer Info -> Customization -> API Keys
       # NEXTSMS_SENDER: jina lililosajiliwa NextSMS. Lisilosajiliwa
