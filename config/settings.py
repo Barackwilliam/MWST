@@ -237,6 +237,11 @@ NEXTSMS_TEST_MODE = os.environ.get("NEXTSMS_TEST_MODE", "False").lower() == "tru
 #: si kwa ofisi. Ikishakamilika, iwekwe namba ya ofisi kwenye Render.
 SUPPORT_PHONE = os.environ.get("SUPPORT_PHONE", "0629712678").strip()
 
+#: Siku ambazo tatizo linakaa ngazi moja kabla ya kupanda lenyewe.
+#: Kiongozi asiyeshughulikia asiliweke kando milele — lakini muda uwe
+#: wa kutosha kumpa nafasi ya kweli ya kulitatua.
+CASE_ESCALATE_DAYS = int(os.environ.get("CASE_ESCALATE_DAYS", "7"))
+
 #: KWA MATENGENEZO PEKEE. Ikiwekwa, SMS ZOTE zinaelekezwa kwenye namba
 #: hii badala ya ile ya mhusika. Msanidi anaweza kuingia kwenye akaunti
 #: yoyote na kujaribu mtiririko wowote bila kugusa data ya wanachama.
@@ -357,11 +362,22 @@ SITE_URL = (
 
 if not DEBUG:
     if not SITE_URL.startswith("https://"):
+        # Kosa hili hutokea kwa sababu mbili tofauti kabisa, na ujumbe
+        # uliokuwa ukitaja Render pekee ulipoteza muda wa msanidi:
+        #   * Kwenye kompyuta: `.env` haipo, kwa hiyo DEBUG ni False
+        #   * Kwenye Render : SITE_URL haijawekwa
+        # Sasa ujumbe unaeleza zote mbili.
+        _ndani = SITE_URL.startswith("http://127.0.0.1") or "localhost" in SITE_URL
         raise RuntimeError(
-            f"SITE_URL si sahihi: {SITE_URL!r}. Lazima iwe anwani kamili ya "
-            "https ya tovuti (mfano https://mwiso.onrender.com). Iweke kwenye "
-            "Render > Environment. Pesapal hujenga callback na IPN kutoka "
-            "hapo; ikiwa si sahihi, mtu aliyelipa hatarudi kwenye risiti yake."
+            f"SITE_URL si sahihi: {SITE_URL!r} (DEBUG=False).\n\n"
+            + ("UNAFANYA KAZI KWENYE KOMPYUTA YAKO?\n"
+               "  `.env` haipo. Itengeneze:   copy .env.example .env\n"
+               "  Kisha:                      python manage.py runserver\n\n"
+               if _ndani else "")
+            + "KWENYE RENDER?\n"
+              "  Weka SITE_URL = https://mwiso.onrender.com kwenye Environment.\n"
+              "  Pesapal hujenga callback na IPN kutoka hapo; ikiwa si sahihi, "
+              "mtu aliyelipa hatarudi kwenye risiti yake."
         )
     if SITE_URL not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(SITE_URL)

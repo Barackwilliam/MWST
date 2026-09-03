@@ -1,0 +1,69 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{% trans "Matatizo" %}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+
+  <section class="card">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Matatizo" %} <span class="appf__count">{{ total }}</span></h3>
+    </div>
+    <div class="card__body">
+      <form method="get" class="filterbar">
+        <select class="select filterbar__f" name="status">
+          <option value="">{% trans "Hali zote" %}</option>
+          {% for v, label in statuses %}
+            <option value="{{ v }}" {% if status == v %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn btn--primary">{% trans "Chuja" %}</button>
+        <a href="{% url 'core:leader_matatizo' %}" class="btn btn--ghost">{% trans "Futa" %}</a>
+      </form>
+    </div>
+
+    <div class="card__body card__body--flush">
+      <ul class="applist">
+        {% for c in rows %}
+          <li class="appcard">
+            <a class="appcard__main" href="{% url 'core:leader_tatizo' c.id %}">
+              <span class="appcard__av">{{ c.days }}<small>s</small></span>
+              <span class="appcard__body">
+                <span class="appcard__top">
+                  <b class="appcard__name">{{ c.subject }}</b>
+                  <span class="badge badge--{{ c.badge }}">{{ c.status }}</span>
+                  {% if c.urgent %}<span class="badge badge--danger">{% trans "HARAKA" %}</span>{% endif %}
+                </span>
+                <span class="appcard__meta">
+                  <span class="t-mono">{{ c.ref }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span>{{ c.member }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span>{{ c.category }}</span>
+                </span>
+                <span class="appcard__meta">
+                  <span>{% trans "Ngazi" %}: {{ c.level }} &mdash; {{ c.area }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span class="t-mono">{{ c.date }}</span>
+                </span>
+              </span>
+            </a>
+            <div class="appcard__acts">
+              <a class="btn btn--sm btn--primary" href="{% url 'core:leader_tatizo' c.id %}">
+                <svg><use href="#i-eye"></use></svg> {% trans "Fungua" %}
+              </a>
+            </div>
+          </li>
+        {% empty %}
+          <li class="appcard appcard--empty">
+            <div class="empty">
+              <span class="empty__icon"><svg width="22" height="22"><use href="#i-check-circle"></use></svg></span>
+              <span class="empty__title">{% trans "Hakuna tatizo" %}</span>
+              <span class="empty__text">{% trans "Hakuna tatizo lililofika ngazi yako." %}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+{% endblock %}

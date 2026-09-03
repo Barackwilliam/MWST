@@ -2,6 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, reverse_lazy
 
 from . import views
+from . import leader_views as lv
 
 urlpatterns = [
     # ---- Tovuti ya umma ----
@@ -44,6 +45,33 @@ urlpatterns = [
     path("ingia/code/", views.login_code_view, name="login_code"),
     #: Kuthibitisha namba ya simu ya ombi jipya la uanachama.
     path("jiunge/thibitisha/", views.thibitisha_simu, name="thibitisha_simu"),
+    # --- Sehemu ya uongozi (kata, wilaya, mkoa, kanda, taifa) ---------------
+    path("uongozi/", lv.dashibodi, name="leader_dashboard"),
+    path("uongozi/wanachama/", lv.wanachama, name="leader_wanachama"),
+    path("uongozi/matatizo/", lv.matatizo, name="leader_matatizo"),
+    path("uongozi/matatizo/<int:pk>/", lv.tatizo, name="leader_tatizo"),
+    path("uongozi/matatizo/<int:pk>/<str:action>/", lv.tatizo_action,
+         name="leader_tatizo_action"),
+    path("uongozi/ada/", lv.ada, name="leader_ada"),
+    path("uongozi/ada/<int:pk>/<str:action>/", lv.ada_action, name="leader_ada_action"),
+    path("uongozi/maombi/", lv.maombi, name="leader_maombi"),
+    path("uongozi/michango/", lv.michango, name="leader_michango"),
+    path("uongozi/msaada/", lv.msaada, name="leader_msaada"),
+    path("uongozi/matangazo/", lv.matangazo, name="leader_matangazo"),
+    path("uongozi/mazungumzo/", lv.mazungumzo, name="leader_mazungumzo"),
+    path("uongozi/mazungumzo/anzisha/<int:pk>/", lv.anzisha_mazungumzo,
+         name="leader_anzisha_mazungumzo"),
+    path("uongozi/mazungumzo/<int:pk>/", lv.mazungumzo_moja,
+         name="leader_mazungumzo_moja"),
+
+    # --- Upande wa mwanachama -----------------------------------------------
+    path("mwanachama/matatizo/", lv.member_matatizo, name="member_matatizo"),
+    path("mwanachama/matatizo/mpya/", lv.member_tatizo_mpya,
+         name="member_tatizo_mpya"),
+    path("mwanachama/viongozi/", lv.member_viongozi, name="member_viongozi"),
+    path("mwanachama/viongozi/<str:level>/", lv.member_mazungumzo,
+         name="member_mazungumzo"),
+
     path("nenosiri/sahau/", auth_views.PasswordResetView.as_view(
         template_name="public/password_reset.html",
         email_template_name="public/password_reset_email.txt",

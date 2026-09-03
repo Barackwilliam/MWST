@@ -1,0 +1,96 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{% trans "Viongozi Wangu" %}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+
+  <div class="card ldr__hero">
+    <div>
+      <h2>{% trans "Viongozi Wangu" %}</h2>
+      <p>{% trans "Hawa ndio viongozi wa eneo lako. Unaweza kuwapigia simu au kuwaandikia hapa." %}</p>
+    </div>
+  </div>
+
+  <section class="card mt">
+    <div class="card__head"><h3 class="card__title">{% trans "Wasiliana Nao" %}</h3></div>
+    <div class="card__body card__body--flush">
+      <ul class="applist">
+        {% for l in leaders %}
+          <li class="appcard">
+            <span class="appcard__main">
+              <span class="appcard__av">{{ l.initials }}</span>
+              <span class="appcard__body">
+                <span class="appcard__top">
+                  <b class="appcard__name">{{ l.name }}</b>
+                  <span class="badge badge--info">{{ l.post }}</span>
+                </span>
+                <span class="appcard__meta">
+                  <span>{{ l.level_name }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span><svg width="12" height="12"><use href="#i-map-pin"></use></svg> {{ l.area }}</span>
+                  {% if l.phone %}
+                    <span class="appcard__dot">&middot;</span>
+                    <span class="t-mono">{{ l.phone }}</span>
+                  {% endif %}
+                </span>
+              </span>
+            </span>
+            <div class="appcard__acts">
+              {% if l.phone %}
+                <a class="btn btn--sm btn--ghost" href="tel:{{ l.phone }}">
+                  <svg><use href="#i-phone"></use></svg> {% trans "Piga" %}
+                </a>
+              {% endif %}
+              <a class="btn btn--sm btn--primary"
+                 href="{% url 'core:member_mazungumzo' l.level %}">
+                <svg><use href="#i-message"></use></svg> {% trans "Andika" %}
+              </a>
+            </div>
+          </li>
+        {% empty %}
+          <li class="appcard appcard--empty">
+            <div class="empty">
+              <span class="empty__icon"><svg width="22" height="22"><use href="#i-user-check"></use></svg></span>
+              <span class="empty__title">{% trans "Hakuna kiongozi aliyewekwa bado" %}</span>
+              <span class="empty__text">
+                {% trans "Eneo lako halina kiongozi kwenye mfumo kwa sasa. Unaweza bado kutoa taarifa — itaenda ngazi ya juu." %}
+              </span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  {% if threads %}
+    <section class="card mt">
+      <div class="card__head"><h3 class="card__title">{% trans "Mazungumzo Yangu" %}</h3></div>
+      <div class="card__body card__body--flush">
+        <ul class="applist">
+          {% for t in threads %}
+            <li class="appcard">
+              <a class="appcard__main" href="{% url 'core:member_mazungumzo' t.level %}">
+                <span class="appcard__av"><svg width="16" height="16"><use href="#i-message"></use></svg></span>
+                <span class="appcard__body">
+                  <span class="appcard__top">
+                    <b class="appcard__name">{{ t.get_level_display }}</b>
+                    <span class="badge badge--muted">{{ t.n }}</span>
+                  </span>
+                  <span class="appcard__meta">
+                    <span class="t-mono">{{ t.last_at|date:"d/m/Y H:i" }}</span>
+                  </span>
+                </span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  {% endif %}
+
+  <div class="ldr__hint mt">
+    <svg width="15" height="15"><use href="#i-info"></use></svg>
+    {% trans "Ukiwa na tatizo linalohitaji ufuatiliaji, ni bora kutumia \"Toa Taarifa kwa Kiongozi\" badala ya ujumbe — utapata namba ya kumbukumbu na kuona limefikia wapi." %}
+  </div>
+{% endblock %}

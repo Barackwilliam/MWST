@@ -178,6 +178,12 @@ def member(active="dashboard"):
         {"key": "familia", "label": "Familia & Wanufaika", "icon": "users",
          "url": "/mwanachama/familia/"},
         {"key": "matukio", "label": "Matukio", "icon": "calendar", "url": "/mwanachama/matukio/"},
+        {"key": "viongozi", "label": "Viongozi Wangu", "icon": "user-check",
+         "url": "/mwanachama/viongozi/"},
+        {"key": "ujumbe", "label": "Ujumbe kwa Kiongozi", "icon": "message",
+         "url": "/mwanachama/viongozi/ward/"},
+        {"key": "matatizo", "label": "Toa Taarifa kwa Kiongozi", "icon": "megaphone",
+         "url": "/mwanachama/matatizo/"},
         {"key": "taarifa", "label": "Taarifa & Matangazo", "icon": "megaphone",
          "url": "/mwanachama/taarifa/"},
         {"key": "habari", "label": "Habari", "icon": "file", "url": "/habari/"},
@@ -241,3 +247,76 @@ def superadmin(active="dashboard"):
         {"key": "watumiaji", "label": "Watumiaji & Ruhusa", "icon": "shield", "url": "/mfumo/watumiaji/"},
         {"key": "mipangilio", "label": "Mipangilio ya Mfumo", "icon": "settings", "url": "/mfumo/mipangilio/"},
     ], active)
+
+
+def uongozi(active="dashboard", is_member=True):
+    """
+    Menyu ya kiongozi wa kata, wilaya, mkoa, kanda au taifa.
+
+    KILA KIONGOZI NI MWANACHAMA PIA. Ana ada ya kulipa, kadi yake,
+    pointi zake na haki zake zote. Menyu ikiwa na kazi za uongozi pekee,
+    kiongozi angelazimika kutoka na kuingia tena kwa akaunti nyingine —
+    au asingeweza kabisa kuona kadi yake.
+
+    Ndiyo maana menyu ina sehemu mbili: KAZI ZA UONGOZI juu, na
+    UANACHAMA WANGU chini.
+    """
+    items = [
+        {"key": "dashboard", "label": "Dashibodi ya Uongozi", "icon": "dashboard",
+         "url": "/uongozi/"},
+        {"key": "wanachama", "label": "Wanachama Wangu", "icon": "users",
+         "url": "/uongozi/wanachama/"},
+        {"key": "ada", "label": "Ada za Wanachama", "icon": "wallet",
+         "url": "/uongozi/ada/"},
+        {"key": "maombi", "label": "Maombi Mapya", "icon": "user-check",
+         "url": "/uongozi/maombi/"},
+        {"key": "michango", "label": "Michango", "icon": "coins",
+         "url": "/uongozi/michango/"},
+        {"key": "msaada", "label": "Maombi ya Msaada", "icon": "hand-heart",
+         "url": "/uongozi/msaada/"},
+        {"key": "matatizo", "label": "Matatizo", "icon": "alert",
+         "url": "/uongozi/matatizo/"},
+        {"key": "matangazo", "label": "Matangazo", "icon": "megaphone",
+         "url": "/uongozi/matangazo/"},
+        {"key": "mazungumzo", "label": "Mazungumzo", "icon": "message",
+         "url": "/uongozi/mazungumzo/"},
+    ]
+    if is_member:
+        items += [
+            {"key": "yangu", "label": "Uanachama Wangu", "icon": "id-card",
+             "children": [
+                 {"key": "yangu-dash", "label": "Dashibodi Yangu",
+                  "url": "/mwanachama/"},
+                 {"key": "yangu-kadi", "label": "Kadi Yangu",
+                  "url": "/mwanachama/kadi/"},
+                 {"key": "yangu-malipo", "label": "Malipo Yangu",
+                  "url": "/mwanachama/malipo/"},
+                 {"key": "yangu-michango", "label": "Michango Yangu",
+                  "url": "/mwanachama/michango/"},
+                 {"key": "yangu-pointi", "label": "Pointi Zangu",
+                  "url": "/mwanachama/pointi/"},
+                 {"key": "yangu-viongozi", "label": "Viongozi Wangu",
+                  "url": "/mwanachama/viongozi/"},
+                 {"key": "yangu-ujumbe", "label": "Ujumbe kwa Kiongozi",
+                  "url": "/mwanachama/viongozi/ward/"},
+                 {"key": "yangu-wasifu", "label": "Wasifu Wangu",
+                  "url": "/mwanachama/wasifu/"},
+             ]},
+        ]
+    return _mark(items, active)
+
+
+def mwanachama(active="dashboard", user=None):
+    """
+    Menyu ya mwanachama.
+
+    Kiongozi akifungua ukurasa wake wa uanachama (kadi, malipo, pointi)
+    ANAPASWA kubaki na menyu ya uongozi — vinginevyo angepoteza njia ya
+    kurudi kwenye kazi zake, na ingeonekana kama ametolewa nje.
+    """
+    if user is not None and getattr(user, "is_authenticated", False):
+        from geo.scope import active_posts, sees_everyone
+        if active_posts(user) or sees_everyone(user):
+            return uongozi("yangu-" + active if active != "dashboard"
+                           else "yangu-dash", is_member=True)
+    return member(active)

@@ -1,0 +1,48 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{% trans "Toa Taarifa" %}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+  <section class="card" style="max-width:640px">
+    <div class="card__head"><h3 class="card__title">{% trans "Toa Taarifa kwa Kiongozi Wako" %}</h3></div>
+    <div class="card__body">
+      <p class="ldr__hint">
+        <svg width="15" height="15"><use href="#i-info"></use></svg>
+        {% trans "Taarifa yako itaenda kwa kiongozi wa kata yako. Asipoweza kuitatua, ataipandisha wilayani, kisha mkoani, kanda na hatimaye makao makuu." %}
+      </p>
+      <form method="post" class="ldr__form">
+        {% csrf_token %}
+        <div class="field">
+          <label class="field__label" for="c-subject">{% trans "Kichwa" %}</label>
+          <input class="input" id="c-subject" name="subject" required maxlength="160"
+                 placeholder="{% trans 'Eleza kwa ufupi' %}">
+        </div>
+        <div class="ldr__row">
+          <div class="field">
+            <label class="field__label" for="c-cat">{% trans "Aina" %}</label>
+            <select class="select" id="c-cat" name="category">
+              {% for v, label in categories %}<option value="{{ v }}">{{ label }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="c-urg">{% trans "Uzito" %}</label>
+            <select class="select" id="c-urg" name="urgency">
+              {% for v, label in urgencies %}
+                <option value="{{ v }}" {% if v == 'normal' %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="c-body">{% trans "Maelezo" %}</label>
+          <textarea class="input" id="c-body" name="body" rows="6" required
+                    placeholder="{% trans 'Eleza tatizo lako kwa kina...' %}"></textarea>
+        </div>
+        <button class="btn btn--primary">
+          <svg><use href="#i-megaphone"></use></svg> {% trans "Tuma Taarifa" %}
+        </button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

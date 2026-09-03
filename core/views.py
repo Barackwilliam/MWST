@@ -97,8 +97,42 @@ def _filter_nav(nav, user):
     return out
 
 
+def _leader_nav(user, nav):
+    """
+    Badilisha menyu ya mwanachama kuwa ya uongozi kwa aliye kiongozi.
+
+    Menyu ya mwanachama inatambulika kwa kiungo chake cha kwanza
+    (`/mwanachama/`). Nyingine zote — usajili, malipo, taifa — hazibadilishwi.
+    """
+    if not nav or not getattr(user, "is_authenticated", False):
+        return nav
+    try:
+        first = nav[0].get("url", "")
+    except (IndexError, AttributeError, TypeError):
+        return nav
+    if first != "/mwanachama/":
+        return nav
+
+    from geo.scope import active_posts, sees_everyone
+    if not (active_posts(user) or sees_everyone(user)):
+        return nav
+
+    active = next((i.get("key") for i in nav if i.get("active")), "dashboard")
+    return navs.uongozi("yangu-dash" if active == "dashboard"
+                        else f"yangu-{active}", is_member=True)
+
+
 def _chrome(request, **kw):
     user = request.user
+
+    # KIONGOZI NI MWANACHAMA PIA. Akifungua ukurasa wake wa uanachama
+    # (kadi, malipo, pointi), menyu isibadilike kumtoa kwenye uongozi —
+    # angepoteza njia ya kurudi kwenye kazi zake.
+    #
+    # Inafanyika hapa, si kwenye kila view, kwa sababu kurasa za
+    # mwanachama ni nyingi na kusahau moja kungeleta menyu isiyolingana.
+    kw["nav"] = _leader_nav(user, kw.get("nav"))
+
     kw.setdefault("year", timezone.localdate().year)
     this_year = timezone.localdate().year
     kw.setdefault("active_year", _active_year(request))

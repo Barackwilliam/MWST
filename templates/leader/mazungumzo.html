@@ -1,0 +1,103 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{% trans "Mazungumzo" %}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+
+  {% comment %}Kuanzisha mazungumzo kupo HAPA, si kwenye ukurasa wa
+  wanachama pekee. Kiongozi anayetaka kuandika anakuja hapa kwanza —
+  ndipo pa kutafuta.{% endcomment %}
+  <section class="card">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Anzisha Mazungumzo" %}</h3>
+    </div>
+    <div class="card__body">
+      <form method="get" class="filterbar">
+        <input class="input filterbar__f" name="mtu" value="{{ q }}"
+               placeholder="{% trans 'Tafuta mwanachama kwa jina, namba au simu...' %}">
+        <button class="btn btn--primary">
+          <svg><use href="#i-search"></use></svg> {% trans "Tafuta" %}
+        </button>
+        {% if q %}
+          <a href="{% url 'core:leader_mazungumzo' %}" class="btn btn--ghost">{% trans "Futa" %}</a>
+        {% endif %}
+      </form>
+    </div>
+
+    {% if q %}
+      <div class="card__body card__body--flush">
+        <ul class="applist">
+          {% for m in matokeo %}
+            <li class="appcard">
+              <span class="appcard__main">
+                <span class="appcard__av">{{ m.initials }}</span>
+                <span class="appcard__body">
+                  <span class="appcard__top"><b class="appcard__name">{{ m.name }}</b></span>
+                  <span class="appcard__meta">
+                    <span class="t-mono">{{ m.no }}</span>
+                    <span class="appcard__dot">&middot;</span>
+                    <span>{{ m.place }}</span>
+                    <span class="appcard__dot">&middot;</span>
+                    <span class="t-mono">{{ m.phone }}</span>
+                  </span>
+                </span>
+              </span>
+              <div class="appcard__acts">
+                <a class="btn btn--sm btn--primary"
+                   href="{% url 'core:leader_anzisha_mazungumzo' m.id %}">
+                  <svg><use href="#i-message"></use></svg> {% trans "Anza" %}
+                </a>
+              </div>
+            </li>
+          {% empty %}
+            <li class="appcard appcard--empty">
+              <div class="empty">
+                <span class="empty__text">{% trans "Hakuna mwanachama anayelingana kwenye eneo lako." %}</span>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="card mt">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Mazungumzo Yanayoendelea" %}</h3>
+      <span class="appf__count">{{ threads|length }}</span>
+    </div>
+    <div class="card__body card__body--flush">
+      <ul class="applist">
+        {% for t in threads %}
+          <li class="appcard">
+            <a class="appcard__main" href="{% url 'core:leader_mazungumzo_moja' t.pk %}">
+              <span class="appcard__av"><svg width="16" height="16"><use href="#i-message"></use></svg></span>
+              <span class="appcard__body">
+                <span class="appcard__top">
+                  <b class="appcard__name">{{ t.member.full_name }}</b>
+                  <span class="badge badge--muted">{{ t.n }}</span>
+                </span>
+                <span class="appcard__meta">
+                  <span>{{ t.subject|default:"—" }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span class="t-mono">{{ t.last_at|date:"d/m/Y H:i" }}</span>
+                </span>
+              </span>
+            </a>
+          </li>
+        {% empty %}
+          <li class="appcard appcard--empty">
+            <div class="empty">
+              <span class="empty__icon"><svg width="22" height="22"><use href="#i-message"></use></svg></span>
+              <span class="empty__title">{% trans "Hakuna mazungumzo bado" %}</span>
+              <span class="empty__text">
+                {% trans "Tafuta mwanachama hapo juu kuanzisha, au subiri akuandikie." %}
+              </span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{% trans "Matangazo" %}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+
+  <div class="ldr__two">
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Tuma Tangazo" %}</h3></div>
+      <div class="card__body">
+        <p class="ldr__hint">
+          <svg width="15" height="15"><use href="#i-info"></use></svg>
+          {% blocktrans with n=target_count a=area %}Litafika wanachama {{ n }} wa {{ a }}.{% endblocktrans %}
+        </p>
+        <form method="post" class="ldr__form">
+          {% csrf_token %}
+          <div class="field">
+            <label class="field__label" for="b-subject">{% trans "Kichwa" %}</label>
+            <input class="input" id="b-subject" name="subject" required maxlength="160">
+          </div>
+          <div class="field">
+            <label class="field__label" for="b-body">{% trans "Ujumbe" %}</label>
+            <textarea class="input" id="b-body" name="body" rows="6" required></textarea>
+          </div>
+          <button class="btn btn--primary">
+            <svg><use href="#i-megaphone"></use></svg> {% trans "Tuma" %}
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Uliyotuma" %}</h3></div>
+      <div class="card__body card__body--flush">
+        <ul class="applist">
+          {% for b in sent %}
+            <li class="appcard">
+              <span class="appcard__main">
+                <span class="appcard__av"><svg width="16" height="16"><use href="#i-megaphone"></use></svg></span>
+                <span class="appcard__body">
+                  <span class="appcard__top"><b class="appcard__name">{{ b.subject }}</b></span>
+                  <span class="appcard__meta">
+                    <span>{{ b.area_name }}</span>
+                    <span class="appcard__dot">&middot;</span>
+                    <span>{% blocktrans with n=b.reached %}wanachama {{ n }}{% endblocktrans %}</span>
+                    <span class="appcard__dot">&middot;</span>
+                    <span class="t-mono">{{ b.created_at|date:"d/m/Y" }}</span>
+                  </span>
+                </span>
+              </span>
+            </li>
+          {% empty %}
+            <li class="appcard appcard--empty">
+              <div class="empty"><span class="empty__text">{% trans "Hujatuma tangazo lolote bado." %}</span></div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  </div>
+{% endblock %}

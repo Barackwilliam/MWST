@@ -1,0 +1,46 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{% trans "Michango" %}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+  <section class="card">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Michango" %}</h3>
+      <span class="appf__count">{{ rows|length }}</span>
+    </div>
+    <div class="card__body card__body--flush">
+      <ul class="applist">
+        {% for r in rows %}
+          <li class="appcard">
+            <span class="appcard__main">
+              <span class="appcard__av"><svg width="16" height="16"><use href="#i-coins"></use></svg></span>
+              <span class="appcard__body">
+                <span class="appcard__top">
+                  <b class="appcard__name">{{ r.member }}</b>
+                  <span class="badge badge--{{ r.badge }}">{{ r.status }}</span>
+                </span>
+                <span class="appcard__meta">
+                  <span class="t-mono">{{ r.receipt }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span class="t-mono">TZS {{ r.amount|floatformat:0 }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span>{{ r.fund }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span class="t-mono">{{ r.date }}</span>
+                </span>
+              </span>
+            </span>
+          </li>
+        {% empty %}
+          <li class="appcard appcard--empty">
+            <div class="empty">
+              <span class="empty__icon"><svg width="22" height="22"><use href="#i-coins"></use></svg></span>
+              <span class="empty__text">{% trans "Hakuna mchango kutoka eneo lako bado." %}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+{% endblock %}

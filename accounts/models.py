@@ -76,7 +76,27 @@ class User(AbstractUser):
         return self.role in [r.value for r in STAFF_ROLES]
 
     def home_url_name(self):
-        return ROLE_HOME.get(self.role, "core:member_dashboard")
+        """
+        Ukurasa wa kwanza baada ya kuingia.
+
+        KIONGOZI ASIYE NA REKODI YA UANACHAMA alikuwa akikwama: jukumu
+        lake ni `member`, kwa hiyo alipelekwa `/mwanachama/`, ambako
+        hakuna rekodi yake — na akarudishwa nyumbani. Kubofya "Dashibodi"
+        kulirudia mzunguko uleule bila mwisho.
+
+        Sasa: mwenye wadhifa wa uongozi lakini asiye na rekodi ya
+        uanachama anaenda `/uongozi/`. Mwenye vyote viwili anaenda
+        `/mwanachama/` kama kawaida — menyu ya uongozi ipo pale pale.
+        """
+        home = ROLE_HOME.get(self.role, "core:member_dashboard")
+        if home == "core:member_dashboard" and getattr(self, "member", None) is None:
+            try:
+                from geo.scope import active_posts, sees_everyone
+                if active_posts(self) or sees_everyone(self):
+                    return "core:leader_dashboard"
+            except Exception:
+                pass
+        return home
 
 
 def _client_ip(request):

@@ -1,0 +1,122 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{% trans "Ada za Wanachama" %}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+
+  {% comment %}Orodha ya wanaokaribia kuisha muda ndiyo yenye thamani
+  kubwa kwa kiongozi — ndio watu wa kuwapigia simu. Imewekwa juu ya
+  historia ya malipo kwa makusudi.{% endcomment %}
+  <section class="card">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Wanaohitaji Kulipa" %}</h3>
+      <span class="appf__count">{{ wasiolipa|length }}</span>
+    </div>
+    <div class="card__body card__body--flush">
+      <ul class="applist">
+        {% for m in wasiolipa %}
+          <li class="appcard">
+            <span class="appcard__main">
+              <span class="appcard__av">{{ m.initials }}</span>
+              <span class="appcard__body">
+                <span class="appcard__top">
+                  <b class="appcard__name">{{ m.name }}</b>
+                  {% if m.imeisha %}
+                    <span class="badge badge--danger">{% trans "Muda umeisha" %}</span>
+                  {% else %}
+                    <span class="badge badge--warn">{% blocktrans with n=m.days %}siku {{ n }}{% endblocktrans %}</span>
+                  {% endif %}
+                </span>
+                <span class="appcard__meta">
+                  <span class="t-mono">{{ m.no }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span>{{ m.place }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span>{% trans "hadi" %} {{ m.expires }}</span>
+                </span>
+              </span>
+            </span>
+            <div class="appcard__acts">
+              <a class="btn btn--sm btn--primary" href="tel:{{ m.phone }}">
+                <svg><use href="#i-phone"></use></svg> {{ m.phone }}
+              </a>
+            </div>
+          </li>
+        {% empty %}
+          <li class="appcard appcard--empty">
+            <div class="empty">
+              <span class="empty__icon"><svg width="22" height="22"><use href="#i-check-circle"></use></svg></span>
+              <span class="empty__title">{% trans "Wote wako sawa" %}</span>
+              <span class="empty__text">{% trans "Hakuna anayekaribia kuisha muda kwenye eneo lako." %}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  <section class="card mt">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Malipo ya Ada" %}</h3>
+    </div>
+    <div class="card__body">
+      <form method="get" class="filterbar">
+        <select class="select filterbar__f" name="hali">
+          <option value="">{% trans "Hali zote" %}</option>
+          <option value="pending" {% if hali == 'pending' %}selected{% endif %}>{% trans "Yanasubiri" %}</option>
+          <option value="confirmed" {% if hali == 'confirmed' %}selected{% endif %}>{% trans "Yaliyothibitishwa" %}</option>
+        </select>
+        <button class="btn btn--primary">{% trans "Chuja" %}</button>
+        <a href="{% url 'core:leader_ada' %}" class="btn btn--ghost">{% trans "Futa" %}</a>
+      </form>
+    </div>
+    <div class="card__body card__body--flush">
+      <ul class="applist">
+        {% for p in rows %}
+          <li class="appcard">
+            <span class="appcard__main">
+              <span class="appcard__av"><svg width="16" height="16"><use href="#i-wallet"></use></svg></span>
+              <span class="appcard__body">
+                <span class="appcard__top">
+                  <b class="appcard__name">{{ p.member }}</b>
+                  <span class="badge badge--{{ p.badge }}">{{ p.status }}</span>
+                </span>
+                <span class="appcard__meta">
+                  <span class="t-mono">{{ p.receipt }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span class="t-mono">TZS {{ p.amount|floatformat:0 }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span>{{ p.method }}</span>
+                  <span class="appcard__dot">&middot;</span>
+                  <span class="t-mono">{{ p.date }}</span>
+                </span>
+              </span>
+            </span>
+            {% if p.pending %}
+              <div class="appcard__acts">
+                <form method="post" action="{% url 'core:leader_ada_action' p.id 'confirm' %}">
+                  {% csrf_token %}
+                  <button class="btn btn--sm btn--primary">
+                    <svg><use href="#i-check-circle"></use></svg> {% trans "Thibitisha" %}
+                  </button>
+                </form>
+                <form method="post" action="{% url 'core:leader_ada_action' p.id 'cancel' %}"
+                      data-confirm="{% trans 'Ghairi malipo haya?' %}">
+                  {% csrf_token %}
+                  <button class="btn btn--sm btn--danger">
+                    <svg><use href="#i-x-circle"></use></svg> {% trans "Ghairi" %}
+                  </button>
+                </form>
+              </div>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li class="appcard appcard--empty">
+            <div class="empty"><span class="empty__text">{% trans "Hakuna malipo yanayolingana." %}</span></div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+{% endblock %}

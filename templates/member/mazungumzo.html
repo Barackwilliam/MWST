@@ -1,0 +1,49 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{% trans "Mazungumzo" %}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+
+  <section class="card">
+    <div class="card__head">
+      <h3 class="card__title">
+        {% trans "Mazungumzo na uongozi wa" %} {{ thread.get_level_display }}
+      </h3>
+      <a href="{% url 'core:member_viongozi' %}" class="btn btn--ghost btn--sm">
+        <svg><use href="#i-arrow-right"></use></svg> {% trans "Rudi" %}
+      </a>
+    </div>
+    <div class="card__body">
+      {% if leaders %}
+        <p class="ldr__hint">
+          <svg width="15" height="15"><use href="#i-user-check"></use></svg>
+          {% for l in leaders %}{{ l.post }}: <b>{{ l.name }}</b>{% if l.phone %} ({{ l.phone }}){% endif %}{% if not forloop.last %} &middot; {% endif %}{% endfor %}
+        </p>
+      {% endif %}
+
+      <div class="chat">
+        {% for m in msgs %}
+          <div class="chat__msg{% if not m.from_leader %} chat__msg--me{% endif %}">
+            <span class="chat__body">{{ m.body|linebreaksbr }}</span>
+            <span class="chat__meta">
+              {% if m.from_leader %}{% trans "Kiongozi" %}{% else %}{% trans "Wewe" %}{% endif %}
+              &middot; {{ m.created_at|date:"d/m/Y H:i" }}
+            </span>
+          </div>
+        {% empty %}
+          <p class="ldr__hint">{% trans "Anza mazungumzo kwa kuandika hapa chini." %}</p>
+        {% endfor %}
+      </div>
+
+      <form method="post" class="ldr__form mt">
+        {% csrf_token %}
+        <textarea class="input" name="body" rows="3" required
+                  placeholder="{% trans 'Andika ujumbe wako...' %}"></textarea>
+        <button class="btn btn--primary">
+          <svg><use href="#i-message"></use></svg> {% trans "Tuma" %}
+        </button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

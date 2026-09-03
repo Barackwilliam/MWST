@@ -1,0 +1,86 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{{ case.reference }}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+
+  <div class="ldr__case">
+    <section class="card">
+      <div class="card__head">
+        <h3 class="card__title">{{ case.subject }}</h3>
+        <span class="badge badge--{{ case.badge }}">{{ case.get_status_display }}</span>
+      </div>
+      <div class="card__body">
+        <div class="detail__row"><svg><use href="#i-file"></use></svg>
+          <span><span class="detail__lbl">{% trans "Kumbukumbu" %}</span>
+          <span class="detail__val t-mono">{{ case.reference }}</span></span></div>
+        <div class="detail__row"><svg><use href="#i-user"></use></svg>
+          <span><span class="detail__lbl">{% trans "Mwanachama" %}</span>
+          <span class="detail__val">{{ case.member.full_name }}
+            <a href="tel:{{ case.member.phone }}" class="t-mono">{{ case.member.phone }}</a></span></span></div>
+        <div class="detail__row"><svg><use href="#i-map-pin"></use></svg>
+          <span><span class="detail__lbl">{% trans "Ngazi ya sasa" %}</span>
+          <span class="detail__val">{{ case.get_level_display }} &mdash; {{ case.area_name }}
+            <small>({% blocktrans with n=case.days_at_level %}siku {{ n }}{% endblocktrans %})</small></span></span></div>
+        <div class="detail__row"><svg><use href="#i-alert"></use></svg>
+          <span><span class="detail__lbl">{% trans "Aina / Uzito" %}</span>
+          <span class="detail__val">{{ case.get_category_display }} &middot; {{ case.get_urgency_display }}</span></span></div>
+
+        <div class="ldr__body">{{ case.body|linebreaksbr }}</div>
+
+        {% if case.resolution %}
+          <div class="ldr__solved">
+            <b>{% trans "Suluhisho" %}</b>
+            <p>{{ case.resolution|linebreaksbr }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head"><h3 class="card__title">{% trans "Hatua Zilizochukuliwa" %}</h3></div>
+      <div class="card__body">
+        {% comment %}Kila hatua inaonyesha nani na lini. Hii ndiyo
+        kumbukumbu inayotumika wakati wa ubishi.{% endcomment %}
+        <ol class="ldr__trail">
+          {% for e in events %}
+            <li class="ldr__step ldr__step--{{ e.kind }}">
+              <span class="ldr__dot"></span>
+              <span class="ldr__stepbody">
+                <b>{{ e.get_kind_display }}</b>
+                {% if e.to_level %}<span class="badge badge--gold">{{ e.to_level }}</span>{% endif %}
+                <small>{% if e.actor %}{{ e.actor.get_full_name|default:e.actor.username }}{% else %}{% trans "Mfumo" %}{% endif %}
+                  &middot; {{ e.created_at|date:"d/m/Y H:i" }}</small>
+                {% if e.note %}<p>{{ e.note|linebreaksbr }}</p>{% endif %}
+              </span>
+            </li>
+          {% endfor %}
+        </ol>
+
+        {% if case.is_open %}
+          <form method="post" action="{% url 'core:leader_tatizo_action' case.pk 'comment' %}"
+                class="ldr__form">
+            {% csrf_token %}
+            <textarea name="note" rows="3" class="input"
+                      placeholder="{% trans 'Andika maoni au suluhisho...' %}"></textarea>
+            <div class="ldr__btns">
+              <button class="btn btn--ghost">{% trans "Ongeza Maoni" %}</button>
+              <button class="btn btn--primary"
+                      formaction="{% url 'core:leader_tatizo_action' case.pk 'resolve' %}">
+                <svg><use href="#i-check-circle"></use></svg> {% trans "Nimetatua" %}
+              </button>
+              {% if can_escalate %}
+                <button class="btn btn--danger"
+                        formaction="{% url 'core:leader_tatizo_action' case.pk 'escalate' %}"
+                        data-confirm="{% trans 'Pandisha tatizo hili ngazi moja juu?' %}">
+                  <svg><use href="#i-arrow-up"></use></svg> {% trans "Pandisha Juu" %}
+                </button>
+              {% endif %}
+            </div>
+          </form>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+{% endblock %}

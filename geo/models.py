@@ -1,5 +1,6 @@
 """Mikoa, wilaya, kata na matawi."""
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -106,3 +107,130 @@ class Branch(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class LeaderLevel(models.TextChoices):
+    """
+    Ngazi za uongozi, kutoka chini kwenda juu.
+
+    Mpangilio ni MUHIMU: `LEVEL_ORDER` inautumia kupandisha matatizo na
+    kuamua nani anaona nani. Ngazi ikiongezwa katikati, mpangilio huu
+    ndio wa kubadilisha — si sehemu nyingine.
+    """
+    WARD = "ward", _("Kata")
+    DISTRICT = "district", _("Wilaya")
+    REGION = "region", _("Mkoa")
+    ZONE = "zone", _("Kanda")
+    NATIONAL = "national", _("Taifa")
+
+
+#: Kutoka chini kwenda juu. Ngazi inayofuata ndiyo tatizo linapopandishwa.
+LEVEL_ORDER = [LeaderLevel.WARD, LeaderLevel.DISTRICT, LeaderLevel.REGION,
+               LeaderLevel.ZONE, LeaderLevel.NATIONAL]
+
+
+def next_level(level):
+    """Ngazi inayofuata juu, au `None` ikiwa tayari ni ya Taifa."""
+    try:
+        i = LEVEL_ORDER.index(level)
+    except ValueError:
+        return None
+    return LEVEL_ORDER[i + 1] if i + 1 < len(LEVEL_ORDER) else None
+
+
+class LeaderPost(models.TextChoices):
+    CHAIR = "chair", _("Mwenyekiti")
+    SECRETARY = "secretary", _("Katibu")
+    TREASURER = "treasurer", _("Mweka Hazina")
+
+
+class Leadership(models.Model):
+    """
+    Kiongozi wa ngazi fulani ya kiutawala.
+
+    Eneo linahifadhiwa kwenye sehemu MOJA tu kati ya `ward`, `district`,
+    `region`, `zone` — ile inayolingana na `level`. Ngazi ya Taifa haina
+    eneo; inaona kila kitu.
+
+    TAREHE NI MUHIMU. Bila `ended_on`, kiongozi wa zamani angeendelea
+    kuona wanachama wote wa eneo lake milele. Na bila `started_on`,
+    hutajua nani alikuwa kiongozi wakati uamuzi fulani ulipofanyika —
+    jambo linalohitajika pale kunapokuwa na ubishi.
+    """
+    user = models.ForeignKey("accounts.User", on_delete=models.CASCADE,
+                             related_name="leaderships", verbose_name=_("Mtumiaji"))
+    level = models.CharField(_("Ngazi"), max_length=12, choices=LeaderLevel.choices)
+    post = models.CharField(_("Wadhifa"), max_length=12, choices=LeaderPost.choices,
+                            default=LeaderPost.CHAIR)
+
+    ward = models.ForeignKey(Ward, null=True, blank=True, on_delete=models.CASCADE,
+                             related_name="leaders", verbose_name=_("Kata"))
+    district = models.ForeignKey(District, null=True, blank=True, on_delete=models.CASCADE,
+                                 related_name="leaders", verbose_name=_("Wilaya"))
+    region = models.ForeignKey(Region, null=True, blank=True, on_delete=models.CASCADE,
+                               related_name="leaders", verbose_name=_("Mkoa"))
+    zone = models.ForeignKey(Zone, null=True, blank=True, on_delete=models.CASCADE,
+                             related_name="leaders", verbose_name=_("Kanda"))
+
+    started_on = models.DateField(_("Ameanza"), default=timezone.localdate)
+    ended_on = models.DateField(_("Amemaliza"), null=True, blank=True)
+    note = models.CharField(_("Maelezo"), max_length=200, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["level", "post"]
+        verbose_name = _("Kiongozi")
+        verbose_name_plural = _("Viongozi")
+        indexes = [models.Index(fields=["level", "ended_on"])]
+
+    def __str__(self):
+        return f"{self.get_post_display()} — {self.area_name}"
+
+    # -- Eneo ----------------------------------------------------------------
+    @property
+    def area(self):
+        """Rekodi ya eneo lake, au `None` kwa ngazi ya Taifa."""
+        return {
+            LeaderLevel.WARD: self.ward,
+            LeaderLevel.DISTRICT: self.district,
+            LeaderLevel.REGION: self.region,
+            LeaderLevel.ZONE: self.zone,
+        }.get(self.level)
+
+    @property
+    def area_name(self):
+        if self.level == LeaderLevel.NATIONAL:
+            return str(_("Taifa"))
+        area = self.area
+        return str(area) if area else "—"
+
+    @property
+    def is_active(self):
+        today = timezone.localdate()
+        if self.started_on and self.started_on > today:
+            return False
+        return self.ended_on is None or self.ended_on >= today
+
+    def clean(self):
+        """
+        Eneo lazima lilingane na ngazi.
+
+        Kiongozi wa kata bila kata angekuwa hana anayemsimamia — na
+        `scope` ingemrudishia wanachama sifuri bila kueleza kwa nini.
+        """
+        from django.core.exceptions import ValidationError
+
+        needed = {
+            LeaderLevel.WARD: "ward", LeaderLevel.DISTRICT: "district",
+            LeaderLevel.REGION: "region", LeaderLevel.ZONE: "zone",
+        }.get(self.level)
+
+        if needed and not getattr(self, f"{needed}_id"):
+            raise ValidationError({needed: _("Ngazi hii inahitaji eneo.")})
+        if self.level == LeaderLevel.NATIONAL and any(
+                [self.ward_id, self.district_id, self.region_id, self.zone_id]):
+            raise ValidationError(_("Ngazi ya Taifa haina eneo maalum."))
+        if self.ended_on and self.started_on and self.ended_on < self.started_on:
+            raise ValidationError({"ended_on": _("Tarehe ya kumaliza ni kabla ya kuanza.")})

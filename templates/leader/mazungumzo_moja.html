@@ -1,0 +1,39 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{{ thread.member.full_name }}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+  <section class="card">
+    <div class="card__head">
+      <h3 class="card__title">{{ thread.member.full_name }}</h3>
+      <a href="tel:{{ thread.member.phone }}" class="btn btn--ghost btn--sm">
+        <svg><use href="#i-phone"></use></svg> {{ thread.member.phone }}
+      </a>
+    </div>
+    <div class="card__body">
+      <div class="chat">
+        {% for m in msgs %}
+          <div class="chat__msg{% if m.from_leader %} chat__msg--me{% endif %}">
+            <span class="chat__body">{{ m.body|linebreaksbr }}</span>
+            <span class="chat__meta">
+              {% if m.sender %}{{ m.sender.get_full_name|default:m.sender.username }}{% else %}&mdash;{% endif %}
+              &middot; {{ m.created_at|date:"d/m/Y H:i" }}
+            </span>
+          </div>
+        {% empty %}
+          <p class="ldr__hint">{% trans "Hakuna ujumbe bado." %}</p>
+        {% endfor %}
+      </div>
+
+      <form method="post" class="ldr__form mt">
+        {% csrf_token %}
+        <textarea class="input" name="body" rows="3" required
+                  placeholder="{% trans 'Andika jibu lako...' %}"></textarea>
+        <button class="btn btn--primary">
+          <svg><use href="#i-message"></use></svg> {% trans "Tuma" %}
+        </button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

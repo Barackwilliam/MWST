@@ -361,3 +361,290 @@ class EventRegistration(TimeStamped):
 
     def __str__(self):
         return f"{self.full_name or self.member} @ {self.event}"
+
+
+# ===========================================================================
+#  UONGOZI: MATATIZO NA MAWASILIANO
+#
+#  MTIRIRIKO WA TATIZO
+#      Mwanachama -> Kata -> Wilaya -> Mkoa -> Kanda -> Taifa
+#
+#  Tatizo linaanzia kwa kiongozi wa kata ya mwanachama. Kiongozi
+#  akishindwa kulitatua, analipandisha ngazi moja juu. Kila hatua
+#  inahifadhiwa kwenye `CaseEvent` — nani, lini, na kwa nini.
+#
+#  Bila kumbukumbu hakuna uwajibikaji: mwanachama akiuliza "ombi langu
+#  liko wapi", jibu lisiwe la kubahatisha.
+# ===========================================================================
+from geo.models import LeaderLevel, next_level
+
+
+class CaseCategory(models.TextChoices):
+    WELFARE = "welfare", _("Ustawi na Msaada")
+    FINANCE = "finance", _("Ada na Malipo")
+    MEMBERSHIP = "membership", _("Uanachama na Kadi")
+    COMPLAINT = "complaint", _("Malalamiko")
+    SUGGESTION = "suggestion", _("Ushauri na Mapendekezo")
+    OTHER = "other", _("Nyingine")
+
+
+class CaseStatus(models.TextChoices):
+    OPEN = "open", _("Limefunguliwa")
+    IN_PROGRESS = "in_progress", _("Linashughulikiwa")
+    ESCALATED = "escalated", _("Limepandishwa")
+    RESOLVED = "resolved", _("Limetatuliwa")
+    CLOSED = "closed", _("Limefungwa")
+
+
+class CaseUrgency(models.TextChoices):
+    LOW = "low", _("Si ya Haraka")
+    NORMAL = "normal", _("Kawaida")
+    HIGH = "high", _("Ya Haraka")
+
+
+class Case(TimeStamped):
+    """
+    Tatizo lililotolewa na mwanachama.
+
+    `level` ni ngazi inayolishughulikia SASA — inabadilika kila
+    linapopandishwa. `ward`, `district`, `region`, `zone` zinanakiliwa
+    kutoka kwa mwanachama wakati wa kufungua, si kusomwa kila mara.
+
+    Sababu ya kunakili: mwanachama akihama kata, matatizo yake ya zamani
+    yanapaswa kubaki kwenye kumbukumbu ya kata aliyokuwepo — si kuhamia
+    kwa kiongozi asiyeyajua.
+    """
+    reference = models.CharField(_("Namba ya Kumbukumbu"), max_length=40,
+                                 unique=True, blank=True)
+    member = models.ForeignKey("members.Member", on_delete=models.CASCADE,
+                               related_name="cases", verbose_name=_("Mwanachama"))
+    subject = models.CharField(_("Kichwa"), max_length=160)
+    body = models.TextField(_("Maelezo"))
+    category = models.CharField(_("Aina"), max_length=12,
+                                choices=CaseCategory.choices,
+                                default=CaseCategory.OTHER)
+    urgency = models.CharField(_("Uzito"), max_length=8,
+                               choices=CaseUrgency.choices,
+                               default=CaseUrgency.NORMAL)
+    status = models.CharField(_("Hali"), max_length=12, choices=CaseStatus.choices,
+                              default=CaseStatus.OPEN, db_index=True)
+
+    #: Ngazi inayolishughulikia sasa.
+    level = models.CharField(_("Ngazi"), max_length=12, choices=LeaderLevel.choices,
+                             default=LeaderLevel.WARD, db_index=True)
+
+    ward = models.ForeignKey("geo.Ward", null=True, blank=True,
+                             on_delete=models.SET_NULL, related_name="cases")
+    district = models.ForeignKey("geo.District", null=True, blank=True,
+                                 on_delete=models.SET_NULL, related_name="cases")
+    region = models.ForeignKey("geo.Region", null=True, blank=True,
+                               on_delete=models.SET_NULL, related_name="cases")
+    zone = models.ForeignKey("geo.Zone", null=True, blank=True,
+                             on_delete=models.SET_NULL, related_name="cases")
+
+    #: Tarehe ya kufika kwenye ngazi ya sasa. Amri ya kupandisha
+    #: yenyewe inaitumia — si `created_at`, ambayo isingebadilika.
+    level_since = models.DateTimeField(default=timezone.now, db_index=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    resolution = models.TextField(_("Suluhisho"), blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = _("Tatizo")
+        verbose_name_plural = _("Matatizo")
+        indexes = [models.Index(fields=["status", "level"])]
+
+    def __str__(self):
+        return f"{self.reference} — {self.subject[:40]}"
+
+    def save(self, *args, **kwargs):
+        if not self.reference:
+            from core.models import Sequence
+            year = timezone.localdate().year
+            seq = Sequence.next(f"case:{year}")
+            self.reference = f"TAT/{year}/{seq:04d}"
+        # Nakili maeneo kutoka kwa mwanachama mara ya kwanza pekee.
+        if not self.pk and self.member_id:
+            self.ward = self.ward or self.member.ward
+            self.district = self.district or self.member.district
+            self.region = self.region or self.member.region
+            self.zone = self.zone or (self.member.region.zone
+                                      if self.member.region else None)
+        super().save(*args, **kwargs)
+
+    # -- Hali ----------------------------------------------------------------
+    @property
+    def is_open(self):
+        return self.status in (CaseStatus.OPEN, CaseStatus.IN_PROGRESS,
+                               CaseStatus.ESCALATED)
+
+    @property
+    def days_at_level(self):
+        return (timezone.now() - self.level_since).days
+
+    @property
+    def badge(self):
+        return {"open": "warn", "in_progress": "info", "escalated": "gold",
+                "resolved": "ok", "closed": "muted"}.get(self.status, "muted")
+
+    @property
+    def area_name(self):
+        area = {LeaderLevel.WARD: self.ward, LeaderLevel.DISTRICT: self.district,
+                LeaderLevel.REGION: self.region, LeaderLevel.ZONE: self.zone}.get(self.level)
+        return str(area) if area else str(_("Taifa"))
+
+    # -- Hatua ---------------------------------------------------------------
+    def log(self, kind, user=None, note="", to_level=""):
+        return CaseEvent.objects.create(case=self, kind=kind, actor=user,
+                                        note=note[:500], to_level=to_level)
+
+    def escalate(self, user=None, note="", automatic=False):
+        """
+        Peleka tatizo ngazi moja juu.
+
+        HATUA MOJA TU. Kuruka ngazi kungefanya kiongozi wa wilaya asijue
+        tatizo lililo kwenye mkoa wake — na wakati wa kuuliza, kila mmoja
+        angesema hakulijua.
+
+        Likishafika Taifa, halipandi tena; ndiyo ngazi ya mwisho.
+        """
+        nxt = next_level(self.level)
+        if nxt is None:
+            return None
+        self.level = nxt
+        self.level_since = timezone.now()
+        self.status = CaseStatus.ESCALATED
+        self.save(update_fields=["level", "level_since", "status", "updated_at"])
+        self.log("auto_escalated" if automatic else "escalated",
+                 user=user, note=note, to_level=nxt)
+        return nxt
+
+    def resolve(self, user=None, resolution=""):
+        self.status = CaseStatus.RESOLVED
+        self.resolved_at = timezone.now()
+        self.resolution = resolution
+        self.save(update_fields=["status", "resolved_at", "resolution", "updated_at"])
+        self.log("resolved", user=user, note=resolution)
+
+
+class CaseEvent(TimeStamped):
+    """
+    Hatua moja kwenye maisha ya tatizo.
+
+    Hazifutwi wala kuhaririwa. Ni kumbukumbu — ikiharirika, haina thamani
+    wakati wa ubishi.
+    """
+    KIND = [
+        ("opened", _("Limefunguliwa")),
+        ("comment", _("Maoni")),
+        ("escalated", _("Limepandishwa na kiongozi")),
+        ("auto_escalated", _("Limepanda lenyewe kwa muda")),
+        ("resolved", _("Limetatuliwa")),
+        ("closed", _("Limefungwa")),
+        ("reopened", _("Limefunguliwa upya")),
+    ]
+
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name="events")
+    kind = models.CharField(max_length=16, choices=KIND)
+    actor = models.ForeignKey("accounts.User", null=True, blank=True,
+                              on_delete=models.SET_NULL, related_name="case_events")
+    note = models.TextField(blank=True)
+    to_level = models.CharField(max_length=12, blank=True)
+    #: Maoni ya ndani hayaonekani kwa mwanachama.
+    internal = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["created_at"]
+        verbose_name = _("Hatua ya Tatizo")
+        verbose_name_plural = _("Hatua za Matatizo")
+
+    def __str__(self):
+        return f"{self.case.reference} — {self.get_kind_display()}"
+
+
+class Broadcast(TimeStamped):
+    """
+    Tangazo la kiongozi kwa wanachama wa eneo lake.
+
+    Wanaolengwa hawanakiliwi kwenye jedwali; wanahesabiwa wakati wa
+    kusoma kwa kutumia ufinyu ule ule wa `geo.scope`. Faida: mwanachama
+    mpya wa kata anaona matangazo yaliyopita, na aliyehama haoni ya
+    kata aliyoiacha.
+    """
+    sender = models.ForeignKey("accounts.User", on_delete=models.CASCADE,
+                               related_name="broadcasts", verbose_name=_("Mtumaji"))
+    level = models.CharField(_("Ngazi"), max_length=12, choices=LeaderLevel.choices)
+    ward = models.ForeignKey("geo.Ward", null=True, blank=True,
+                             on_delete=models.CASCADE, related_name="broadcasts")
+    district = models.ForeignKey("geo.District", null=True, blank=True,
+                                 on_delete=models.CASCADE, related_name="broadcasts")
+    region = models.ForeignKey("geo.Region", null=True, blank=True,
+                               on_delete=models.CASCADE, related_name="broadcasts")
+    zone = models.ForeignKey("geo.Zone", null=True, blank=True,
+                             on_delete=models.CASCADE, related_name="broadcasts")
+
+    subject = models.CharField(_("Kichwa"), max_length=160)
+    body = models.TextField(_("Ujumbe"))
+    #: Idadi ya waliolengwa wakati wa kutuma. Inahifadhiwa kwa sababu
+    #: idadi hubadilika — wanachama wanaingia na kutoka.
+    reached = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = _("Tangazo la Kiongozi")
+        verbose_name_plural = _("Matangazo ya Viongozi")
+
+    def __str__(self):
+        return self.subject[:50]
+
+    @property
+    def area_name(self):
+        area = {LeaderLevel.WARD: self.ward, LeaderLevel.DISTRICT: self.district,
+                LeaderLevel.REGION: self.region, LeaderLevel.ZONE: self.zone}.get(self.level)
+        return str(area) if area else str(_("Taifa"))
+
+
+class Thread(TimeStamped):
+    """
+    Mazungumzo kati ya mwanachama na uongozi wa ngazi fulani.
+
+    Ni kati ya mwanachama na NGAZI, si mtu binafsi. Kiongozi akibadilika,
+    mazungumzo yanabaki na yanaendelea — hayapotei na mtu aliyeondoka.
+    """
+    member = models.ForeignKey("members.Member", on_delete=models.CASCADE,
+                               related_name="threads")
+    level = models.CharField(max_length=12, choices=LeaderLevel.choices,
+                             default=LeaderLevel.WARD)
+    subject = models.CharField(_("Kichwa"), max_length=160, blank=True)
+    last_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ["-last_at"]
+        verbose_name = _("Mazungumzo")
+        verbose_name_plural = _("Mazungumzo")
+
+    def __str__(self):
+        return f"{self.member.full_name} — {self.subject or '(bila kichwa)'}"
+
+    def touch(self):
+        self.last_at = timezone.now()
+        self.save(update_fields=["last_at", "updated_at"])
+
+
+class Message(TimeStamped):
+    thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey("accounts.User", null=True, blank=True,
+                               on_delete=models.SET_NULL, related_name="sent_messages")
+    #: True = kutoka kwa kiongozi. Tunaihifadhi badala ya kukisia kutoka
+    #: kwa `sender`, kwa sababu kiongozi anaweza kubadilika baadaye.
+    from_leader = models.BooleanField(default=False)
+    body = models.TextField(_("Ujumbe"))
+    read_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        verbose_name = _("Ujumbe")
+        verbose_name_plural = _("Ujumbe")
+
+    def __str__(self):
+        return self.body[:50]

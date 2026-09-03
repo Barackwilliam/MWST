@@ -74,14 +74,13 @@
       </div>
     {% endif %}
 
-    {% if not contact_card and not sidebar_summary %}
-    <div class="support-card">
-      <div class="support-card__title">{% trans "MUWESTA Support Center" %}</div>
-      <div class="support-card__sub">{% trans "Tupo kwa ajili yako" %}</div>
-      <a class="support-card__link" href="/mawasiliano/">{% trans "Wasiliana Nasi" %}<svg width="15" height="15"><use href="#i-arrow-right"></use></svg>
-      </a>
-    </div>
-    {% endif %}
+    {% comment %}Kadi ya "Wasiliana Nasi" imeondolewa.
+
+    Ilikuwa ikimtoa mtu nje ya mfumo na kumpeleka kwenye ukurasa wa umma
+    wa mawasiliano — akiwa tayari ameingia. Mwanachama ana "Viongozi
+    Wangu" na "Toa Taarifa kwa Kiongozi"; kiongozi ana "Mazungumzo".
+    Njia zote za kuwasiliana ziko NDANI ya mfumo, ambako zinahifadhiwa.
+    {% endcomment %}
 
     <a href="{% url 'core:logout' %}" class="nav-link" style="margin-top:4px">
       <svg class="nav-link__icon"><use href="#i-logout"></use></svg>
