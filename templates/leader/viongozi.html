@@ -1,0 +1,81 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{% trans "Viongozi Walio Chini" %}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+
+  <div class="card ldr__hero">
+    <div>
+      <h2>{% trans "Viongozi Walio Chini Yangu" %}</h2>
+      <p>{% blocktrans with n=sub_name %}Ngazi ya {{ n }} — utendaji wa kila eneo{% endblocktrans %}</p>
+    </div>
+  </div>
+
+  {% comment %}Wasio na kiongozi kwanza — ndilo tatizo la kiutawala
+  linalotakiwa kutatuliwa kabla ya mengine. Matatizo yao yanakuja moja
+  kwa moja kwa kiongozi wa juu.{% endcomment %}
+  <section class="card mt">
+    <div class="card__head">
+      <h3 class="card__title">{% trans "Maeneo na Viongozi Wake" %}</h3>
+      <span class="appf__count">{{ rows|length }}</span>
+    </div>
+    <div class="card__body card__body--flush">
+      <ul class="applist">
+        {% for r in rows %}
+          <li class="appcard{% if r.no_leader %} is-warn{% endif %}">
+            <span class="appcard__main">
+              <span class="appcard__av">{{ r.members }}</span>
+              <span class="appcard__body">
+                <span class="appcard__top">
+                  <b class="appcard__name">{{ r.area }}</b>
+                  {% if r.no_leader %}
+                    <span class="badge badge--danger">{% trans "HAKUNA KIONGOZI" %}</span>
+                  {% elif r.cases %}
+                    <span class="badge badge--gold">
+                      {{ r.cases }} {% trans "hajajibu" %}
+                    </span>
+                  {% else %}
+                    <span class="badge badge--ok">{% trans "Hakuna linalosubiri" %}</span>
+                  {% endif %}
+                </span>
+                <span class="appcard__meta">
+                  {% for l in r.leaders %}
+                    <span><b>{{ l.post }}</b>: {{ l.name }}</span>
+                    {% if l.phone %}
+                      <span class="appcard__dot">&middot;</span>
+                      <span class="t-mono">{{ l.phone }}</span>
+                    {% endif %}
+                    {% if not forloop.last %}<span class="appcard__dot">&middot;</span>{% endif %}
+                  {% empty %}
+                    <span>{% trans "Matatizo ya eneo hili yanakuja moja kwa moja kwako." %}</span>
+                  {% endfor %}
+                </span>
+              </span>
+            </span>
+            <div class="appcard__acts">
+              {% for l in r.leaders %}
+                {% if l.phone and forloop.first %}
+                  <a class="btn btn--sm btn--primary" href="tel:{{ l.phone }}">
+                    <svg><use href="#i-phone"></use></svg> {% trans "Piga" %}
+                  </a>
+                {% endif %}
+              {% endfor %}
+              <a class="btn btn--sm btn--ghost"
+                 href="{% url 'core:leader_wanachama' %}?{{ label }}={{ r.id }}">
+                <svg><use href="#i-users"></use></svg> {% trans "Wanachama" %}
+              </a>
+            </div>
+          </li>
+        {% empty %}
+          <li class="appcard appcard--empty">
+            <div class="empty">
+              <span class="empty__icon"><svg width="22" height="22"><use href="#i-user-check"></use></svg></span>
+              <span class="empty__text">{% trans "Hakuna eneo chini yako." %}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+{% endblock %}

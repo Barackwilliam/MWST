@@ -25,6 +25,22 @@
     {% for k in kpis %}{% include "components/kpi.html" %}{% endfor %}
   </div>
 
+  {% if worst %}
+    {% comment %}Eneo lenye matatizo mengi zaidi. Kiongozi wa ngazi ya
+    juu asianze kwa kusoma orodha — aanze na eneo linalosuasua.{% endcomment %}
+    <div class="ldr__alert mt">
+      <svg width="17" height="17"><use href="#i-alert"></use></svg>
+      <span>
+        <b>{{ worst.name }}</b>
+        {% blocktrans with n=worst.cases %}ina matatizo {{ n }} yanayosubiri{% endblocktrans %}{% if worst.no_leader %},
+        {% trans "na haina kiongozi" %}{% endif %}.
+      </span>
+      <a class="btn btn--sm btn--primary" href="{% url 'core:leader_viongozi' %}">
+        {% trans "Angalia" %} <svg><use href="#i-arrow-right"></use></svg>
+      </a>
+    </div>
+  {% endif %}
+
   {% if breakdown %}
     {% comment %}Mchanganuo wa maeneo yaliyo chini yake. Kiongozi wa kata
     hana hii — hana ngazi ya chini. Kiongozi wa mkoa mwenye wanachama 500
@@ -121,7 +137,7 @@
       </div>
     </section>
 
-    <section class="card">
+    <section class="card"{% if not is_field %} hidden{% endif %}>
       <div class="card__head">
         <h3 class="card__title">{% trans "Wanachama wa Karibuni" %}</h3>
         <a href="{% url 'core:leader_wanachama' %}" class="btn btn--ghost btn--sm">

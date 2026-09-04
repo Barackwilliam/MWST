@@ -48,7 +48,13 @@ def _chrome(request, active, **kw):
     # Wangu" kwenye menyu. Asiye nayo (mfano afisa wa makao makuu
     # aliyepewa wadhifa) hapati — vinginevyo angebofya na kupata kosa.
     is_member = getattr(request.user, "member", None) is not None
-    kw.update(base_chrome(request, nav=navs.uongozi(active, is_member=is_member),
+    # Kata ni ngazi ya uwanjani — menyu yake inatofautiana na ya
+    # wilaya/mkoa/kanda, ambao wanafanya kazi kupitia viongozi.
+    from geo.models import LeaderLevel
+    from geo.scope import top_level
+    is_field = top_level(request.user) == LeaderLevel.WARD
+    kw.update(base_chrome(request, nav=navs.uongozi(active, is_member=is_member,
+                                                    is_field=is_field),
                           topbar_title="MUWESTA Membership Management System",
                           topbar_sub=str(_("Uongozi"))))
     return kw
@@ -416,3 +422,21 @@ def michango(request):
 def msaada(request):
     return render(request, "leader/msaada.html", _chrome(
         request, "msaada", rows=L.msaada_rows(request.user)))
+
+
+@leader_required
+def viongozi(request):
+    """
+    Viongozi walio chini yangu.
+
+    Ni ukurasa wa ngazi za juu pekee — kiongozi wa kata hana ngazi ya
+    chini, kwa hiyo anarudishwa kwenye dashibodi yake badala ya kuona
+    ukurasa tupu.
+    """
+    data = L.viongozi_chini(request.user)
+    if data is None:
+        messages.info(request, _(
+            "Ukurasa huu ni wa viongozi wenye maeneo chini yao."))
+        return redirect("core:leader_dashboard")
+    return render(request, "leader/viongozi.html", _chrome(
+        request, "viongozi", **data))

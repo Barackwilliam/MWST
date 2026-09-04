@@ -118,8 +118,11 @@ def _leader_nav(user, nav):
         return nav
 
     active = next((i.get("key") for i in nav if i.get("active")), "dashboard")
+    from geo.models import LeaderLevel
+    from geo.scope import top_level
     return navs.uongozi("yangu-dash" if active == "dashboard"
-                        else f"yangu-{active}", is_member=True)
+                        else f"yangu-{active}", is_member=True,
+                        is_field=top_level(user) == LeaderLevel.WARD)
 
 
 def _chrome(request, **kw):
@@ -2450,9 +2453,27 @@ def user_zone(user):
     Mratibu ana kanda moja. Msimamizi na maafisa wa taifa hawana kanda,
     kwa hiyo wanaona nchi nzima (`None`).
     """
-    if not user.is_authenticated or user.role != Role.COORDINATOR:
+    if not user.is_authenticated:
         return None
-    return Zone.objects.filter(coordinator=user).first()
+
+    # Kanda inatoka kwenye `Leadership` KWANZA — ndio mfumo mmoja wa
+    # ukweli sasa. `Zone.coordinator` inabaki kama njia ya pili kwa
+    # rekodi za zamani zisizohamishwa bado.
+    #
+    # Awali ilikuwa inaangalia `role == COORDINATOR` pekee, kwa hiyo
+    # mratibu asiye na `Zone.coordinator` alionekana kama afisa wa
+    # taifa — au, baada ya mfumo mpya, hakuona chochote kabisa.
+    from geo.models import LeaderLevel
+
+    post = (user.leaderships.filter(level=LeaderLevel.ZONE,
+                                    zone__isnull=False,
+                                    ended_on__isnull=True)
+            .select_related("zone").first())
+    if post:
+        return post.zone
+    if user.role == Role.COORDINATOR:
+        return Zone.objects.filter(coordinator=user).first()
+    return None
 
 
 def scope_regions(user):

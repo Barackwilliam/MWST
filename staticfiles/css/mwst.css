@@ -5439,3 +5439,20 @@ html { overflow-x: clip; }
   .chat__msg { max-width: 92%; }
   .ldr__btns .btn { flex: 1 1 auto; justify-content: center; }
 }
+
+/* Onyo la eneo linalosuasua — kiongozi wa ngazi ya juu aanze hapa,
+   si kwa kusoma orodha ndefu. */
+.ldr__alert {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 13px 16px; border-radius: var(--r-lg);
+  background: var(--warn-bg); border: 1px solid var(--warn);
+  border-left-width: 4px; font-size: 13px; color: var(--ink);
+}
+.ldr__alert svg { flex: none; color: var(--warn); }
+.ldr__alert span { flex: 1; min-width: 0; }
+.appcard.is-warn { background: var(--warn-bg); }
+.appcard.is-warn:hover { background: var(--warn-bg); }
+@media (max-width: 560px) {
+  .ldr__alert { align-items: flex-start; }
+  .ldr__alert .btn { width: 100%; justify-content: center; }
+}

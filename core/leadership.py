@@ -17,8 +17,17 @@ from programs.models import Broadcast, Case, CaseStatus, Thread
 
 
 def is_leader(user):
-    """Je, mtu huyu ana sehemu ya uongozi?"""
-    return bool(active_posts(user)) or sees_everyone(user)
+    """
+    Je, mtu huyu ana sehemu ya uongozi?
+
+    Inahitaji WADHIFA HALISI wa `Leadership`, si `sees_everyone` peke
+    yake. Awali afisa wa usajili au wa malipo alifika `/uongozi/` kwa
+    sababu jukumu lake linamruhusu kuona wanachama wote — lakini
+    dashibodi ya uongozi si yake. Ana `/dashibodi/` na kurasa zake.
+
+    Msimamizi mkuu anabaki na ufikiaji, kwa ajili ya kukagua.
+    """
+    return bool(active_posts(user)) or bool(getattr(user, "is_superuser", False))
 
 
 # ---------------------------------------------------------------------------
@@ -79,13 +88,30 @@ def case_rows(cases, limit=None):
 #  Dashibodi
 # ---------------------------------------------------------------------------
 def dashboard(user):
-    """Takwimu za eneo lake pekee."""
+    """
+    Dashibodi inayolingana na KAZI ya ngazi husika.
+
+    Ngazi si kichujio cha data pekee — ni kazi tofauti:
+
+      * KATA anafanya kazi na WATU. Anampigia simu mwanachama,
+        anamkumbusha ada. Orodha ya wanachama ndicho chombo chake.
+
+      * WILAYA/MKOA/KANDA hawafanyi kazi na watu — wanafanya kazi na
+        VIONGOZI walio chini yao. Kiongozi wa mkoa hawezi kumpigia
+        kila mmoja wa wanachama 500; anahitaji kujua wilaya ipi
+        inasuasua na kata ipi haina kiongozi.
+
+      * TAIFA ni ngazi ya sera — ulinganisho wa kanda, si mtu mmoja.
+
+    Ndiyo maana KPI na vipaumbele vinatofautiana hapa chini.
+    """
     members = scope_members(user)
     cases = scope_cases(user)
+    level = top_level(user)
     today = timezone.localdate()
 
-    hai = members.filter(status=MemberStatus.ACTIVE).count()
     jumla = members.count()
+    hai = members.filter(status=MemberStatus.ACTIVE).count()
     kuisha = members.filter(expires_on__isnull=False,
                             expires_on__lt=today).count()
     wazi = cases.filter(status__in=[CaseStatus.OPEN, CaseStatus.IN_PROGRESS,
@@ -93,37 +119,65 @@ def dashboard(user):
     haraka = cases.filter(urgency="high").exclude(
         status__in=[CaseStatus.RESOLVED, CaseStatus.CLOSED]).count()
 
-    return {
-        "kpis": [
-            {"label": _("Wanachama Wangu"), "value": f"{jumla:,}",
-             "icon": "users", "tint": "green",
-             "note": _("Kwenye eneo lako")},
-            {"label": _("Wanachama Hai"), "value": f"{hai:,}",
-             "icon": "user-check", "tint": "navy",
-             "note": f"{(hai * 100 // jumla) if jumla else 0}%"},
-            {"label": _("Muda Umeisha"), "value": f"{kuisha:,}",
-             "icon": "clock", "tint": "red" if kuisha else "gold",
-             "note": _("Wanahitaji kuhuisha")},
-            {"label": _("Matatizo Wazi"), "value": f"{wazi:,}",
-             "icon": "alert", "tint": "gold" if wazi else "green",
-             "note": _("Yanasubiri jibu lako")},
-            {"label": _("Ya Haraka"), "value": f"{haraka:,}",
-             "icon": "megaphone", "tint": "red" if haraka else "navy",
-             "note": _("Yenye uzito wa juu")},
-        ],
+    bd = breakdown(user)
+    ctx = {
         "areas": areas_label(user),
-        "level": top_level(user),
+        "level": level,
+        "breakdown": bd,
+        "is_field": level == LeaderLevel.WARD,
         "recent_cases": case_rows(cases.exclude(
             status__in=[CaseStatus.RESOLVED, CaseStatus.CLOSED]), limit=6),
-        "breakdown": breakdown(user),
-        "recent_members": [{
-            "id": m.pk, "no": m.membership_no, "name": m.full_name,
-            "phone": m.phone, "initials": _initials(m.full_name),
-            "place": str(m.ward or m.district or "—"),
-            "status": m.get_status_display(), "badge": _member_badge(m),
-        } for m in members.select_related("ward", "district")
-            .order_by("-created_at")[:6]],
     }
+
+    if level == LeaderLevel.WARD:
+        # Ngazi ya uwanjani: watu, si maeneo.
+        ctx["kpis"] = [
+            _kpi("Wanachama Wangu", jumla, "users", "green", "Kwenye kata yako"),
+            _kpi("Wanachama Hai", hai, "user-check", "navy",
+                 f"{(hai * 100 // jumla) if jumla else 0}%"),
+            _kpi("Hawajalipa", kuisha, "clock", "red" if kuisha else "gold",
+                 "Wanahitaji kupigiwa simu"),
+            _kpi("Matatizo Wazi", wazi, "alert", "gold" if wazi else "green",
+                 "Yanasubiri jibu lako"),
+            _kpi("Ya Haraka", haraka, "megaphone", "red" if haraka else "navy",
+                 "Yenye uzito wa juu"),
+        ]
+        ctx["recent_members"] = _member_cards(members)
+    else:
+        # Ngazi za usimamizi: maeneo na viongozi, si orodha bapa.
+        rows = bd["rows"] if bd else []
+        bila = sum(1 for r in rows if r["no_leader"])
+        mbaya = max(rows, key=lambda r: r["cases"], default=None)
+        ctx["kpis"] = [
+            _kpi(f"Maeneo Yangu", len(rows), "map-pin", "navy",
+                 bd["level_name"] if bd else ""),
+            _kpi("Wanachama Wote", jumla, "users", "green",
+                 f"Hai: {hai}"),
+            _kpi("Hawana Kiongozi", bila, "user-plus",
+                 "red" if bila else "green",
+                 "Matatizo yao yanakuja kwako"),
+            _kpi("Hawajalipa", kuisha, "clock", "gold" if kuisha else "green",
+                 "Kwenye maeneo yako yote"),
+            _kpi("Matatizo Kwangu", wazi, "alert", "gold" if wazi else "green",
+                 f"Ya haraka: {haraka}"),
+        ]
+        ctx["worst"] = mbaya if mbaya and mbaya["cases"] else None
+        ctx["recent_members"] = []
+    return ctx
+
+
+def _kpi(label, value, icon, tint, note=""):
+    return {"label": _(label), "value": f"{value:,}", "icon": icon,
+            "tint": tint, "note": _(note) if note else ""}
+
+
+def _member_cards(qs, limit=6):
+    return [{
+        "id": m.pk, "no": m.membership_no, "name": m.full_name,
+        "phone": m.phone, "initials": _initials(m.full_name),
+        "place": str(m.ward or m.district or "—"),
+        "status": m.get_status_display(), "badge": _member_badge(m),
+    } for m in qs.select_related("ward", "district").order_by("-created_at")[:limit]]
 
 
 def _initials(name):
@@ -543,3 +597,65 @@ def can_touch_payment(user, payment):
         return False
     from geo.scope import can_see_member
     return can_see_member(user, payment.member)
+
+
+def viongozi_chini(user):
+    """
+    Viongozi walio chini ya kiongozi huyu, pamoja na utendaji wao.
+
+    Hiki ndicho chombo kikuu cha ngazi za juu. Kiongozi wa mkoa hawezi
+    kumpigia simu kila mmoja wa wanachama 500 — anafanya kazi kupitia
+    wenyeviti wa wilaya. Anahitaji kujua nani anajibu na nani hajibu.
+
+    `open_cases` ni matatizo yaliyo KWENYE ngazi ya kiongozi huyo bado —
+    yaani asiyoyashughulikia wala kuyapandisha. Ndio kipimo cha
+    utendaji kinachoeleweka zaidi.
+    """
+    level = top_level(user)
+    spec = BREAKDOWN.get(level)
+    if spec is None:
+        return None
+
+    label, member_path, case_path = spec
+    sub = next_level_down(level)
+    areas = list(_areas_under(user, level))
+    ids = [a.pk for a in areas]
+
+    members = scope_members(user)
+    counts = dict(members.values_list(f"{member_path}__id").annotate(
+        n=Count("id")).values_list(f"{member_path}__id", "n"))
+
+    # Matatizo yaliyo kwenye ngazi ya chini — hayajapandishwa wala
+    # kutatuliwa. Ndiyo yanayoonyesha nani hajibu.
+    from programs.models import Case
+    open_by_area = dict(
+        Case.objects.filter(level=sub, **{f"{case_path}_id__in": ids})
+        .exclude(status__in=[CaseStatus.RESOLVED, CaseStatus.CLOSED])
+        .values_list(f"{case_path}__id").annotate(n=Count("id"))
+        .values_list(f"{case_path}__id", "n"))
+
+    leaders = _leaders_by_area(areas, label)
+
+    rows = []
+    for a in areas:
+        wao = leaders.get(a.pk, [])
+        rows.append({
+            "area": str(a), "id": a.pk,
+            "members": counts.get(a.pk, 0),
+            "cases": open_by_area.get(a.pk, 0),
+            "leaders": wao,
+            "no_leader": not wao,
+        })
+    # Wasio na kiongozi kwanza, kisha wenye matatizo mengi.
+    rows.sort(key=lambda r: (not r["no_leader"], -r["cases"], r["area"]))
+    return {"rows": rows, "sub_name": dict(LeaderLevel.choices).get(sub, ""),
+            "label": label}
+
+
+def next_level_down(level):
+    """Ngazi moja chini ya hii, au `None` ikiwa ni ya chini kabisa."""
+    try:
+        i = LEVEL_ORDER.index(level)
+    except ValueError:
+        return None
+    return LEVEL_ORDER[i - 1] if i > 0 else None

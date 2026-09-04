@@ -52,6 +52,7 @@ urlpatterns = [
     path("uongozi/matatizo/<int:pk>/", lv.tatizo, name="leader_tatizo"),
     path("uongozi/matatizo/<int:pk>/<str:action>/", lv.tatizo_action,
          name="leader_tatizo_action"),
+    path("uongozi/viongozi/", lv.viongozi, name="leader_viongozi"),
     path("uongozi/ada/", lv.ada, name="leader_ada"),
     path("uongozi/ada/<int:pk>/<str:action>/", lv.ada_action, name="leader_ada_action"),
     path("uongozi/maombi/", lv.maombi, name="leader_maombi"),

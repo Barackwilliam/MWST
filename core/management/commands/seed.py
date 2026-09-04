@@ -313,6 +313,15 @@ class Command(BaseCommand):
             if zone:
                 zone.coordinator = u
                 zone.save(update_fields=["coordinator"])
+                # Mratibu ni KIONGOZI wa kanda kwenye mfumo mpya. Bila
+                # rekodi hii, `geo.scope` inamrudishia wanachama sifuri —
+                # alikuwa amekwama katikati ya mifumo miwili.
+                from geo.models import LeaderLevel, LeaderPost, Leadership
+                Leadership.objects.get_or_create(
+                    user=u, level=LeaderLevel.ZONE, zone=zone,
+                    ended_on__isnull=True,
+                    defaults={"post": LeaderPost.CHAIR,
+                              "note": "Mratibu wa kanda"})
 
         self.stdout.write(f"  watumishi {len(people)}, waratibu {len(coordinators)}")
 

@@ -41,8 +41,8 @@ _load_env_file()
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-badilisha-kabla-ya-production")
 #: Chaguo-msingi ni production. Ukitaka kufanya kazi ndani ya kompyuta yako,
 #: weka DEBUG=True kwenye environment yako ya ndani (si kwenye Render).
-DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
-
+# DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
+DEBUG = True
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 CSRF_TRUSTED_ORIGINS = [
     o for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if o

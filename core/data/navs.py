@@ -249,26 +249,42 @@ def superadmin(active="dashboard"):
     ], active)
 
 
-def uongozi(active="dashboard", is_member=True):
+def uongozi(active="dashboard", is_member=True, is_field=True):
     """
-    Menyu ya kiongozi wa kata, wilaya, mkoa, kanda au taifa.
+    Menyu ya kiongozi.
 
-    KILA KIONGOZI NI MWANACHAMA PIA. Ana ada ya kulipa, kadi yake,
-    pointi zake na haki zake zote. Menyu ikiwa na kazi za uongozi pekee,
-    kiongozi angelazimika kutoka na kuingia tena kwa akaunti nyingine —
-    au asingeweza kabisa kuona kadi yake.
+    INATOFAUTIANA KWA NGAZI, kwa sababu kazi zinatofautiana:
 
-    Ndiyo maana menyu ina sehemu mbili: KAZI ZA UONGOZI juu, na
-    UANACHAMA WANGU chini.
+      * KATA (`is_field=True`) — anafanya kazi na WATU. Ana "Wanachama
+        Wangu" kama chombo chake kikuu. Hana "Viongozi Walio Chini" —
+        hana ngazi ya chini.
+
+      * WILAYA na juu (`is_field=False`) — anafanya kazi na VIONGOZI.
+        Ana "Viongozi Walio Chini Yangu" juu ya orodha ya wanachama.
+        Orodha bapa ya wanachama 500 haina maana kwake, kwa hiyo
+        imeshuka chini.
+
+    KILA KIONGOZI NI MWANACHAMA PIA — ndiyo maana kuna sehemu ya
+    "Uanachama Wangu" chini.
     """
     items = [
         {"key": "dashboard", "label": "Dashibodi ya Uongozi", "icon": "dashboard",
          "url": "/uongozi/"},
-        {"key": "wanachama", "label": "Wanachama Wangu", "icon": "users",
-         "url": "/uongozi/wanachama/"},
+    ]
+    if is_field:
+        items.append({"key": "wanachama", "label": "Wanachama Wangu",
+                      "icon": "users", "url": "/uongozi/wanachama/"})
+    else:
+        items += [
+            {"key": "viongozi", "label": "Viongozi Walio Chini", "icon": "user-check",
+             "url": "/uongozi/viongozi/"},
+            {"key": "wanachama", "label": "Wanachama Wote", "icon": "users",
+             "url": "/uongozi/wanachama/"},
+        ]
+    items += [
         {"key": "ada", "label": "Ada za Wanachama", "icon": "wallet",
          "url": "/uongozi/ada/"},
-        {"key": "maombi", "label": "Maombi Mapya", "icon": "user-check",
+        {"key": "maombi", "label": "Maombi Mapya", "icon": "user-plus",
          "url": "/uongozi/maombi/"},
         {"key": "michango", "label": "Michango", "icon": "coins",
          "url": "/uongozi/michango/"},
@@ -282,7 +298,7 @@ def uongozi(active="dashboard", is_member=True):
          "url": "/uongozi/mazungumzo/"},
     ]
     if is_member:
-        items += [
+        items.append(
             {"key": "yangu", "label": "Uanachama Wangu", "icon": "id-card",
              "children": [
                  {"key": "yangu-dash", "label": "Dashibodi Yangu",
@@ -301,8 +317,7 @@ def uongozi(active="dashboard", is_member=True):
                   "url": "/mwanachama/viongozi/ward/"},
                  {"key": "yangu-wasifu", "label": "Wasifu Wangu",
                   "url": "/mwanachama/wasifu/"},
-             ]},
-        ]
+             ]})
     return _mark(items, active)
 
 
