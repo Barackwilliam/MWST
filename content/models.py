@@ -38,10 +38,26 @@ class SiteSetting(Bilingual):
 
     @classmethod
     def get(cls):
-        obj = cls.objects.first()
+        """
+        Mipangilio ya tovuti — rekodi MOJA inayotumika kila mahali.
+
+        Inahifadhiwa kwenye cache kwa dakika tano. Ilikuwa ikiulizwa
+        mara 2-3 kwa kila ukurasa (header, footer, risiti), na haibadiliki
+        isipokuwa mtu akiihariri — ambapo `save()` inafuta cache.
+        """
+        from django.core.cache import cache
+
+        obj = cache.get("mwst:sitesetting")
         if obj is None:
-            obj = cls.objects.create()
+            obj = cls.objects.first() or cls.objects.create()
+            cache.set("mwst:sitesetting", obj, 300)
         return obj
+
+    def save(self, *args, **kwargs):
+        from django.core.cache import cache
+
+        super().save(*args, **kwargs)
+        cache.delete("mwst:sitesetting")
 
 
 class Verse(Bilingual):

@@ -234,3 +234,26 @@ class Leadership(models.Model):
             raise ValidationError(_("Ngazi ya Taifa haina eneo maalum."))
         if self.ended_on and self.started_on and self.ended_on < self.started_on:
             raise ValidationError({"ended_on": _("Tarehe ya kumaliza ni kabla ya kuanza.")})
+
+# ---------------------------------------------------------------------------
+#  Cache ya jedwali za marejeo
+#
+#  `core.refdata` inahifadhi mikoa, wilaya na kanda kwa dakika kumi.
+#  Rekodi ikibadilika, cache lazima ifutwe mara moja — vinginevyo afisa
+#  angeongeza wilaya asiione hadi dakika kumi zipite.
+# ---------------------------------------------------------------------------
+from django.db.models.signals import post_delete, post_save   # noqa: E402
+from django.dispatch import receiver                          # noqa: E402
+
+
+@receiver(post_save, sender=Zone)
+@receiver(post_delete, sender=Zone)
+@receiver(post_save, sender=Region)
+@receiver(post_delete, sender=Region)
+@receiver(post_save, sender=District)
+@receiver(post_delete, sender=District)
+@receiver(post_save, sender=Ward)
+@receiver(post_delete, sender=Ward)
+def _futa_refdata(sender, **kwargs):
+    from core.refdata import clear
+    clear()

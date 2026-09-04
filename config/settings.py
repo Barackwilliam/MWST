@@ -41,8 +41,8 @@ _load_env_file()
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-badilisha-kabla-ya-production")
 #: Chaguo-msingi ni production. Ukitaka kufanya kazi ndani ya kompyuta yako,
 #: weka DEBUG=True kwenye environment yako ya ndani (si kwenye Render).
-# DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
+
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 CSRF_TRUSTED_ORIGINS = [
     o for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if o
@@ -122,6 +122,7 @@ if _DATABASE_URL:
         "default": dj_database_url.parse(
             _DATABASE_URL,
             conn_max_age=600,
+            conn_health_checks=True,
             ssl_require=_DATABASE_URL.startswith("postgres"),
         )
     }
@@ -137,6 +138,17 @@ else:
             'HOST': 'aws-0-eu-west-3.pooler.supabase.com',
             'PORT': '5432',
             'OPTIONS': {'sslmode': 'require'},  # hii inaruhusu SSL
+
+            # MUHIMU KWA KASI. Bila hii, Django inaunda muunganisho MPYA
+            # kwa kila ombi — na muunganisho wa Postgres wenye SSL
+            # kwenda Ulaya unachukua 150-300ms. Ukurasa wenye maswali 30
+            # ulikuwa ukilipia gharama hiyo kabla hata swali la kwanza
+            # halijafika.
+            #
+            # Njia ya DATABASE_URL ilikuwa nayo tayari (`conn_max_age=600`);
+            # fallback hii — ndiyo inayotumika Render — haikuwa nayo.
+            'CONN_MAX_AGE': 600,
+            'CONN_HEALTH_CHECKS': True,
         }
     }
 

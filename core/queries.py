@@ -17,6 +17,7 @@ from django.utils.translation import gettext, gettext as _
 # ONYO: usitumie `_` kama variable ya kutupa hapa — inafunika gettext.
 #       Tumia `_unused` badala yake.
 
+from . import refdata
 from .data import giving as _g
 
 from content.models import (Album, Announcement, Faq, Leader, MediaItem, Milestone,
@@ -150,7 +151,7 @@ def national(year=None):
     cat_counts = {row["category_id"]: row["n"]
                   for row in members.values("category_id").annotate(n=Count("id"))}
     cat_rows = []
-    for c in Category.objects.all():
+    for c in refdata.categories():
         n = cat_counts.get(c.pk, 0)
         if n:
             cat_rows.append({"label": c.name, "value": n, "display": num(n),
@@ -169,7 +170,7 @@ def national(year=None):
     counts = {row["region_id"]: row["n"]
               for row in members.values("region_id").annotate(n=Count("id"))}
     regions = [{"name": r.name, "members": counts.get(r.pk, 0), "x": r.map_x, "y": r.map_y}
-               for r in Region.objects.all()]
+               for r in refdata.regions()]
 
     # -- Mifuko --
     fund_totals = {row["fund_id"]: row["s"] for row in
@@ -253,7 +254,7 @@ def national(year=None):
         "zones": _zone_rows(members, year),
         "summary": [
             {"label": "Idadi ya Kanda", "value": num(Zone.objects.count()), "icon": "globe"},
-            {"label": "Idadi ya Mikoa", "value": num(Region.objects.count()), "icon": "map"},
+            {"label": "Idadi ya Mikoa", "value": num(len(refdata.regions())), "icon": "map"},
             {"label": "Idadi ya Wilaya", "value": num(_district_count()), "icon": "map-pin"},
             {"label": "Wanachama Hai", "value": num(members.filter(status=MemberStatus.ACTIVE).count()),
              "icon": "users"},
@@ -299,7 +300,7 @@ def _zone_rows(members, year):
 
 def _district_count():
     from geo.models import District
-    return District.objects.count()
+    return len(refdata.districts())
 
 
 def _cumulative(series, total):
@@ -409,7 +410,10 @@ def usajili(year=None, region_ids=None):
              "place": f"{a.region.name if a.region else '—'} - {a.district.name if a.district else '—'}",
              "status": a.get_status_display(), "badge": a.badge,
              "time": a.created_at.strftime("%I:%M %p")}
-            for a in apps.order_by("-created_at")[:5]
+            #: `select_related` — bila hiyo, kila ombi lilikuwa likiuliza
+            #: mkoa na wilaya yake peke yake. Maombi matano = maswali kumi
+            #: ya ziada.
+            for a in apps.select_related("region", "district").order_by("-created_at")[:5]
         ],
         "apps_month": {"labels": MONTHS, "data": monthly_series(apps, "created_at", year=year)},
         "apps_status": {"id": "chAppStatus", "title": "Hali ya Maombi", "sub": f"({year})",
@@ -433,8 +437,8 @@ def usajili(year=None, region_ids=None):
             {"label": "Tuma SMS", "icon": "message", "tint": "navy", "url": "/ujumbe/"},
             {"label": "Tuma Email", "icon": "mail", "tint": "gold", "url": "/ujumbe/"},
         ],
-        "categories": Category.objects.filter(is_selectable=True),
-        "regions_list": Region.objects.all(),
+        "categories": refdata.categories(only_selectable=True),
+        "regions_list": refdata.regions(),
     }
 
 
@@ -476,20 +480,40 @@ def malipo(page=1, per_page=10, filters=None, year=None, region_ids=None):
     pages = max((total_rows + per_page - 1) // per_page, 1)
     page = min(max(page, 1), pages)          # bana ndani ya mipaka
 
-    today_amt = ok.filter(paid_at__date=today).aggregate(s=Sum("amount"))["s"] or 0
-    today_n = ok.filter(paid_at__date=today).count()
-    month_amt = ok.filter(paid_at__date__gte=this_m).aggregate(s=Sum("amount"))["s"] or 0
-    month_n = ok.filter(paid_at__date__gte=this_m).count()
-    year_amt = ok.filter(paid_at__year=year).aggregate(s=Sum("amount"))["s"] or 0
-    target = Decimal("500000000")
+    # Takwimu ZOTE kwa maswali MAWILI badala ya tisa.
+    #
+    # Awali kila kipimo kilikuwa na swali lake: jumla ya leo, idadi ya
+    # leo, jumla ya mwezi, idadi ya mwezi, jumla ya mwaka, iliyokosekana,
+    # idadi jumla, na kiwango cha uthibitisho. Kwenye SQLite ya ndani
+    # tofauti ni ndogo; kwenye Supabase iliyoko Ulaya, kila swali ni
+    # safari ya mtandao.
+    agg = ok.aggregate(
+        today_amt=Sum("amount", filter=Q(paid_at__date=today)),
+        today_n=Count("id", filter=Q(paid_at__date=today)),
+        month_amt=Sum("amount", filter=Q(paid_at__date__gte=this_m)),
+        month_n=Count("id", filter=Q(paid_at__date__gte=this_m)),
+        year_amt=Sum("amount", filter=Q(paid_at__year=year)),
+        ok_n=Count("id"),
+    )
+    today_amt = agg["today_amt"] or 0
+    today_n = agg["today_n"] or 0
+    month_amt = agg["month_amt"] or 0
+    month_n = agg["month_n"] or 0
+    year_amt = agg["year_amt"] or 0
+
     missed = all_pay.filter(status=PaymentStatus.FAILED)
-    missed_amt = missed.aggregate(s=Sum("amount"))["s"] or 0
-    total_n = all_pay.count() or 1
-    conf_rate = round(ok.count() / total_n * 100, 1)
+    both = all_pay.aggregate(
+        missed_amt=Sum("amount", filter=Q(status=PaymentStatus.FAILED)),
+        total_n=Count("id"),
+    )
+    missed_amt = both["missed_amt"] or 0
+    total_n = both["total_n"] or 1
+    target = Decimal("500000000")
+    conf_rate = round((agg["ok_n"] or 0) / total_n * 100, 1)
 
     # -- kwa kategoria --
     cat_rows = []
-    for c in Category.objects.all():
+    for c in refdata.categories():
         amt = ok.filter(member__category=c).aggregate(s=Sum("amount"))["s"] or 0
         if amt:
             cat_rows.append({"label": c.name, "value": int(amt), "display": tzs(amt),
@@ -604,17 +628,19 @@ def michango(page=1, per_page=10, filters=None, year=None, region_ids=None):
     page = min(max(page, 1), pages)
     total = ok.aggregate(s=Sum("amount"))["s"] or 0
 
-    def fund_total(code):
-        return ok.filter(fund__code=code).aggregate(s=Sum("amount"))["s"] or 0
-
-    hiari, zaka, sadaqa, waqf = (fund_total("hiari"), fund_total("zaka"),
-                                 fund_total("sadaqa"), fund_total("waqf"))
+    # Jumla za mifuko yote kwa SWALI MOJA. Awali kila mfuko ulikuwa na
+    # swali lake — mifuko minne = maswali manne, na ukurasa wa michango
+    # ulikuwa na jumla tisa tofauti.
+    by_fund = {r["fund__code"]: r["s"] for r in
+               ok.values("fund__code").annotate(s=Sum("amount"))}
+    hiari, zaka, sadaqa, waqf = (by_fund.get("hiari") or 0, by_fund.get("zaka") or 0,
+                                 by_fund.get("sadaqa") or 0, by_fund.get("waqf") or 0)
     verified = total
     tint = {"hiari": "navy", "zaka": "purple", "sadaqa": "orange", "waqf": "teal"}
 
     type_rows = []
     for f in Fund.objects.exclude(code="ada")[:5]:
-        amt = fund_total(f.code)
+        amt = by_fund.get(f.code) or 0
         if amt:
             type_rows.append({"label": f.name, "value": int(amt),
                               "display": f"{pct(amt, total)}%", "pct": None,
@@ -650,7 +676,7 @@ def michango(page=1, per_page=10, filters=None, year=None, region_ids=None):
 
     targets, t_target, t_actual = [], Decimal(0), Decimal(0)
     for f in Fund.objects.exclude(code="ada")[:5]:
-        amt = fund_total(f.code)
+        amt = by_fund.get(f.code) or 0
         tgt = f.annual_target or Decimal(1)
         targets.append({"label": f.name, "target": num(tgt), "actual": num(amt),
                         "pct": round(float(amt) / float(tgt) * 100, 1)})
@@ -736,7 +762,7 @@ def wadau(year=None):
     reg_counts = {row["member__region_id"]: row["n"]
                   for row in ok.values("member__region_id").annotate(n=Count("id"))}
     regions = [{"name": r.name, "members": reg_counts.get(r.pk, 0),
-                "x": r.map_x, "y": r.map_y} for r in Region.objects.all()]
+                "x": r.map_x, "y": r.map_y} for r in refdata.regions()]
     reg_rows = (ok.values("member__region__name").annotate(s=Sum("amount"))
                 .exclude(member__region__name=None).order_by("-s")[:5])
     reg_total = sum(r["s"] for r in reg_rows) or 1
@@ -769,7 +795,7 @@ def wadau(year=None):
                        for i, d_ in enumerate(top, 1)],
         "recent": [{"name": c.display_name, "type": c.fund.name, "value": tzs(c.amount),
                     "date": c.received_at.strftime("%d/%m/%Y - %I:%M %p"), "tint": "red"}
-                   for c in ok.order_by("-received_at")[:5]],
+                   for c in ok.select_related("fund").order_by("-received_at")[:5]],
         "regions": regions,
         "region_share": [{"name": r["member__region__name"],
                           "pct": round(float(r["s"]) / float(reg_total) * 100)} for r in reg_rows],
@@ -873,11 +899,11 @@ def matukio(month_key=None, year=None, region_ids=None):
         "upcoming": [{"title": e.tx("title"), "date": e.start_at.strftime("%d/%m/%Y"),
                       "place": e.region.name if e.region else "—",
                       "in": _("Siku %(n)d") % {"n": max(e.days_until, 0)}, "scene": e.scene}
-                     for e in evs.filter(start_at__gte=now).order_by("start_at")[:5]],
+                     for e in evs.select_related("region").filter(start_at__gte=now).order_by("start_at")[:5]],
         "recent": [{"title": e.tx("title"), "date": e.start_at.strftime("%d/%m/%Y"),
                     "place": e.region.name if e.region else "—",
                     "status": e.get_status_display()}
-                   for e in evs.filter(status="done").order_by("-start_at")[:5]],
+                   for e in evs.select_related("region").filter(status="done").order_by("-start_at")[:5]],
         "participants": [{"n": i, "name": r["event__region__name"], "value": num(r["n"]),
                           "pct": round(r["n"] / pmax * 100), "color": colours[(i - 1) % 5]}
                          for i, r in enumerate(part_rows, 1)],
@@ -887,7 +913,7 @@ def matukio(month_key=None, year=None, region_ids=None):
         "alerts": [{"text": _("%(title)s lipo baada ya siku %(days)d.")
                              % {"title": e.tx("title"), "days": max(e.days_until, 0)},
                     "time": e.start_at.strftime("%d/%m/%Y"), "icon": "bell", "tint": "green"}
-                   for e in evs.filter(start_at__gte=now).order_by("start_at")[:4]],
+                   for e in evs.select_related("region").filter(start_at__gte=now).order_by("start_at")[:4]],
         "calendar": cal,
         "month_summary": month_sum,
         "month_total": num(month_evs.count()),
@@ -1016,8 +1042,11 @@ def superadmin(year=None):
     mix = []
     ada = ok.filter(paid_at__date__gte=this_m).aggregate(s=Sum("amount"))["s"] or 0
     conts = confirmed(Contribution.objects.filter(received_at__date__gte=this_m))
-    hiari = conts.filter(fund__code="hiari").aggregate(s=Sum("amount"))["s"] or 0
-    misaada = conts.filter(fund__code__in=["sadaqa", "dharura"]).aggregate(s=Sum("amount"))["s"] or 0
+    # Swali moja badala ya mawili.
+    _by = {r["fund__code"]: r["s"] for r in
+           conts.values("fund__code").annotate(s=Sum("amount"))}
+    hiari = _by.get("hiari") or 0
+    misaada = (_by.get("sadaqa") or 0) + (_by.get("dharura") or 0)
     other = (conts.aggregate(s=Sum("amount"))["s"] or 0) - hiari - misaada
     total_mix = ada + hiari + misaada + other or 1
     for label, amt, colour in [("Ada za Uanachama", ada, C["green"]),
@@ -1048,7 +1077,7 @@ def superadmin(year=None):
         "recent_members": [{"full_name": m.full_name, "initials": m.initials,
                             "category": m.category.name,
                             "joined": m.joined_on.strftime("%d %b %Y")}
-                           for m in Member.objects.order_by("-created_at")[:5]],
+                           for m in Member.objects.select_related("category").order_by("-created_at")[:5]],
         "revenue": {"labels": MONTHS, "data": monthly_series(ok, "paid_at", "amount", year)},
         "payment_mix": {"id": "chPayments", "title": "Muhtasari wa Malipo", "control": "Mwezi Huu",
                         "center_value": tzs(total_mix), "center_label": "Jumla", "rows": mix},
@@ -1066,7 +1095,7 @@ def superadmin(year=None):
             {"date": p.paid_at.strftime("%d %b %Y"), "member": p.member.full_name,
              "desc": _("Ada ya Uanachama"), "amount": num(p.amount), "method": p.method_label,
              "receipt_no": p.receipt_no, "status": p.get_status_display()}
-            for p in ok.order_by("-paid_at")[:5]],
+            for p in ok.select_related("member").order_by("-paid_at")[:5]],
         "announcements": [{"title": a.tx("title"), "icon": a.icon, "tint": a.tint,
                            "body": a.tx("body"), "date": a.published_on.strftime("%d %b %Y")}
                           for a in Announcement.objects.filter(is_active=True, status="approved")[:3]],
@@ -1084,7 +1113,7 @@ def _superadmin_shared(year=None):
     cat_counts = {row["category_id"]: row["n"]
                   for row in members.values("category_id").annotate(n=Count("id"))}
     cat_rows = []
-    for c in Category.objects.all():
+    for c in refdata.categories():
         cnt = cat_counts.get(c.pk, 0)
         if cnt:
             cat_rows.append({"label": c.name, "value": cnt, "display": num(cnt),
@@ -1286,8 +1315,12 @@ def public_home():
         "news": [{"title": n.tx("title"), "date": n.published_on.strftime("%d %b %Y"),
                   "text": n.tx("summary"), "scene": n.scene}
                  for n in News.objects.filter(is_published=True)[:3]],
-        "gallery": [{"cap": a.tx("name"), "count": _("%(n)d Picha") % {"n": a.item_count()}, "scene": a.scene}
-                    for a in Album.objects.filter(is_public=True)[:6]],
+        #: `annotate` badala ya `item_count()` kwa kila albamu. Awali
+        #: albamu sita zilifanya maswali sita ya ziada; sasa ni moja.
+        "gallery": [{"cap": a.tx("name"), "count": _("%(n)d Picha") % {"n": a.n_items},
+                     "scene": a.scene}
+                    for a in Album.objects.filter(is_public=True)
+                                          .annotate(n_items=Count("items"))[:6]],
         #: Miradi michache inayoendelea. Mgeni anataka kuona kazi HALISI
         #: kabla ya kuombwa kuchangia; kiungo cha "tazama zote" kinampeleka
         #: kwenye orodha kamili badala ya kujaza ukurasa wa nyumbani.
@@ -1344,7 +1377,7 @@ def public_kuhusu():
                     for p in Pillar.objects.all()],
         "counters": [
             {"value": Member.objects.count(), "label": "Wanachama Nchini Kote"},
-            {"value": Region.objects.count(), "label": "Mikoa Tunayofanya Kazi"},
+            {"value": len(refdata.regions()), "label": "Mikoa Tunayofanya Kazi"},
             {"value": _district_count(), "label": "Wilaya Tulizofikia"},
             {"value": Project.objects.count(), "label": "Miradi Inayoendelea"},
         ],
@@ -1359,7 +1392,7 @@ def public_kuhusu():
 
 def public_uanachama():
     tiers = []
-    for c in Category.objects.filter(is_selectable=True):
+    for c in refdata.categories(only_selectable=True):
         tiers.append({"name": c.name, "price": tzs(c.monthly_fee), "per": "kwa mwezi",
                       "featured": c.is_featured, "items": c.benefit_list()})
     special = Category.objects.filter(is_special=True).first()
@@ -1451,7 +1484,7 @@ def public_huduma():
                       "raised": tzs(p.raised()), "goal": num(p.target_amount),
                       "purpose": _project_purpose(p),
                       "scene": p.scene, "over": p.progress() > 100}
-                     for p in Project.objects.filter(status="ongoing")[:3]],
+                     for p in Project.objects.select_related("region").filter(status="ongoing")[:3]],
         "impact": [
             {"value": EventRegistration.objects.count(), "label": "Wanufaika kwa Mwezi"},
             {"value": Project.objects.filter(status="ongoing").count(),
@@ -1481,8 +1514,12 @@ def public_habari():
                    "cat": n.category.slug if n.category else "nyingine",
                    "cat_label": n.category.tx("name") if n.category else "Habari",
                    "text": n.tx("summary"), "scene": n.scene} for n in others[:9]],
-        "gallery": [{"cap": a.tx("name"), "count": _("%(n)d Picha") % {"n": a.item_count()}, "scene": a.scene}
-                    for a in Album.objects.filter(is_public=True)[:6]],
+        #: `annotate` badala ya `item_count()` kwa kila albamu. Awali
+        #: albamu sita zilifanya maswali sita ya ziada; sasa ni moja.
+        "gallery": [{"cap": a.tx("name"), "count": _("%(n)d Picha") % {"n": a.n_items},
+                     "scene": a.scene}
+                    for a in Album.objects.filter(is_public=True)
+                                          .annotate(n_items=Count("items"))[:6]],
     }
 
 
@@ -1536,8 +1573,8 @@ def public_jiunge():
                      "text": "Jaza fomu hii kuanza safari yako ya uanachama. "
                              "Itachukua dakika chache tu."},
             "tiers": u["tiers"], "steps": u["steps"], "special": u["special"],
-            "categories": Category.objects.filter(is_selectable=True),
-            "regions_list": Region.objects.all()}
+            "categories": refdata.categories(only_selectable=True),
+            "regions_list": refdata.regions()}
 
 
 def verse(index=0):
@@ -1937,7 +1974,7 @@ def coordinator(region, year=None):
     cat_counts = {r["category_id"]: r["n"]
                   for r in members.values("category_id").annotate(n=Count("id"))}
     cat_rows = []
-    for c in Category.objects.all():
+    for c in refdata.categories():
         n = cat_counts.get(c.pk, 0)
         if n:
             cat_rows.append({"label": c.name, "value": n, "display": num(n),
@@ -2069,7 +2106,7 @@ def zone_dashboard(zone, year=None):
     cat_counts = {r["category_id"]: r["n"]
                   for r in members.values("category_id").annotate(n=Count("id"))}
     cat_rows = []
-    for c in Category.objects.all():
+    for c in refdata.categories():
         n = cat_counts.get(c.pk, 0)
         if n:
             cat_rows.append({"label": c.name, "value": n, "display": num(n),
@@ -2205,7 +2242,7 @@ def broadcast_page(region_ids=None):
 
 def public_gallery(album_slug=None, page=1, per_page=24):
     """Maktaba ya picha na video kwa umma."""
-    albums = Album.objects.filter(is_public=True)
+    albums = Album.objects.filter(is_public=True).annotate(n_items=Count("items"))
     items = MediaItem.objects.filter(album__is_public=True).select_related("album")
     active = None
     if album_slug:
@@ -2222,7 +2259,7 @@ def public_gallery(album_slug=None, page=1, per_page=24):
         "hero": {"eyebrow": "Picha na Video", "scene": "sadaka",
                  "title": "Maktaba ya Picha na Video",
                  "text": "Shughuli, miradi na matukio ya MUWESTA katika picha."},
-        "albums": [{"id": a.pk, "name": a.tx("name"), "count": a.item_count(),
+        "albums": [{"id": a.pk, "name": a.tx("name"), "count": a.n_items,
                     "scene": a.scene, "active": bool(active and active.pk == a.pk)}
                    for a in albums],
         "active_album": {"id": active.pk, "name": active.tx("name")} if active else None,

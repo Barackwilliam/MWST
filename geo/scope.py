@@ -36,16 +36,39 @@ NATIONAL_ROLES = {"super_admin", "admin", "management", "registration",
 
 
 def active_posts(user):
-    """Nyadhifa zake zinazotumika leo. Zilizoisha muda hazihesabiwi."""
+    """
+    Nyadhifa zake zinazotumika leo. Zilizoisha muda hazihesabiwi.
+
+    MATOKEO YANAHIFADHIWA KWENYE `user` KWA OMBI HILI.
+
+    Kazi hii inaitwa na kila kitu: `scope_members`, `scope_cases`,
+    `top_level`, `breakdown`, menyu, rangi ya jukumu, na `is_leader`.
+    Bila kuhifadhi, ukurasa mmoja wa uongozi ulikuwa ukiuliza jedwali la
+    `geo_leadership` MARA 18. Sasa ni mara moja.
+
+    `user` ni kitu kipya kwa kila ombi, kwa hiyo hakuna hatari ya
+    kubeba data ya zamani kati ya maombi.
+    """
     if not user or not user.is_authenticated:
         return []
+
+    hifadhi = getattr(user, "_mwst_posts", None)
+    if hifadhi is not None:
+        return hifadhi
+
     from django.utils import timezone
 
     today = timezone.localdate()
-    return [p for p in user.leaderships.select_related(
-        "ward", "district", "region", "zone").all()
+    posts = [p for p in user.leaderships.select_related(
+        "ward__district__region__zone", "district__region__zone",
+        "region__zone", "zone").all()
         if (p.started_on is None or p.started_on <= today)
         and (p.ended_on is None or p.ended_on >= today)]
+    try:
+        user._mwst_posts = posts
+    except Exception:
+        pass          # AnonymousUser na wengine wasiokubali sifa mpya
+    return posts
 
 
 def sees_everyone(user):

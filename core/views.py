@@ -28,6 +28,7 @@ from programs.models import AssistanceRequest, Event, EventRegistration
 
 from . import queries as q
 from . import registry
+from . import refdata
 from .data import (about as about_data, giving, legal, membership as mem_data,
                    verses as verses_data,
                    navs, pages as pg, tz_map)
@@ -1806,8 +1807,8 @@ def maombi(request):
     ctx = {
         "rows": rows, "filters": f, "total": qs.count(),
         "statuses": ApplicationStatus.choices,
-        "categories": Category.objects.all(),
-        "regions_list": Region.objects.all(),
+        "categories": refdata.categories(),
+        "regions_list": refdata.regions(),
         "detail": detail or (rows[0] if rows else None),
         "picked": picked,
         "kpis": q.usajili()["kpis"],
@@ -1910,9 +1911,9 @@ def _member_list(request, region_ids=None, nav=None, zone=None):
         } for m in qs[:50]],
         "total": qs.count(), "filters": f,
         "statuses": MemberStatus.choices,
-        "categories": Category.objects.all(),
+        "categories": refdata.categories(),
         "regions_list": (Region.objects.filter(pk__in=region_ids)
-                         if region_ids is not None else Region.objects.all()),
+                         if region_ids is not None else refdata.regions()),
         "zone": zone,
     }
     ctx.update(_chrome(request, nav=nav or navs.superadmin("wanachama"),
@@ -2524,7 +2525,7 @@ def coordinator(request):
 
     ctx = q.zone_dashboard(zone, year=_active_year(request))
     ctx["zone"] = zone
-    ctx["all_zones"] = Zone.objects.all() if user_zone(request.user) is None else None
+    ctx["all_zones"] = refdata.zones() if user_zone(request.user) is None else None
     ctx.update(_chrome(request, nav=navs.coordinator("dashboard"),
                        topbar_title=zone.tx("name"),
                        topbar_sub=str(_("Mratibu wa Kanda")),

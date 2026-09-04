@@ -129,6 +129,14 @@ class Member(TimeStamped):
             models.Index(fields=["status"]),
             models.Index(fields=["category"]),
             models.Index(fields=["region"]),
+            #: Orodha ya "hawajalipa" inachuja hali PAMOJA na tarehe ya
+            #: kuisha. Index ya `status` peke yake haitoshi kwa swali
+            #: lenye masharti mawili.
+            models.Index(fields=["status", "expires_on"]),
+            #: Ufinyu wa viongozi unachuja kwa kata au wilaya. Index ya
+            #: `region` peke yake haisaidii kiongozi wa kata.
+            models.Index(fields=["ward"]),
+            models.Index(fields=["district"]),
         ]
 
     def __str__(self):
@@ -529,3 +537,14 @@ class Beneficiary(models.Model):
 
     def __str__(self):
         return self.full_name
+
+from django.db.models.signals import post_delete, post_save   # noqa: E402
+from django.dispatch import receiver                          # noqa: E402
+
+
+@receiver(post_save, sender=Category)
+@receiver(post_delete, sender=Category)
+def _futa_refdata_category(sender, **kwargs):
+    """Cache ya kategoria ifutwe bei ikibadilika — si baada ya dakika kumi."""
+    from core.refdata import clear
+    clear("categories")
