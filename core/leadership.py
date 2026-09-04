@@ -9,7 +9,7 @@ from django.db.models import Count, Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from geo.models import LeaderLevel, LEVEL_ORDER, Leadership
+from geo.models import LeaderLevel, LEVEL_ORDER, Leadership, next_level
 from geo.scope import (active_posts, areas_label, member_filter, scope_members,
                        sees_everyone, top_level)
 from members.models import Member, MemberStatus
@@ -121,6 +121,7 @@ def dashboard(user):
 
     bd = breakdown(user)
     ctx = {
+        "ticker": matangazo_ticker(user),
         "areas": areas_label(user),
         "level": level,
         "breakdown": bd,
@@ -315,6 +316,7 @@ def my_leaders(member):
             "level": p.level,
             "level_name": p.get_level_display(),
             "post": p.get_post_display(),
+            "post_key": p.post,
             "area": p.area_name,
             "name": p.user.get_full_name() or p.user.username,
             "phone": getattr(p.user, "phone", "") or "",
@@ -322,8 +324,14 @@ def my_leaders(member):
         })
     # Kutoka chini kwenda juu — kiongozi wa kata ndiye wa kwanza kuonwa,
     # kwa sababu ndiye wa kwanza kuwasiliana naye.
+    #
+    # Ndani ya ngazi, MWENYEKITI anatangulia. Awali nilipanga kwa jina la
+    # wadhifa kwa alfabeti, kwa hiyo "Katibu" ilitangulia "Mwenyekiti" —
+    # na kitufe cha simu kikamfuata katibu badala ya mwenyekiti.
     order = {lv: i for i, lv in enumerate(LEVEL_ORDER)}
-    out.sort(key=lambda r: (order.get(r["level"], 99), r["post"]))
+    rank = {"chair": 0, "secretary": 1, "treasurer": 2}
+    out.sort(key=lambda r: (order.get(r["level"], 99),
+                            rank.get(r["post_key"], 9)))
     return out
 
 
@@ -659,3 +667,190 @@ def next_level_down(level):
     except ValueError:
         return None
     return LEVEL_ORDER[i - 1] if i > 0 else None
+
+
+# ---------------------------------------------------------------------------
+#  Mawasiliano kati ya viongozi
+# ---------------------------------------------------------------------------
+def wenzangu(user):
+    """
+    Viongozi ambao mtu huyu anaweza kuwasiliana nao.
+
+    Makundi matatu, kwa mpangilio wa matumizi:
+      * WALIO CHINI  — anaowasimamia; ndio anaowaandikia mara nyingi
+      * WENZANGU     — wa ngazi ile ile, eneo moja (mwenyekiti na katibu)
+      * WALIO JUU    — anaowaripoti
+
+    Hakuna kiongozi anayeweza kuandikia mtu wa mnyororo mwingine —
+    mwenyekiti wa Kata A hawezi kumwandikia wa Wilaya B.
+    """
+    from geo.models import Leadership
+
+    posts = active_posts(user)
+    if not posts and not sees_everyone(user):
+        return {"chini": [], "wenzangu": [], "juu": []}
+
+    chini, wenza, juu = [], [], []
+    seen = {user.pk}
+
+    for p in posts:
+        # Walio chini: maeneo ya ngazi moja chini ya eneo lake
+        sub = next_level_down(p.level)
+        if sub:
+            for l in _leaders_in(sub, _under(p)):
+                if l.user_id not in seen:
+                    seen.add(l.user_id)
+                    chini.append(_leader_card(l, "chini"))
+
+        # Wenzangu: ngazi ile ile, eneo lile lile
+        for l in Leadership.objects.filter(level=p.level, **_area_filter(p)) \
+                .select_related("user", "ward", "district", "region", "zone"):
+            if l.user_id not in seen and l.is_active:
+                seen.add(l.user_id)
+                wenza.append(_leader_card(l, "wenzangu"))
+
+        # Walio juu: ngazi moja juu, eneo linalomjumuisha
+        up = next_level(p.level)
+        if up:
+            for l in _leaders_above(up, p):
+                if l.user_id not in seen:
+                    seen.add(l.user_id)
+                    juu.append(_leader_card(l, "juu"))
+
+    # Mwenyekiti kwanza kwenye kila kundi.
+    rank = {"chair": 0, "secretary": 1, "treasurer": 2}
+    for lst in (chini, wenza, juu):
+        lst.sort(key=lambda r: (rank.get(r["post_key"], 9), r["area"]))
+    return {"chini": chini, "wenzangu": wenza, "juu": juu}
+
+
+def _area_filter(post):
+    """Kichujio cha eneo la wadhifa huu."""
+    for f in ("ward", "district", "region", "zone"):
+        if getattr(post, f"{f}_id", None):
+            return {f"{f}_id": getattr(post, f"{f}_id")}
+    return {}
+
+
+def _under(post):
+    """Maeneo ya ngazi moja chini ya wadhifa huu."""
+    from geo.models import District, Region, Ward, Zone
+
+    if post.level == LeaderLevel.DISTRICT and post.district_id:
+        return Ward.objects.filter(district_id=post.district_id)
+    if post.level == LeaderLevel.REGION and post.region_id:
+        return District.objects.filter(region_id=post.region_id)
+    if post.level == LeaderLevel.ZONE and post.zone_id:
+        return Region.objects.filter(zone_id=post.zone_id)
+    if post.level == LeaderLevel.NATIONAL:
+        return Zone.objects.all()
+    return []
+
+
+def _leaders_in(level, areas):
+    """Viongozi wa ngazi husika kwenye maeneo haya."""
+    from geo.models import Leadership
+
+    field = {LeaderLevel.WARD: "ward", LeaderLevel.DISTRICT: "district",
+             LeaderLevel.REGION: "region", LeaderLevel.ZONE: "zone"}.get(level)
+    if not field:
+        return []
+    ids = [a.pk for a in areas]
+    return [l for l in Leadership.objects.filter(
+        level=level, **{f"{field}_id__in": ids}).select_related(
+        "user", "ward", "district", "region", "zone") if l.is_active]
+
+
+def _leaders_above(level, post):
+    """Viongozi wa ngazi ya juu wanaomsimamia mtu huyu."""
+    from geo.models import Leadership
+
+    qs = Leadership.objects.filter(level=level).select_related(
+        "user", "ward", "district", "region", "zone")
+    if level == LeaderLevel.DISTRICT and post.ward_id:
+        qs = qs.filter(district_id=post.ward.district_id)
+    elif level == LeaderLevel.REGION and post.district_id:
+        qs = qs.filter(region_id=post.district.region_id)
+    elif level == LeaderLevel.ZONE and post.region_id:
+        qs = qs.filter(zone_id=post.region.zone_id)
+    elif level != LeaderLevel.NATIONAL:
+        return []
+    return [l for l in qs if l.is_active]
+
+
+def _leader_card(post, kundi):
+    u = post.user
+    return {
+        "id": u.pk, "name": u.get_full_name() or u.username,
+        "post": post.get_post_display(), "post_key": post.post,
+        "level": post.get_level_display(),
+        "area": post.area_name, "phone": getattr(u, "phone", "") or "",
+        "initials": _initials(u.get_full_name() or u.username),
+        "kundi": kundi,
+    }
+
+
+def chats_for(user):
+    """Mazungumzo yake na viongozi wengine, mapya kwanza."""
+    from django.db.models import Q as _Q
+    from programs.models import Chat
+
+    return (Chat.objects.filter(_Q(a=user) | _Q(b=user))
+            .select_related("a", "b").order_by("-last_at"))
+
+
+def can_chat(user, other):
+    """Je, anaruhusiwa kuandikia kiongozi huyu?"""
+    if sees_everyone(user) and active_posts(user):
+        return True
+    w = wenzangu(user)
+    ids = {x["id"] for x in w["chini"] + w["wenzangu"] + w["juu"]}
+    return other.pk in ids
+
+
+def matangazo_ticker(user, limit=6):
+    """
+    Matangazo yanayomhusu kiongozi — ya mnyororo wake wote.
+
+    Kiongozi wa kata anaona ya wilaya, mkoa, kanda na taifa. Ya kwake
+    mwenyewe hayajumuishwi; anayajua tayari.
+
+    Yanaonyeshwa kwa kuteleza juu ya dashibodi ili asiyakose — tangazo
+    lililofichwa ndani ya menyu halisomwi.
+    """
+    from programs.models import Broadcast
+
+    posts = active_posts(user)
+    if not posts and not sees_everyone(user):
+        return []
+
+    q = Q(level=LeaderLevel.NATIONAL)
+    mine = set()
+    for p in posts:
+        mine.add((p.level, getattr(p, f"{p.level}_id", None)))
+        if p.ward_id:
+            q |= Q(level=LeaderLevel.DISTRICT, district_id=p.ward.district_id)
+            q |= Q(level=LeaderLevel.REGION, region_id=p.ward.district.region_id)
+            if p.ward.district.region.zone_id:
+                q |= Q(level=LeaderLevel.ZONE, zone_id=p.ward.district.region.zone_id)
+        elif p.district_id:
+            q |= Q(level=LeaderLevel.REGION, region_id=p.district.region_id)
+            if p.district.region.zone_id:
+                q |= Q(level=LeaderLevel.ZONE, zone_id=p.district.region.zone_id)
+        elif p.region_id and p.region.zone_id:
+            q |= Q(level=LeaderLevel.ZONE, zone_id=p.region.zone_id)
+
+    rows = []
+    for b in Broadcast.objects.filter(q).select_related("sender")[:limit * 2]:
+        if (b.level, getattr(b, f"{b.level}_id", None)) in mine:
+            continue          # yake mwenyewe
+        rows.append({
+            "id": b.pk, "subject": b.subject, "body": b.body,
+            "sender": b.sender.get_full_name() or b.sender.username,
+            "initials": _initials(b.sender.get_full_name() or b.sender.username),
+            "level": b.get_level_display(), "area": b.area_name,
+            "when": b.created_at,
+        })
+        if len(rows) >= limit:
+            break
+    return rows

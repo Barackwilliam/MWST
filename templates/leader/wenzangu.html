@@ -1,0 +1,74 @@
+{% extends "base/app.html" %}
+{% load i18n %}
+{% block title %}{% trans "Viongozi Wenzangu" %}{% endblock %}
+
+{% block page %}
+  {% include "base/messages.html" %}
+
+  <div class="card ldr__hero">
+    <div>
+      <h2>{% trans "Viongozi Wenzangu" %}</h2>
+      <p>{% trans "Wasiliana na viongozi wa mnyororo wako ndani ya mfumo" %}</p>
+    </div>
+  </div>
+
+  {% if chats %}
+    <section class="card mt">
+      <div class="card__head"><h3 class="card__title">{% trans "Mazungumzo Yanayoendelea" %}</h3></div>
+      <div class="card__body card__body--flush">
+        <ul class="applist">
+          {% for c in chats %}
+            <li class="appcard">
+              <a class="appcard__main" href="{% url 'core:leader_chat' c.other.pk %}">
+                <span class="appcard__av">{{ c.other.initials }}</span>
+                <span class="appcard__body">
+                  <span class="appcard__top">
+                    <b class="appcard__name">{{ c.other.get_full_name|default:c.other.username }}</b>
+                    <span class="badge badge--muted">{{ c.n }}</span>
+                  </span>
+                  <span class="appcard__meta">
+                    {% if c.last %}
+                      <span>{{ c.last.body|truncatechars:56 }}</span>
+                      <span class="appcard__dot">&middot;</span>
+                      <span class="t-mono">{{ c.last.created_at|date:"d/m H:i" }}</span>
+                    {% endif %}
+                  </span>
+                </span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  {% endif %}
+
+  {% comment %}Makundi matatu kwa mpangilio wa matumizi: anaowasimamia
+  kwanza (ndio anaowaandikia mara nyingi), kisha wenzake, kisha
+  anaowaripoti.{% endcomment %}
+  {% for kundi, watu in group_list %}
+    {% if watu %}
+      <section class="card mt">
+        <div class="card__head">
+          <h3 class="card__title">{{ kundi }}</h3>
+          <span class="appf__count">{{ watu|length }}</span>
+        </div>
+        <div class="card__body">
+          <div class="peeps">
+            {% for p in watu %}
+              <a class="peep" href="{% url 'core:leader_chat' p.id %}">
+                <span class="peep__av">{{ p.initials }}</span>
+                <span class="peep__name">{{ p.name }}</span>
+                <span class="peep__post">{{ p.post }}</span>
+                <span class="peep__area">{{ p.area }}</span>
+                <span class="peep__go">
+                  <svg width="13" height="13"><use href="#i-message"></use></svg>
+                  {% trans "Andika" %}
+                </span>
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

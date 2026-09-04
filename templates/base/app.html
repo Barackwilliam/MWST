@@ -14,7 +14,10 @@
   <link rel="stylesheet" href="{% static 'css/mwst.css' %}">
   {% block head %}{% endblock %}
 </head>
-<body>
+{% comment %}`role_key` inatoka `_chrome` — inaruhusu CSS kubadilisha
+rangi ya kichwa kwa kila jukumu. Afisa akifungua akaunti isiyo yake
+anaigundua kwa rangi kabla hajasoma menyu.{% endcomment %}
+<body class="app-{{ role_key|default:'member' }}">
 {% include "base/icons.html" %}
 
 <div class="app">

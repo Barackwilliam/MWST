@@ -8,6 +8,7 @@ kuhakikisha kiongozi wa Kata A hamwoni mwanachama wa Kata B.
 from functools import wraps
 
 from django.contrib import messages
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -440,3 +441,57 @@ def viongozi(request):
         return redirect("core:leader_dashboard")
     return render(request, "leader/viongozi.html", _chrome(
         request, "viongozi", **data))
+
+
+# ---------------------------------------------------------------------------
+#  Mawasiliano kati ya viongozi
+# ---------------------------------------------------------------------------
+@leader_required
+def wenzangu(request):
+    """Viongozi ninaoweza kuwasiliana nao, pamoja na mazungumzo yaliyopo."""
+    g = L.wenzangu(request.user)
+    # Mpangilio wa matumizi: anaowasimamia kwanza — ndio anaowaandikia
+    # mara nyingi — kisha wenzake, kisha anaowaripoti.
+    group_list = [
+        (_("Walio Chini Yangu"), g["chini"]),
+        (_("Wenzangu wa Ngazi Ile Ile"), g["wenzangu"]),
+        (_("Walio Juu Yangu"), g["juu"]),
+    ]
+    return render(request, "leader/wenzangu.html", _chrome(
+        request, "wenzangu", group_list=group_list,
+        chats=[{
+            "id": c.pk,
+            "other": c.other(request.user),
+            "last": c.messages.last(),
+            "n": c.messages.count(),
+        } for c in L.chats_for(request.user)[:20]]))
+
+
+@leader_required
+def chat(request, pk):
+    """Mazungumzo na kiongozi mmoja."""
+    from django.contrib.auth import get_user_model
+    from programs.models import Chat, ChatMessage
+
+    other = get_object_or_404(get_user_model(), pk=pk)
+    if other.pk == request.user.pk or not L.can_chat(request.user, other):
+        raise Http404
+
+    convo = Chat.between(request.user, other)
+
+    if request.method == "POST":
+        body = (request.POST.get("body") or "").strip()
+        if body:
+            ChatMessage.objects.create(chat=convo, sender=request.user, body=body)
+            convo.touch()
+        return redirect("core:leader_chat", pk=pk)
+
+    # Ujumbe usiosomwa unawekwa alama mtu anapoufungua.
+    convo.messages.exclude(sender=request.user).filter(
+        read_at__isnull=True).update(read_at=timezone.now())
+
+    posts = [p for p in L.active_posts(other)]
+    return render(request, "leader/chat.html", _chrome(
+        request, "wenzangu", convo=convo, other=other,
+        other_post=posts[0] if posts else None,
+        msgs=convo.messages.select_related("sender").all()))

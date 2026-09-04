@@ -21,6 +21,57 @@
     </div>
   </div>
 
+  {% if ticker %}
+    {% comment %}Matangazo ya viongozi wa juu, yakiteleza. Tangazo
+    lililofichwa ndani ya menyu halisomwi — hili linamfuata kiongozi
+    kwenye ukurasa wa kwanza.{% endcomment %}
+    <section class="tick mt" data-tick>
+      <span class="tick__tag">
+        <span class="tick__pulse" aria-hidden="true"></span>
+        <svg width="14" height="14"><use href="#i-megaphone"></use></svg>
+        <b>{% trans "Matangazo" %}</b>
+      </span>
+
+      <div class="tick__view">
+        {% for t in ticker %}
+          <article class="tick__item{% if forloop.first %} is-on{% endif %}"
+                   data-tick-item>
+            <span class="tick__av">{{ t.initials }}</span>
+            <span class="tick__body">
+              <b class="tick__subject">{{ t.subject }}</b>
+              <span class="tick__text">{{ t.body|truncatechars:110 }}</span>
+              <span class="tick__meta">
+                {{ t.sender }}
+                <span class="tick__dot">&middot;</span>
+                {{ t.level }} &mdash; {{ t.area }}
+                <span class="tick__dot">&middot;</span>
+                <time datetime="{{ t.when|date:'c' }}">{{ t.when|timesince }} {% trans "iliyopita" %}</time>
+              </span>
+            </span>
+          </article>
+        {% endfor %}
+      </div>
+
+      <div class="tick__nav">
+        <button type="button" class="tick__arrow" data-tick-prev
+                aria-label="{% trans 'Iliyotangulia' %}">
+          <svg width="14" height="14"><use href="#i-chevron-right"></use></svg>
+        </button>
+        <span class="tick__dots">
+          {% for t in ticker %}
+            <button type="button" class="tick__d{% if forloop.first %} is-on{% endif %}"
+                    data-tick-go="{{ forloop.counter0 }}"
+                    aria-label="{{ forloop.counter }}"></button>
+          {% endfor %}
+        </span>
+        <button type="button" class="tick__arrow" data-tick-next
+                aria-label="{% trans 'Inayofuata' %}">
+          <svg width="14" height="14"><use href="#i-chevron-right"></use></svg>
+        </button>
+      </div>
+    </section>
+  {% endif %}
+
   <div class="grid grid--5 mt">
     {% for k in kpis %}{% include "components/kpi.html" %}{% endfor %}
   </div>

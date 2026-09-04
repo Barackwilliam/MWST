@@ -1418,3 +1418,84 @@
     }, 8000);
   });
 })();
+
+/* ==========================================================================
+   UKANDA WA MATANGAZO
+   Unateleza wenyewe kila sekunde saba, na unasimama mtu akipitisha
+   kishale — asije akaikosa anayoisoma.
+   ========================================================================== */
+(function () {
+  "use strict";
+  var box = document.querySelector("[data-tick]");
+  if (!box) return;
+
+  var items = box.querySelectorAll("[data-tick-item]");
+  var dots = box.querySelectorAll("[data-tick-go]");
+  if (items.length < 2) return;
+
+  var i = 0, timer = null;
+
+  function show(n) {
+    i = (n + items.length) % items.length;
+    for (var k = 0; k < items.length; k++) {
+      items[k].classList.toggle("is-on", k === i);
+      if (dots[k]) dots[k].classList.toggle("is-on", k === i);
+    }
+  }
+
+  function start() { stop(); timer = setInterval(function () { show(i + 1); }, 7000); }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+  box.addEventListener("click", function (e) {
+    var go = e.target.closest("[data-tick-go]");
+    var next = e.target.closest("[data-tick-next]");
+    var prev = e.target.closest("[data-tick-prev]");
+    if (go) show(parseInt(go.getAttribute("data-tick-go"), 10));
+    else if (next) show(i + 1);
+    else if (prev) show(i - 1);
+    else return;
+    start();          // anza upya baada ya mtu kubofya
+  });
+
+  box.addEventListener("mouseenter", stop);
+  box.addEventListener("mouseleave", start);
+
+  // Kivinjari kikiwa nyuma, kusimamisha kunapunguza kazi bure.
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) stop(); else start();
+  });
+
+  start();
+})();
+
+/* ==========================================================================
+   MAZUNGUMZO
+   ========================================================================== */
+(function () {
+  "use strict";
+  var scroll = document.querySelector("[data-chat-scroll]");
+  var input = document.querySelector("[data-chat-input]");
+
+  /* Ujumbe mpya uko chini — ndipo mtu anataka kuanzia. */
+  if (scroll) scroll.scrollTop = scroll.scrollHeight;
+
+  if (!input) return;
+
+  /* Sanduku linakua kadri mtu anavyoandika, hadi kikomo cha CSS. */
+  function grow() {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 130) + "px";
+  }
+  input.addEventListener("input", grow);
+
+  /* Enter kutuma, Shift+Enter kuvunja mstari — kama programu za ujumbe
+     zilivyozoeleka. Kwenye simu tunaacha Enter ivunje mstari, kwa sababu
+     kibodi ya simu haina Shift inayotumika kwa urahisi. */
+  input.addEventListener("keydown", function (e) {
+    var mobile = window.matchMedia("(pointer: coarse)").matches;
+    if (e.key === "Enter" && !e.shiftKey && !mobile) {
+      e.preventDefault();
+      if (input.value.trim()) input.form.submit();
+    }
+  });
+})();

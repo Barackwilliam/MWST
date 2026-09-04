@@ -648,3 +648,70 @@ class Message(TimeStamped):
 
     def __str__(self):
         return self.body[:50]
+
+
+class Chat(TimeStamped):
+    """
+    Mazungumzo kati ya VIONGOZI wawili.
+
+    Ni tofauti na `Thread`, ambayo ni kati ya mwanachama na ngazi.
+    Hapa ni kati ya watu wawili wenye nyadhifa — mwenyekiti wa kata na
+    mwenyekiti wa wilaya yake, au wenyeviti wawili wa kata moja.
+
+    `pair_key` ni funguo ya kipekee inayozuia mazungumzo mawili kati ya
+    watu wale wale. Bila hiyo, kila mmoja angeanzisha yake na majibu
+    yangetawanyika sehemu mbili.
+    """
+    a = models.ForeignKey("accounts.User", on_delete=models.CASCADE,
+                          related_name="chats_a")
+    b = models.ForeignKey("accounts.User", on_delete=models.CASCADE,
+                          related_name="chats_b")
+    pair_key = models.CharField(max_length=40, unique=True, db_index=True)
+    last_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ["-last_at"]
+        verbose_name = _("Mazungumzo ya Viongozi")
+        verbose_name_plural = _("Mazungumzo ya Viongozi")
+
+    def __str__(self):
+        return f"{self.a} \u2194 {self.b}"
+
+    @staticmethod
+    def key_for(u1, u2):
+        """Funguo isiyobadilika bila kujali nani alianzisha."""
+        x, y = sorted([int(u1), int(u2)])
+        return f"{x}-{y}"
+
+    @classmethod
+    def between(cls, u1, u2):
+        """Rudisha mazungumzo yaliyopo, au yaunde."""
+        key = cls.key_for(u1.pk, u2.pk)
+        chat = cls.objects.filter(pair_key=key).first()
+        if chat is None:
+            first, second = (u1, u2) if u1.pk < u2.pk else (u2, u1)
+            chat = cls.objects.create(a=first, b=second, pair_key=key)
+        return chat
+
+    def other(self, user):
+        return self.b if self.a_id == user.pk else self.a
+
+    def touch(self):
+        self.last_at = timezone.now()
+        self.save(update_fields=["last_at", "updated_at"])
+
+
+class ChatMessage(TimeStamped):
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey("accounts.User", on_delete=models.CASCADE,
+                               related_name="chat_messages")
+    body = models.TextField(_("Ujumbe"))
+    read_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        verbose_name = _("Ujumbe wa Kiongozi")
+        verbose_name_plural = _("Ujumbe wa Viongozi")
+
+    def __str__(self):
+        return self.body[:50]

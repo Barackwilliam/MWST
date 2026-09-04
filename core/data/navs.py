@@ -294,8 +294,10 @@ def uongozi(active="dashboard", is_member=True, is_field=True):
          "url": "/uongozi/matatizo/"},
         {"key": "matangazo", "label": "Matangazo", "icon": "megaphone",
          "url": "/uongozi/matangazo/"},
-        {"key": "mazungumzo", "label": "Mazungumzo", "icon": "message",
+        {"key": "mazungumzo", "label": "Mazungumzo na Wanachama", "icon": "message",
          "url": "/uongozi/mazungumzo/"},
+        {"key": "wenzangu", "label": "Viongozi Wenzangu", "icon": "users",
+         "url": "/uongozi/wenzangu/"},
     ]
     if is_member:
         items.append(

@@ -97,6 +97,33 @@ def _filter_nav(nav, user):
     return out
 
 
+def _role_key(user):
+    """
+    Ufunguo wa rangi ya jukumu — unatumika kwenye `<body class="app-...">`.
+
+    Makundi manne yenye rangi tofauti: uongozi (kijani), fedha
+    (dhahabu), usimamizi (bluu), mwanachama (kijani laini). Si mapambo
+    tu — afisa akifungua akaunti isiyo yake anaigundua kwa rangi kabla
+    hajasoma menyu.
+    """
+    if not getattr(user, "is_authenticated", False):
+        return "member"
+    role = getattr(user, "role", "") or ""
+    if role in ("finance", "contributions"):
+        return "fedha"
+    if role in ("super_admin", "admin", "management"):
+        return "taifa"
+    try:
+        from geo.scope import active_posts
+        if active_posts(user):
+            return "uongozi"
+    except Exception:
+        pass
+    if role in ("registration", "welfare", "outreach"):
+        return "afisa"
+    return "member"
+
+
 def _leader_nav(user, nav):
     """
     Badilisha menyu ya mwanachama kuwa ya uongozi kwa aliye kiongozi.
@@ -135,6 +162,7 @@ def _chrome(request, **kw):
     # Inafanyika hapa, si kwenye kila view, kwa sababu kurasa za
     # mwanachama ni nyingi na kusahau moja kungeleta menyu isiyolingana.
     kw["nav"] = _leader_nav(user, kw.get("nav"))
+    kw.setdefault("role_key", _role_key(user))
 
     kw.setdefault("year", timezone.localdate().year)
     this_year = timezone.localdate().year
