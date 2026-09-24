@@ -310,9 +310,15 @@ ukurasa wa nyumbani si orodha, ni mwaliko.{% endcomment %}
 
   <div class="grid grid--3">
     {% for p in projects %}
-      <article class="proj reveal">
+      <article class="proj reveal{% if p.full %} proj--full{% endif %}">
         <span class="illus illus--card proj__pic">
           {% include "components/illus.html" with scene=p.scene|default:"ujenzi" %}
+          {% if p.full %}
+            <span class="proj__stamp">
+              <svg width="13" height="13"><use href="#i-check-circle"></use></svg>
+              {% trans "IMETIMIA" %}
+            </span>
+          {% endif %}
         </span>
         <div class="proj__body">
           {% if p.place %}
@@ -329,10 +335,20 @@ ukurasa wa nyumbani si orodha, ni mwaliko.{% endcomment %}
             <span>{% trans "kati ya" %} {{ p.goal }}</span>
           </div>
 
-          <a href="{% url 'core:changia' %}?aina={{ p.purpose }}&mradi={{ p.title|urlencode }}"
-             class="btn btn--gold btn--block">
-            <svg><use href="#i-heart"></use></svg> {% trans "Changia Mradi Huu" %}
-          </a>
+          {% if p.full %}
+            {% comment %}Lengo limetimia — mtu apelekwe kwenye mradi
+            unaohitaji fedha, si kwenye fomu isiyoweza kupokea.{% endcomment %}
+            <a href="{% url 'core:changia' %}?mradi={{ p.id }}"
+               class="btn btn--ghost btn--block">
+              <svg><use href="#i-arrow-right"></use></svg>
+              {% trans "Changia Mradi Mwingine" %}
+            </a>
+          {% else %}
+            <a href="{% url 'core:changia' %}?aina={{ p.purpose }}&mradi={{ p.id }}"
+               class="btn btn--gold btn--block">
+              <svg><use href="#i-heart"></use></svg> {% trans "Changia Mradi Huu" %}
+            </a>
+          {% endif %}
         </div>
       </article>
     {% endfor %}

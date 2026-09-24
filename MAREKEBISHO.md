@@ -1246,3 +1246,102 @@ kamili kwa umma.
 hayaruhusu kufikia `cybqa.pesapal.com`, na sina funguo. Hatua ya 4 kwenye
 `PESAPAL.md` ndiyo jaribio la kweli, na inapaswa kufanywa kwa sandbox
 kabla ya `PESAPAL_ENV=live`.
+
+---
+
+## Bar ya mradi haikupanda; mradi uliojaa; fomu ndefu
+
+Mambo matatu, lakini yalikuwa na mzizi mmoja: mchango haukuwahi
+kuunganishwa na mradi wowote kwenye database.
+
+### 1. Michango haikuhesabiwa
+
+Mnyororo ulivunjika sehemu nne mfululizo:
+
+1. `home.html` na `huduma.html` zilipeleka `?mradi=<KICHWA cha mradi>` —
+   herufi, si namba.
+2. `core/views.py::changia()` ilisoma `aina` pekee. `mradi` haikusomwa
+   kamwe.
+3. `PublicDonationForm` haikuwa na uwanja wa `project`.
+4. Kwa hiyo `Contribution.project` ilikuwa `NULL` daima, na
+   `Project.raised()` — inayochuja kwa `project=self` — ilirudisha sifuri
+   milele.
+
+Bar ingeweza kusimama pale pale hata michango ya milioni ingeingia.
+
+Marekebisho: viungo sasa vinapeleka `?mradi={{ p.id }}`; `changia()`
+inasoma namba hiyo na kuipeleka kwenye fomu; fomu ina uwanja uliofichwa
+wa `project`; `save()` inauhifadhi.
+
+`raised()` inahesabu michango ya `CONFIRMED` pekee. Ya `pending`
+haihesabiwi kwa makusudi — mtu anaweza kujaza fomu asilipe, au kadi
+ikakataliwa; bar ingepanda kisha ikashuka, na ripoti za mweka hazina
+zingeonyesha fedha zisizopo.
+
+### 2. Mradi uliotimia
+
+`Project` imepata `remaining()`, `is_full()`, `accepts_donations()` na
+`suggest_other()`. Mradi usio na lengo (`target_amount = 0`) HAUJAI
+kamwe — ni wa uendeshaji wa kudumu, si kampeni yenye kikomo.
+
+`suggest_other()` inapanga kwa iliyokaribia lengo kwanza: mradi wa 80%
+humvutia mtu zaidi kuliko wa 5%, na pia unamaliza haraka.
+
+Kwenye kadi: beji ya **IMETIMIA** na kitufe cha "Changia Mradi Mwingine".
+Mtu akifika `/changia/?mradi=<uliojaa>`, anaambiwa lengo limetimia na
+beji inabadilika yenyewe kwenda mradi mwingine unaohitaji msaada.
+
+Ukaguzi upo pia kwenye `clean_project()` — si kwenye kiolezo pekee.
+`mradi` inatoka kwenye URL, na mtu anaweza kuandika namba yoyote; bila
+huo ukaguzi fedha zingeingia kwenye mradi uliokwisha kamilika. Nilijaribu
+kutuma POST ya kughushi yenye `project=<uliojaa>`: ilikataliwa, idadi ya
+michango haikuongezeka.
+
+### 3. Fomu imepunguzwa kutoka hatua 5 kwenda 3
+
+- **1 · Unachangia nini** — kusudi, mradi, kiasi, marudio
+- **2 · Taarifa zako**
+- **3 · Njia ya malipo**
+
+Baada ya kuunganisha hatua, ukurasa ULIONGEZEKA urefu (2,515 → 2,680px)
+kwa sababu beji ya mradi iliongeza nafasi. Nilibana hatua ya malipo:
+`.gv__methods` kutoka gridi kwenda pills, `.paybadge` 400 → 250px.
+Mwisho: **2,418px**, fomu 1,765 → 1,611px.
+
+### Kilichojaribiwa
+
+- POST `/changia/` yenye `project=5` → `MUWESTA-M-000011 | project = 5`;
+  baada ya kuthibitisha, `raised` 0 → 250,000 na kadi ikaonyesha
+  "TZS 250,000 kati ya TZS 60,000,000".
+- Mradi #4 kujazwa hadi 85,000,000 → `is_full()` kweli, beji IMETIMIA,
+  bar 100%, na `/changia/?mradi=4` ikapendekeza mradi mwingine.
+- POST ya kughushi kwenye mradi uliojaa: ilikataliwa (12 → 12).
+- Njia 14: zote 200. Hakuna maandishi ya maoni yanayovuja.
+  Hakuna kufurika kwa mlalo kwenye 360px wala 390px.
+- Maneno mapya 8 yametafsiriwa; `compilemessages` → 1,837.
+
+### Somo nililojifunza (tena)
+
+Niliandika maoni ya `{# ... #}` ya mistari mingi mara tatu, nayo
+yakachapishwa kwenye ukurasa. Somo hili lilikuwa tayari limeandikwa
+hapa kwenye awamu ya 14. Mistari mingi = `{% comment %}` DAIMA.
+
+Pia: nilianzisha `runserver` mpya bila kuua ya zamani, nikadhani
+marekebisho hayafanyi kazi. Ilikuwa proceso ya zamani yenye kiolezo cha
+kabla ya marekebisho. `pkill` kwanza.
+
+### Bado inasubiri uamuzi wako
+
+- `core/finance_models.py` ni nakala inayofanana herufi kwa herufi na
+  `finance/models.py`. Mtu akibadilisha moja tu, kutakuwa na tofauti
+  isiyoonekana.
+- Nenosiri la Supabase bado lipo wazi `config/settings.py:137`.
+- `SOMA.md` sehemu ya 1 inasema uingie kama `admin` kwenye ukurasa wa
+  umma; `core/views.py:688` inazuia superuser hapo kwa makusudi.
+- OTP inapita ikiwa SMS haipatikani (fail-open).
+- Matangazo ya mfano yote ni `draft` — upau wa taarifa hauonekani kwenye
+  usakinishaji mpya.
+- MediaItem 20 hazina faili.
+- `db.sqlite3.backup` iliyopo ina historia ya uhamishaji iliyochanganyika
+  (`finance.0006` kabla ya `members.0009`). Ukiirudisha, utapata
+  `InconsistentMigrationHistory`. Database mpya inajengeka safi.

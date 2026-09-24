@@ -218,6 +218,13 @@ class Project(Bilingual, TimeStamped):
         return self.title
 
     def raised(self):
+        """
+        Fedha zilizokwisha THIBITISHWA pekee.
+
+        Michango ya `pending` haihesabiwi kwa makusudi: mtu anaweza kujaza
+        fomu asilipe, au Pesapal ikakataa kadi. Bar ingepanda kisha
+        ikashuka, na ripoti za mweka hazina zingeonyesha fedha zisizopo.
+        """
         return self.contributions.filter(status=PaymentStatus.CONFIRMED)\
                    .aggregate(s=Sum("amount"))["s"] or Decimal("0")
 
@@ -230,6 +237,38 @@ class Project(Bilingual, TimeStamped):
     def progress_bar(self):
         """Upana wa bar, umebanwa 100% ili usivuke kisanduku."""
         return min(self.progress(), 100)
+
+    def remaining(self):
+        """Kilichobaki ili lengo litimie. Halipungui chini ya sifuri."""
+        if not self.target_amount:
+            return Decimal("0")
+        return max(self.target_amount - self.raised(), Decimal("0"))
+
+    def is_full(self):
+        """
+        Je, lengo limetimia?
+
+        Mradi usio na lengo (`target_amount = 0`) HAUJAI kamwe — ni wa
+        uendeshaji wa kudumu, si kampeni yenye kikomo.
+        """
+        return bool(self.target_amount) and self.raised() >= self.target_amount
+
+    def accepts_donations(self):
+        """Mradi unaokubali michango: unaendelea NA lengo halijatimia."""
+        return self.status == "ongoing" and not self.is_full()
+
+    @classmethod
+    def suggest_other(cls, exclude_pk=None, limit=3):
+        """
+        Miradi mingine inayohitaji fedha — kwa mtu aliyefika kwenye mradi
+        uliojaa. Inapanga kwa iliyokaribia lengo kwanza: mradi wa 80%
+        humvutia mtu zaidi kuliko wa 5%, na pia unamaliza haraka.
+        """
+        rows = [p for p in cls.objects.filter(status="ongoing")
+                                      .exclude(pk=exclude_pk)
+                if p.accepts_donations()]
+        rows.sort(key=lambda p: p.progress(), reverse=True)
+        return rows[:limit]
 
 
 class Donor(TimeStamped):

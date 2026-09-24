@@ -1324,11 +1324,15 @@ def public_home():
         #: Miradi michache inayoendelea. Mgeni anataka kuona kazi HALISI
         #: kabla ya kuombwa kuchangia; kiungo cha "tazama zote" kinampeleka
         #: kwenye orodha kamili badala ya kujaza ukurasa wa nyumbani.
-        "projects": [{"title": p.tx("title"),
+        "projects": [{"id": p.pk,
+                      "title": p.tx("title"),
                       "text": p.tx("summary"),
                       "place": p.region.name if p.region else "",
                       "pct": p.progress(), "bar": p.progress_bar(),
                       "raised": tzs(p.raised()), "goal": tzs(p.target_amount),
+                      #: `full` inabadilisha kadi kuwa "IMETIMIA" na
+                      #: kuzima kitufe cha kuchangia.
+                      "full": p.is_full(), "remaining": tzs(p.remaining()),
                       "purpose": _project_purpose(p), "scene": p.scene}
                      for p in Project.objects.filter(status="ongoing")
                      .order_by("-created_at")[:3]],
@@ -1479,9 +1483,11 @@ def public_huduma():
         #: `purpose` inaunganisha mradi na aina ya mchango kwenye ukurasa
         #: wa malipo, ili mtu asichague tena kile alichokwisha kubofya.
         #: Mfuko wa mradi ndio chanzo; ukikosekana, "maendeleo".
-        "projects": [{"title": p.tx("title"), "place": p.region.name if p.region else "—",
+        "projects": [{"id": p.pk,
+                      "title": p.tx("title"), "place": p.region.name if p.region else "—",
                       "pct": p.progress(), "bar": p.progress_bar(),
                       "raised": tzs(p.raised()), "goal": num(p.target_amount),
+                      "full": p.is_full(), "remaining": tzs(p.remaining()),
                       "purpose": _project_purpose(p),
                       "scene": p.scene, "over": p.progress() > 100}
                      for p in Project.objects.select_related("region").filter(status="ongoing")[:3]],

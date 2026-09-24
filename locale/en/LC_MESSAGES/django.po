@@ -5497,3 +5497,27 @@ msgstr "From"
 
 msgid "Hadi"
 msgstr "To"
+
+msgid "Unachangia nini"
+msgstr "What you are giving"
+
+msgid "IMETIMIA"
+msgstr "GOAL MET"
+
+msgid "Changia Mradi Mwingine"
+msgstr "Support Another Project"
+
+msgid "Imetimia — changia mwingine"
+msgstr "Goal met — support another"
+
+msgid "Ondoa mradi"
+msgstr "Remove project"
+
+msgid "Kimebaki TSh %(k)s ili lengo litimie"
+msgstr "TSh %(k)s still needed to reach the goal"
+
+msgid "Lengo la mradi huu tayari limetimia. Chagua mradi mwingine."
+msgstr "This project has already reached its goal. Please choose another project."
+
+msgid "Lengo la mradi wa \"%(m)s\" limetimia — asante kwa wote waliochangia. Hapa kuna miradi mingine inayohitaji msaada."
+msgstr "The goal for \"%(m)s\" has been reached — thank you to everyone who gave. Here are other projects that still need support."

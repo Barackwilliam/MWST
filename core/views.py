@@ -1143,10 +1143,30 @@ def changia(request):
     wa afisa, kutegemea njia iliyochaguliwa. Hali haibadiliki kuwa
     `confirmed` mpaka Pesapal au afisa athibitishe.
     """
-    from finance.models import Donor
+    from finance.models import Donor, Project
+
+    # --- Mradi alioufuata, kama amefika kupitia kadi ya mradi -------------
+    # `?mradi=` ilikuwa inapitishwa kama KICHWA cha mradi na haikusomwa
+    # kamwe, kwa hiyo mchango haukuunganishwa na mradi wowote. Sasa ni
+    # namba, na inasomwa hapa.
+    project = None
+    suggested = []
+    raw = (request.GET.get("mradi") or "").strip()
+    if raw.isdigit():
+        project = Project.objects.filter(pk=int(raw), status="ongoing").first()
+        if project is not None and project.is_full():
+            # Lengo limetimia — usimwache atume fedha zisizohitajika.
+            messages.info(request, _(
+                "Lengo la mradi wa \"%(m)s\" limetimia — asante kwa wote "
+                "waliochangia. Hapa kuna miradi mingine inayohitaji msaada."
+            ) % {"m": project.tx("title")})
+            suggested = Project.suggest_other(exclude_pk=project.pk)
+            project = suggested[0] if suggested else None
 
     lang = get_language()
     catalogue = {
+        "project": project,
+        "suggested": suggested,
         "purposes": giving.localise(giving.PURPOSES, lang),
         "purpose_groups": giving.localise(giving.PURPOSE_GROUPS, lang),
         "recurrences": giving.localise(giving.RECURRENCES, lang),
@@ -1190,6 +1210,7 @@ def changia(request):
         initial = {"purpose": request.GET.get("aina", "sadaqah"),
                    "currency": "TZS", "recurrence": "once", "provider": "pesapal",
                    "amount": 20000}
+        initial["project"] = project
         if request.user.is_authenticated:
             donor = Donor.objects.filter(user=request.user).first()
             initial.update({

@@ -505,6 +505,12 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
     ikiunganishwa lazima ipitie hosted fields au redirect ya gateway.
     """
     purpose = forms.ChoiceField(label=_("Aina ya mchango"))
+    #: Mradi anaochangia, ikiwa amefika kupitia kadi ya mradi. Bila hii
+    #: mchango hauhesabiwi kwenye bar ya mradi — ndiyo iliyokuwa sababu
+    #: bar haikupanda hata mtu akichanga.
+    project = forms.ModelChoiceField(
+        label=_("Mradi"), required=False, queryset=None,
+        widget=forms.HiddenInput())
     amount = forms.DecimalField(label=_("Kiasi"), max_digits=14, decimal_places=2)
     currency = forms.ChoiceField(label=_("Fedha"))
     recurrence = forms.ChoiceField(label=_("Rudia mchango"))
@@ -521,12 +527,28 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
         required=False)
 
     def __init__(self, *args, **kwargs):
+        from finance.models import Project
         super().__init__(*args, **kwargs)
         self.fields["purpose"].choices = [(p["key"], p["name"]) for p in giving.PURPOSES]
         self.fields["currency"].choices = [(c["code"], c["code"]) for c in giving.CURRENCIES]
         self.fields["recurrence"].choices = [(r["key"], r["name"]) for r in giving.RECURRENCES]
         self.fields["provider"].choices = [(p["key"], p["name"]) for p in giving.PROVIDERS]
+        self.fields["project"].queryset = Project.objects.filter(status="ongoing")
         self._style()
+
+    def clean_project(self):
+        """
+        Mradi uliojaa haupokei tena.
+
+        Ukaguzi upo hapa — si kwenye kiolezo pekee — kwa sababu `mradi`
+        inatoka kwenye URL, na mtu anaweza kuandika namba yoyote. Bila
+        hii, fedha zingeingia kwenye mradi uliokwisha kamilika.
+        """
+        project = self.cleaned_data.get("project")
+        if project is not None and project.is_full():
+            raise forms.ValidationError(
+                _("Lengo la mradi huu tayari limetimia. Chagua mradi mwingine."))
+        return project
 
     def clean_amount(self):
         amount = self.cleaned_data["amount"]
@@ -596,6 +618,9 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
         total = giving.recurrence_total(data["amount"], data.get("recurrence") or "once")
         return Contribution(
             fund=fund,
+            #: Bila hii, `Project.raised()` haioni mchango kabisa na bar
+            #: ya mradi inabaki sifuri milele.
+            project=data.get("project"),
             amount=giving.to_tzs(total, data["currency"]),
             entered_amount=data["amount"],
             currency=data["currency"],

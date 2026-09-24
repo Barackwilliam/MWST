@@ -64,11 +64,21 @@
           {% comment %}Kitufe hiki kilipeleka mtu kwenye fomu ya MAWASILIANO —
           mtu aliyeamua kuchangia alilazimika kuandika ujumbe na kusubiri
           jibu. Sasa kinaenda moja kwa moja kwenye malipo, na aina ya
-          mchango imeshachaguliwa kufuata mfuko wa mradi.{% endcomment %}
-          <a class="btn btn--primary btn--block" style="margin-top:12px"
-             href="{% url 'core:changia' %}?aina={{ p.purpose|default:'maendeleo' }}&mradi={{ p.title|urlencode }}">
-            <svg><use href="#i-heart"></use></svg> {% trans "Changia Mradi Huu" %}
-          </a>
+          mchango imeshachaguliwa kufuata mfuko wa mradi.
+
+          `mradi` ni NAMBA, si kichwa: kichwa hakikuweza kuunganisha
+          mchango na mradi, kwa hiyo bar haikupanda kamwe.{% endcomment %}
+          {% if p.full %}
+            <a class="btn btn--ghost btn--block" style="margin-top:12px"
+               href="{% url 'core:changia' %}?mradi={{ p.id }}">
+              <svg><use href="#i-check-circle"></use></svg> {% trans "Imetimia — changia mwingine" %}
+            </a>
+          {% else %}
+            <a class="btn btn--primary btn--block" style="margin-top:12px"
+               href="{% url 'core:changia' %}?aina={{ p.purpose|default:'maendeleo' }}&mradi={{ p.id }}">
+              <svg><use href="#i-heart"></use></svg> {% trans "Changia Mradi Huu" %}
+            </a>
+          {% endif %}
         </div>
       </article>
     {% endfor %}

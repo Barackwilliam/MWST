@@ -1,5 +1,5 @@
 {% extends "public/base.html" %}
-{% load i18n static mwst_tags %}
+{% load i18n humanize static mwst_tags %}
 {% block title %}{% trans "Toa Mchango" %}{% endblock %}
 
 {% block body %}
@@ -39,9 +39,11 @@
       {# ================= FOMU ================= #}
       <div class="gv__form">
 
-        {# ---- 1. Aina ya mchango ---- #}
+        {% comment %}1. Unachangia nini: aina, kiasi na marudio.
+Hatua tano zilikuwa nyingi mno kwa kitendo kimoja. Aina, kiasi na marudio
+ni swali moja ("unatoa nini"), kwa hiyo ni hatua moja.{% endcomment %}
         <div class="gv__step">
-          <span class="gv__label"><span class="gv__n">1</span>{% trans "Aina ya mchango" %}</span>
+          <span class="gv__label"><span class="gv__n">1</span>{% trans "Unachangia nini" %}</span>
 
           {% comment %}Chaguo la asili — JS inaifunika na dropdown inayofunguka chini
              daima. Bila JS, hii inabaki inafanya kazi kama kawaida.{% endcomment %}
@@ -62,6 +64,56 @@
             <svg class="gv__chev" width="16" height="16"><use href="#i-chevron-down"></use></svg>
           </div>
           <p class="gv__note" data-purpose-note></p>
+
+          {% if project %}
+            {% comment %}Mtu amefika kupitia kadi ya mradi. Beji hii
+            inamthibitishia anachochangia, na `project` iliyofichwa ndiyo
+            inayounganisha mchango na mradi kwenye database.{% endcomment %}
+            <div class="gv__proj">
+              <span class="gv__projico"><svg width="16" height="16"><use href="#i-building"></use></svg></span>
+              <span class="gv__projtxt">
+                <b>{{ project|tx:"title" }}</b>
+                <small>{% blocktrans with k=project.remaining|floatformat:0|intcomma:False %}Kimebaki TSh {{ k }} ili lengo litimie{% endblocktrans %}</small>
+              </span>
+              <a href="{% url 'core:changia' %}" class="gv__projx"
+                 title="{% trans 'Ondoa mradi' %}">&times;</a>
+            </div>
+            <input type="hidden" name="project" value="{{ project.pk }}">
+          {% endif %}
+
+
+          <label class="gv__sub" for="id_amount">{% trans "Kiasi" %}</label>
+          <p class="gv__hint">{% trans "Ingiza kiasi cha mwezi mmoja. Ukichagua miezi zaidi hapo chini, jumla itahesabiwa yenyewe pamoja na punguzo." %}</p>
+          <div class="gv__amount">
+            <select name="currency" data-currency aria-label="{% trans 'Fedha' %}">
+              {% for c in currencies %}
+                <option value="{{ c.code }}" data-rate="{{ c.rate }}" data-symbol="{{ c.symbol }}"
+                        {% if c.code == form.currency.value %}selected{% endif %}>{{ c.code }}</option>
+              {% endfor %}
+            </select>
+            <input type="number" name="amount" id="id_amount" min="1" step="any" required
+                   value="{{ form.amount.value|default:'' }}" data-amount
+                   placeholder="{% trans 'Ingiza kiasi' %}">
+          </div>
+          <div class="gv__chips">
+            {% for a in presets %}
+              <button type="button" class="gv__chip" data-preset="{{ a }}">{{ a|floatformat:0 }}</button>
+            {% endfor %}
+          </div>
+          <p class="gv__fx" data-sum-fx hidden></p>
+
+          <span class="gv__sub">{% trans "Marudio" %}</span>
+          <div class="gv__pills">
+            {% for r in recurrences %}
+              <label class="gv__pill{% if r.key == form.recurrence.value %} is-on{% endif %}"
+                     data-months="{{ r.months }}" data-discount="{{ r.discount }}">
+                <input type="radio" name="recurrence" value="{{ r.key }}"
+                       {% if r.key == form.recurrence.value %}checked{% endif %}>
+                <span>{{ r.name }}</span>
+                {% if r.discount %}<small class="gv__off">-{{ r.discount }}%</small>{% endif %}
+              </label>
+            {% endfor %}
+          </div>
         </div>
 
         {# ---- 2. Taarifa zako ---- #}
@@ -106,50 +158,9 @@
           </details>
         </div>
 
-        {# ---- 3. Kiasi ---- #}
+        {# ---- 3. Njia ya malipo ---- #}
         <div class="gv__step">
-          <label class="gv__label" for="id_amount">
-            <span class="gv__n">3</span>{% trans "Kiasi" %}
-          </label>
-          <p class="gv__hint">{% trans "Ingiza kiasi cha mwezi mmoja. Ukichagua miezi zaidi hapo chini, jumla itahesabiwa yenyewe pamoja na punguzo." %}</p>
-          <div class="gv__amount">
-            <select name="currency" data-currency aria-label="{% trans 'Fedha' %}">
-              {% for c in currencies %}
-                <option value="{{ c.code }}" data-rate="{{ c.rate }}" data-symbol="{{ c.symbol }}"
-                        {% if c.code == form.currency.value %}selected{% endif %}>{{ c.code }}</option>
-              {% endfor %}
-            </select>
-            <input type="number" name="amount" id="id_amount" min="1" step="any" required
-                   value="{{ form.amount.value|default:'' }}" data-amount
-                   placeholder="{% trans 'Ingiza kiasi' %}">
-          </div>
-          <div class="gv__chips">
-            {% for a in presets %}
-              <button type="button" class="gv__chip" data-preset="{{ a }}">{{ a|floatformat:0 }}</button>
-            {% endfor %}
-          </div>
-          <p class="gv__fx" data-sum-fx hidden></p>
-        </div>
-
-        {# ---- 4. Marudio ---- #}
-        <div class="gv__step">
-          <span class="gv__label"><span class="gv__n">4</span>{% trans "Marudio" %}</span>
-          <div class="gv__pills">
-            {% for r in recurrences %}
-              <label class="gv__pill{% if r.key == form.recurrence.value %} is-on{% endif %}"
-                     data-months="{{ r.months }}" data-discount="{{ r.discount }}">
-                <input type="radio" name="recurrence" value="{{ r.key }}"
-                       {% if r.key == form.recurrence.value %}checked{% endif %}>
-                <span>{{ r.name }}</span>
-                {% if r.discount %}<small class="gv__off">-{{ r.discount }}%</small>{% endif %}
-              </label>
-            {% endfor %}
-          </div>
-        </div>
-
-        {# ---- 5. Njia ya malipo ---- #}
-        <div class="gv__step">
-          <span class="gv__label"><span class="gv__n">5</span>{% trans "Njia ya malipo" %}</span>
+          <span class="gv__label"><span class="gv__n">3</span>{% trans "Njia ya malipo" %}</span>
           {% comment %}Ngazi mbili: mtu anachagua mtoa huduma, kisha anaona
           huduma zinazopatikana ndani yake. Orodha ya ndani ni ya KUELEZA —
           Selcom hutambua mtandao kutoka kwenye namba ya simu, na Pesapal

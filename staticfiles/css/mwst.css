@@ -5842,3 +5842,84 @@ html { overflow-x: clip; }
   /* Kwenye simu, kuinuka kunachanganya kugusa. */
   .kpi:hover, .peep:hover { transform: none; }
 }
+
+/* ==========================================================================
+   MICHANGO — hatua tatu, beji ya mradi, na mradi uliotimia
+   ========================================================================== */
+
+/* Kichwa kidogo ndani ya hatua. Hatua tano zilipunguzwa kuwa tatu, kwa hiyo
+   "Kiasi" na "Marudio" si hatua tena — ni sehemu za swali moja. Zinatofautiana
+   na `gv__label` kwa kukosa namba na kuwa nyepesi. */
+.gv__sub {
+  display: block; margin: 20px 0 9px;
+  font-size: 12px; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--ink-2);
+}
+.gv__sub:first-child { margin-top: 0; }
+
+/* --- Beji ya mradi anaochangia --- */
+.gv__proj {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 14px; padding: 12px 14px;
+  border-radius: 14px; border: 1px solid var(--g-100); background: var(--g-50);
+}
+.gv__projico {
+  width: 34px; height: 34px; flex: none; border-radius: 10px;
+  display: grid; place-items: center;
+  background: var(--surface); color: var(--g-600);
+}
+.gv__projtxt { flex: 1; min-width: 0; }
+.gv__projtxt b {
+  display: block; font-size: 13.5px; font-weight: 700; color: var(--g-800);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.gv__projtxt small { display: block; margin-top: 2px; font-size: 11.5px; color: var(--muted); }
+.gv__projx {
+  flex: none; width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: var(--muted); font-size: 17px; line-height: 1; text-decoration: none;
+  transition: background .16s, color .16s;
+}
+.gv__projx:hover { background: var(--surface); color: var(--danger); }
+
+/* --- Mradi uliotimia lengo --- */
+.proj--full { border-color: var(--g-300); }
+.proj--full .proj__bar span { background: linear-gradient(90deg, var(--g-500), var(--gold-500)); }
+.proj__stamp {
+  position: absolute; z-index: 3; top: 11px; right: 11px;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px; border-radius: var(--r-full);
+  background: var(--g-700); color: var(--gold-400);
+  font-size: 10px; font-weight: 800; letter-spacing: .1em;
+  box-shadow: 0 4px 12px -3px rgba(4,35,24,.5);
+}
+.proj__stamp svg { flex: none; }
+
+/* --------------------------------------------------------------------------
+   Hatua ya malipo ilikuwa 829px — karibu nusu ya fomu nzima. Vipengele vya
+   KUELEZA (orodha ya mitandao, beji ya Pesapal) vimebanwa; vya KUCHAGUA
+   (kadi za watoa huduma) vimeachwa kama vilivyo.
+   -------------------------------------------------------------------------- */
+
+/* Mitandao ndani ya paneli: vigae 6 vya safu mbili -> mstari mmoja wa maandishi.
+   Ni orodha ya kueleza tu — mtu hachagui hapa, kwa hiyo haihitaji nafasi ya kadi. */
+.gv__methods {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.gv__methods li {
+  flex-direction: row; align-items: baseline; gap: 5px;
+  padding: 5px 10px; border-radius: var(--r-full);
+}
+.gv__methods b { font-size: 11.5px; }
+.gv__methods small { font-size: 10px; }
+
+/* Beji ya Pesapal: 234px -> ~96px. Bado inaonekana, lakini haitawali. */
+.paybadge { margin-top: 10px; padding: 9px; }
+.paybadge img { max-width: 250px; }
+@media (max-width: 560px) { .paybadge img { max-width: 210px; } }
+
+/* Njia zinazokuja bado zinaonekana ili mtu ajue zipo, lakini kwa unyenyekevu —
+   hazina uzito sawa na zinazofanya kazi leo. */
+.gv__pay.is-soon { padding-block: 9px; opacity: .72; }
+.gv__pay.is-soon .gv__payico { transform: scale(.88); }
+.gv__pay.is-soon .gv__paytxt small { display: none; }
