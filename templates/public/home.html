@@ -200,7 +200,7 @@
 
     {# ---------- Hatua 2: fomu ---------- #}
     {% for f in login_forms %}
-      <div class="lw__step" data-login-step="{{ f.key }}">
+      <div class="lw__step" data-login-step="{{ f.key }}" hidden>
         <button type="button" class="lw__back" data-login-back>
           <svg width="15" height="15"><use href="#i-arrow-right"></use></svg>
           {% trans "Rudi" %}

@@ -1512,8 +1512,11 @@
 
   function show(key) {
     for (var i = 0; i < steps.length; i++) {
-      steps[i].classList.toggle(
-        "is-on", steps[i].getAttribute("data-login-step") === key);
+      var on = steps[i].getAttribute("data-login-step") === key;
+      /* `hidden` ndiyo inayoficha kweli — `is-on` ni ya mapambo tu.
+         Ukurasa lazima uwe sahihi hata CSS isipofika. */
+      steps[i].hidden = !on;
+      steps[i].classList.toggle("is-on", on);
     }
     /* Kielekezi kiende kwenye sehemu ya kwanza ya kujaza — mtu asilazimike
        kubofya tena baada ya kuchagua. */
