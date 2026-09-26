@@ -65,7 +65,7 @@
                 <tr>
                   <td><b>{{ g.receipt_no }}</b></td>
                   <td>{{ g.received_at|date:"d M Y" }}</td>
-                  <td>{{ g.fund.name }}</td>
+                  <td>{{ g.fund|tx:"name" }}</td>
                   <td>TSh {{ g.amount|floatformat:0 }}</td>
                   <td><span class="badge badge--{{ g.badge }}">{{ g.get_status_display }}</span></td>
                 </tr>

@@ -11,9 +11,15 @@
       <p>{{ total }} {% trans "wanachama" %}</p>
     </div>
     <div class="pagehead__actions">
-      <a href="{% url 'core:usajili' %}" class="btn btn--primary">
-        <svg><use href="#i-user-plus"></use></svg> {% trans "Sajili Mwanachama" %}
-      </a>
+      {% comment %}Orodha ya wanachama inaonekana kwa maafisa wote (mtu
+      anahitaji kumtafuta mwanachama), lakini KUSAJILI ni kazi ya
+      usajili. Kitufe kilikuwa kikionekana kwa wote na kuwaambia hawana
+      ruhusa wakibofya.{% endcomment %}
+      {% if can_register %}
+        <a href="{% url 'core:usajili' %}" class="btn btn--primary">
+          <svg><use href="#i-user-plus"></use></svg> {% trans "Sajili Mwanachama" %}
+        </a>
+      {% endif %}
     </div>
   </div>
 

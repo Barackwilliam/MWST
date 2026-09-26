@@ -36,6 +36,11 @@ kwa hiyo hakuna `{% trans %}` kwenye maandishi ya hati yenyewe.
          href="{% url 'core:faragha' %}">{% trans "Sera ya Faragha" %}</a>
       <a class="chip {% if page_key == 'vidakuzi' %}is-active{% endif %}"
          href="{% url 'core:vidakuzi' %}">{% trans "Sera ya Vidakuzi" %}</a>
+      {% comment %}Masharti ya Huduma yanatumia kiolezo hiki hiki, lakini
+      hayakuwa na chip yake — hivyo ukurasa ulionekana kama umepotea:
+      ukiufungua, viungo viwili tu vinavyoonekana ni vya kurasa nyingine.{% endcomment %}
+      <a class="chip {% if page_key == 'masharti' %}is-active{% endif %}"
+         href="{% url 'core:masharti' %}">{% trans "Masharti ya Huduma" %}</a>
     </nav>
 
     {# ---------------- Yaliyomo ---------------- #}

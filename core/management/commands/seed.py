@@ -5,7 +5,7 @@ Endesha:  python manage.py seed
 Kufuta na kuanza upya:  python manage.py seed --fresh
 """
 import random
-from datetime import timedelta
+from datetime import date, timedelta
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -14,7 +14,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from accounts.models import Role
-from content.models import (Album, Announcement, Faq, Leader, MediaItem, Milestone,
+from content.models import (Album, Announcement, Faq, MediaItem, Milestone,
                             News, NewsCategory, Pillar, Service, SiteSetting, Verse)
 from finance.models import (Account, Campaign, Contribution, Donor, Expense, Fund,
                             Payment, PaymentMethod, PaymentStatus, Project)
@@ -67,6 +67,8 @@ class Command(BaseCommand):
         n = max(opts["limit"], 1)
         self.settings()
         self.verses()
+        self.contact_channels()
+        self.exchange_rates()
         self.geo(None if opts["mikoa_yote"] else n)
         self.categories()
         self.funds()
@@ -105,6 +107,23 @@ class Command(BaseCommand):
         s.address_en = "Shariff PBZ House, Nyerere Square, Dodoma"
         s.working_hours_en = "Monday - Friday: 08:00 - 17:00"
         s.fundraising_target = Decimal("2000000000")
+        #: Vitu hivi vilikuwa vimeandikwa ndani ya `core/data/pages.py`,
+        #: `core/data/legal.py` na ndani ya HTML — kila mahali kwa
+        #: maneno yake. Sasa ni sehemu moja.
+        s.org_short = "MUWESTA"
+        s.meta_description = s.about
+        s.meta_description_en = s.about_en
+        s.values_line = "Imani, Huruma, Huduma, Maendeleo"
+        s.values_line_en = "Faith, Compassion, Service, Development"
+        s.po_box = "S.L.P 450, Dodoma, Tanzania"
+        s.phone_support = s.phone
+        #: TAZAMA: nyaraka za kisheria zilikuwa zikitaja
+        #: `https://mwiso.onrender.com` — anwani ya majaribio ya Render —
+        #: kama tovuti rasmi ya shirika. Weka tovuti halisi hapa.
+        s.website = ""
+        s.map_url = ("https://www.google.com/maps/search/?api=1"
+                     "&query=Nyerere+Square+Dodoma+Tanzania")
+        s.legal_effective_on = s.legal_effective_on or date(2026, 8, 8)
         s.save()
         self.stdout.write("  mipangilio")
 
@@ -117,10 +136,68 @@ class Command(BaseCommand):
              "And whatever good you put forward for yourselves, you will find it with Allah.",
              "Al-Baqarah: 110"),
         ]
+        #: `slot` inaamua aya inaonekana wapi. Aya za kurasa za umma
+        #: zilikuwa zimeandikwa ndani ya HTML wakati jedwali hili
+        #: likiwepo, kwa hiyo mtu aliyehariri hapa hakuona mabadiliko.
+        slots = ["dashibodi", "kuhusu"]
         for i, (ar, sw, en, ref) in enumerate(data):
             Verse.objects.get_or_create(reference=ref, defaults={
-                "arabic": ar, "swahili": sw, "swahili_en": en, "order": i})
+                "arabic": ar, "swahili": sw, "swahili_en": en, "order": i,
+                "slot": slots[i % len(slots)]})
         self.stdout.write("  aya")
+
+    def contact_channels(self):
+        """
+        Namba na barua pepe za idara.
+
+        Zilikuwa ndani ya `core/data/pages.py`, na nne kati ya tano
+        zilikuwa za mfano (`+255 684 123 456`). Hapa tunaweka ya ofisi
+        pekee — iliyo halisi — na ofisi iongeze nyingine yenyewe
+        `/mfumo/mawasiliano/`. Ni bora ukurasa uwe na namba moja halisi
+        kuliko tano ambazo nne haziitiki.
+        """
+        from content.models import ContactChannel
+
+        st = SiteSetting.get()
+        rows = [("phone", "Ofisi", "Office", st.phone, 0)]
+        if st.phone_alt:
+            rows.append(("phone", "Maswali ya Jumla", "General Enquiries", st.phone_alt, 1))
+        rows.append(("email", "Maswali ya Jumla", "General Enquiries", st.email, 0))
+        if st.email_alt:
+            rows.append(("email", "Msaada", "Support", st.email_alt, 1))
+        for kind, lbl, lbl_en, val, o in rows:
+            if val:
+                ContactChannel.objects.get_or_create(
+                    kind=kind, value=val,
+                    defaults={"label": lbl, "label_en": lbl_en, "order": o})
+        self.stdout.write("  namba za mawasiliano")
+
+    def exchange_rates(self):
+        """
+        Viwango vya kubadilisha fedha.
+
+        Vilikuwa vimeandikwa ndani ya `core/data/giving.py`, na maelezo
+        yake yenyewe yalisema "ni vya MFANO tu na havisasishwi" — huku
+        `to_tzs()` ikivitumia kwa michango HALISI. Sasa mweka hazina
+        anaweza kuvisasisha `/mfumo/viwango-fedha/`.
+
+        TAZAMA: viwango hivi vya kuanzia ni vya mfano. Vibadilishe kabla
+        ya kupokea michango ya fedha za nje.
+        """
+        from finance.models import ExchangeRate
+
+        for i, (code, name, sym, rate) in enumerate([
+            ("TZS", "Tanzanian Shilling", "TSh", 1),
+            ("USD", "US Dollar", "$", 2615),
+            ("EUR", "Euro", "\u20ac", 2840),
+            ("GBP", "British Pound", "\u00a3", 3320),
+            ("AED", "UAE Dirham", "AED", 712),
+            ("SAR", "Saudi Riyal", "SAR", 697),
+            ("KES", "Kenyan Shilling", "KSh", 20),
+        ]):
+            ExchangeRate.objects.get_or_create(code=code, defaults={
+                "name": name, "symbol": sym, "rate": Decimal(str(rate)), "order": i})
+        self.stdout.write("  viwango vya fedha")
 
     def geo(self, limit=None):
         """
@@ -366,37 +443,41 @@ class Command(BaseCommand):
             Milestone.objects.get_or_create(year=y, title=t, defaults={
                 "title_en": ten, "body": b, "body_en": ben, "order": o})
 
-        for n, r, ren, o in [("Mohammed Omari Kapera", "Mwenyekiti", "Chairperson", 0),
-                             ("Ali H. Suleiman", "Katibu Mkuu", "Secretary General", 1),
-                             ("Fatma H. Ali", "Mweka Hazina", "Treasurer", 2),
-                             ("Juma K. Abdallah", "Afisa Miradi", "Projects Officer", 3)]:
-            Leader.objects.get_or_create(full_name=n, defaults={"role": r, "role_en": ren, "order": o})
+        #: Viongozi HAWAWEKWI hapa.
+        #:
+        #: Hapa palikuwa na majina manne ya watu WASIOKUWEPO
+        #: ("Mohammed Omari Kapera", "Ali H. Suleiman"...) yaliyokuwa
+        #: yakionyeshwa kwenye ukurasa wa "Kuhusu Sisi" kama uongozi
+        #: halisi wa shirika. Orodha rasmi ipo kwenye migration
+        #: `content/0004_muwesta_leaders.py`, na `seed` ilikuwa
+        #: ikiiongezea majina ya kubuni baada ya migration kuiweka.
+        #: Sasa migration ndiyo chanzo pekee.
 
         for t, ten, s, sen, stat, staten, icon, tint, scene, cat, o in [
             ("Elimu na Mafunzo", "Education and Training",
              "Ufadhili wa masomo, ujenzi wa madarasa, vifaa vya shule na mafunzo ya ufundi kwa vijana.",
              "Scholarships, classroom construction, school supplies and vocational training for young people.",
-             "1,240 wanafunzi wamefadhiliwa", "1,240 students sponsored", "book", "green", "elimu", "elimu", 0),
+             "", "", "book", "green", "elimu", "elimu", 0),
             ("Huduma za Afya", "Health Services",
              "Kambi za upimaji afya bure, msaada wa matibabu, na ujenzi wa vituo vya afya vijijini.",
              "Free health screening camps, medical assistance and rural health centre construction.",
-             "18 kambi za afya mwaka huu", "18 health camps this year", "heart", "red", "afya", "afya", 1),
+             "", "", "heart", "red", "afya", "afya", 1),
             ("Ustawi wa Jamii", "Community Welfare",
              "Msaada kwa yatima, wajane, wazee na familia zilizoathirika na majanga.",
              "Support for orphans, widows, the elderly and families affected by disasters.",
-             "2,450 wanufaika kwa mwezi", "2,450 beneficiaries per month", "hand-heart", "navy", "yatima", "ustawi", 2),
+             "", "", "hand-heart", "navy", "yatima", "ustawi", 2),
             ("Maji Safi na Salama", "Clean and Safe Water",
              "Uchimbaji wa visima na ujenzi wa miundombinu ya maji katika maeneo yenye uhaba.",
              "Borehole drilling and water infrastructure in areas facing shortages.",
-             "34 visima vimechimbwa", "34 boreholes drilled", "globe", "teal", "maji", "miradi", 3),
+             "", "", "globe", "teal", "maji", "miradi", 3),
             ("Uwezeshaji Kiuchumi", "Economic Empowerment",
              "Mikopo midogo, mafunzo ya ujasiriamali na vikundi vya akiba kwa wanawake na vijana.",
              "Microloans, entrepreneurship training and savings groups for women and youth.",
-             "860 wajasiriamali wamewezeshwa", "860 entrepreneurs supported", "briefcase", "gold", "uchumi", "uchumi", 4),
+             "", "", "briefcase", "gold", "uchumi", "uchumi", 4),
             ("Ujenzi wa Vituo vya Ibada", "Building Places of Worship",
              "Ujenzi na ukarabati wa misikiti, madrasa na vituo vya elimu ya dini.",
              "Construction and renovation of mosques, madrasas and religious education centres.",
-             "12 miradi imekamilika", "12 projects completed", "mosque", "purple", "msikiti", "miradi", 5),
+             "", "", "mosque", "purple", "msikiti", "miradi", 5),
         ]:
             Service.objects.get_or_create(title=t, defaults={
                 "title_en": ten, "summary": s, "summary_en": sen, "stats_line": stat,

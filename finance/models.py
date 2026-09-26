@@ -36,11 +36,46 @@ class Fund(Bilingual):
         return self.name
 
 
+class ExchangeRate(TimeStamped):
+    """
+    Kiwango cha kubadilisha fedha ya nje kwenda TZS.
+
+    Viwango vilikuwa vimeandikwa ndani ya `core/data/giving.py` na
+    maelezo yake yenyewe yakisema "ni vya MFANO tu na havisasishwi".
+    Lakini `to_tzs()` ilikuwa ikivitumia kwa michango HALISI, kwa hiyo
+    kila shilingi iliyoingia kwenye leja kutoka nje ya nchi ilikuwa
+    imepimwa kwa kiwango cha kubuni. Sasa mweka hazina anaweza
+    kuvisasisha mwenyewe bila kusubiri deploy.
+
+    Kiwango ni: shilingi ngapi kwa kipimo kimoja cha fedha hiyo.
+    """
+    code = models.CharField(_("Alama ya Fedha"), max_length=3, unique=True)
+    name = models.CharField(_("Jina"), max_length=60)
+    symbol = models.CharField(_("Kiashiria"), max_length=8, default="")
+    rate = models.DecimalField(_("Shilingi kwa kipimo kimoja"),
+                               max_digits=14, decimal_places=4, default=1)
+    is_active = models.BooleanField(_("Inatumika"), default=True)
+    order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "code"]
+        verbose_name = _("Kiwango cha Fedha")
+        verbose_name_plural = _("Viwango vya Fedha")
+
+    def __str__(self):
+        return f"{self.code} = {self.rate:,.2f} TZS"
+
+
 class PaymentMethod(models.TextChoices):
     #: Malipo ya mtandaoni yote yanapita Pesapal. Mtandao halisi
     #: (M-Pesa, Airtel, kadi...) anauchagua mtu akiwa Pesapal, si hapa —
     #: kwa hiyo hii ndiyo njia inayohifadhiwa kwa malipo ya mtandaoni.
     PESAPAL = "pesapal", _("Mtandaoni (Pesapal)")
+    #: Selcom ilikuwa ikihifadhiwa kama "selcom" bila kuwa kwenye orodha
+    #: hii. `create()` haikagui `choices`, kwa hiyo iliingia kimya kimya
+    #: na `get_method_display()` ikarudisha "selcom" badala ya jina —
+    #: risiti zikaonyesha ufunguo wa msimbo kwa mteja.
+    SELCOM = "selcom", _("Mtandaoni (Selcom)")
     MPESA = "mpesa", "M-Pesa"
     AIRTEL = "airtel", "Airtel Money"
     TIGO = "tigo", "Tigo Pesa"
@@ -113,6 +148,40 @@ class LedgerEntry(TimeStamped):
         return f"{self.account.member.account_no} {self.amount:+,.2f}"
 
 
+def reverse_posting(obj, reason=""):
+    """
+    Rudisha nyuma athari za malipo yaliyokwisha thibitishwa.
+
+    Kughairi kulikuwa kunabadilisha `status` pekee. Leja na pointi
+    zilibaki mahali pake, kwa hiyo baada ya afisa kughairi malipo ya
+    TSh 500,000 (hundi iliyokataliwa, mfano) dashibodi ilisoma TSh 0
+    huku leja ikisoma TSh 500,000 — ripoti mbili zinazopingana milele,
+    na leja ndiyo hati ya mwisho.
+
+    Leja haifutwi kamwe; kosa hurekebishwa kwa ingizo la kinyume. Hivyo
+    ndivyo `LedgerEntry.reverses` na `PointTransaction.reverse()`
+    zilivyokusudiwa — zilikuwepo tangu mwanzo, hazikuwa zinaitwa.
+    """
+    entry = obj.ledger_entry
+    if entry is not None and not entry.reversed_by.exists():
+        LedgerEntry.objects.create(
+            account=entry.account, fund=entry.fund, amount=-entry.amount,
+            description=(reason or str(_("Kughairi"))) + f" — {obj.receipt_no}",
+            entry_date=timezone.localdate(), reverses=entry)
+
+    #: `exclude(kind=REVERSAL)` ni muhimu: ingizo la kurekebisha
+    #: linahifadhi `source` ile ile. Bila hii, wito wa pili ungekuta
+    #: ingizo la kurekebisha lenyewe na kulirekebisha — pointi
+    #: zingerudi, kisha zingeondoka, bila mwisho.
+    from programs.models import PointTransaction
+    from programs import points as pts
+
+    rows = (PointTransaction.objects.filter(source=obj.receipt_no)
+            .exclude(kind=pts.PointKind.REVERSAL))
+    for tx in rows:
+        tx.reverse(reason=reason or str(_("Malipo yameghairiwa")))
+
+
 # ===========================================================================
 #  MALIPO YA ADA
 # ===========================================================================
@@ -174,7 +243,13 @@ class Payment(TimeStamped):
         if self.ledger_entry_id or self.status != PaymentStatus.CONFIRMED:
             return self.ledger_entry
         account, _created = Account.objects.get_or_create(member=self.member)
-        fund = Fund.objects.get(code=fund_code)
+        #: Kutumia `.get()` hapa kulifanya mfuko mmoja usiopo uvunje
+        #: KILA malipo — ikiwa ni pamoja na yale yanayotoka kwenye
+        #: kidokezo cha Pesapal, ambako kosa halionekani na mtu yeyote.
+        fund = (Fund.objects.filter(code=fund_code).first()
+                or Fund.objects.order_by("order").first())
+        if fund is None:
+            return None
         entry = LedgerEntry.objects.create(
             account=account, fund=fund, amount=self.amount,
             description=f"Ada ya uanachama — {self.receipt_no}",
@@ -362,6 +437,10 @@ class Contribution(TimeStamped):
     #: haihifadhi — hivyo mtu aliyechangia TZS 200,000 hakuwa na njia ya
     #: kupata risiti wala sisi ya kumfuatilia.
     donor_phone = models.CharField(_("Simu ya Mchangiaji"), max_length=20, blank=True)
+    #: Barua pepe ya mchangiaji wa umma. Pesapal inahitaji njia MOJA ya
+    #: mawasiliano kwenye `SubmitOrderRequest`; bila hii, malipo ya
+    #: `/lipa/` yalikuwa yanaenda bila simu wala barua pepe.
+    donor_email = models.EmailField(_("Barua Pepe ya Mchangiaji"), blank=True)
     project = models.ForeignKey(Project, null=True, blank=True,
                                 on_delete=models.SET_NULL, related_name="contributions")
     campaign = models.ForeignKey(Campaign, null=True, blank=True,
@@ -413,6 +492,17 @@ class Contribution(TimeStamped):
         verbose_name = _("Mchango")
         verbose_name_plural = _("Michango")
         indexes = [models.Index(fields=["fund"]), models.Index(fields=["received_at"])]
+        constraints = [
+            #: Mtoa huduma mmoja hawezi kuwa na muamala mmoja kwenye
+            #: michango miwili. Bila kizuizi hiki, kidokezo kilichorudiwa
+            #: (Pesapal hupiga IPN zaidi ya mara moja) au mtu anayetuma
+            #: `?OrderTrackingId=` ya mtu mwingine angeweza kuunganisha
+            #: muamala mmoja na rekodi nyingi.
+            models.UniqueConstraint(
+                fields=["gateway", "gateway_ref"],
+                condition=models.Q(gateway_ref__gt=""),
+                name="uniq_contribution_gateway_ref"),
+        ]
 
     def __str__(self):
         return f"{self.receipt_no} — {self.display_name}"
@@ -421,6 +511,28 @@ class Contribution(TimeStamped):
     def display_name(self):
         return self.donor_name or (self.donor.name if self.donor else "") or \
                (self.member.full_name if self.member else "—")
+
+    @property
+    def contact_phone(self):
+        """
+        Simu ya kumfikia mlipaji, popote ilipohifadhiwa.
+
+        `/changia/` huweka `donor`; `/lipa/` huweka `donor_phone` pekee na
+        hakuna `donor` kabisa. Kusoma `donor.phone` peke yake kulifanya
+        malipo yote ya ada ya Selcom yashindwe kabla hayajaanza.
+        """
+        return (self.donor_phone
+                or (self.donor.phone if self.donor else "")
+                or (self.member.phone if self.member else "")
+                or "")
+
+    @property
+    def contact_email(self):
+        """Barua pepe ya mlipaji — angalia `contact_phone` kwa sababu."""
+        return (self.donor_email
+                or (self.donor.email if self.donor else "")
+                or (self.member.email if self.member else "")
+                or "")
 
     @property
     def badge(self):
@@ -434,6 +546,46 @@ class Contribution(TimeStamped):
                 super().save(*args, **kwargs)
             return
         super().save(*args, **kwargs)
+
+    #: Hali zinazoruhusiwa kubadilika zenyewe kutokana na jibu la mtoa
+    #: huduma. `confirmed` HAIPO hapa kwa makusudi: mchango uliokwisha
+    #: thibitishwa — au uliogharikiwa na afisa — haubadilishwi na
+    #: kidokezo kingine kutoka nje. Pesapal hupiga IPN mara kadhaa, na
+    #: kidokezo hakina saini; bila kizuizi hiki mtu yeyote angeweza
+    #: kurudisha nyuma uamuzi wa afisa kwa kuomba URL moja.
+    GATEWAY_MUTABLE = (PaymentStatus.PENDING,)
+
+    @classmethod
+    def settle(cls, pk, state):
+        """
+        Badilisha hali ya mchango kutokana na jibu la mtoa huduma.
+
+        Hii ndiyo NJIA PEKEE inayopaswa kutumiwa na callback, IPN,
+        webhook na kipima-hali. Sababu ni mashindano: Pesapal hupiga IPN
+        wakati ule ule kivinjari kinapiga callback, na Selcom hupiga
+        webhook wakati ukurasa wa kusubiri unauliza hali. Bila kufuli,
+        nyuzi mbili zilikuwa zinasoma `pending` kwa wakati mmoja, zote
+        zikaandika `confirmed`, na signal ikaendeshwa mara mbili:
+        LedgerEntry mbili kwa malipo moja, pointi mara mbili, na — kwa
+        ombi jipya — Member WAWILI kwa mtu mmoja.
+
+        Hurudisha `(mchango, imebadilika)`.
+        """
+        with transaction.atomic():
+            gift = cls.objects.select_for_update().get(pk=pk)
+            if state == "confirmed":
+                new = PaymentStatus.CONFIRMED
+            elif state in ("failed", "reversed"):
+                new = PaymentStatus.FAILED
+            else:
+                return gift, False
+
+            if gift.status == new or gift.status not in cls.GATEWAY_MUTABLE:
+                return gift, False
+
+            gift.status = new
+            gift.save(update_fields=["status", "updated_at"])
+            return gift, True
 
     @transaction.atomic
     def post_to_ledger(self):
@@ -452,15 +604,11 @@ class Contribution(TimeStamped):
         # (TSh 1,000 = pointi 1), na kikomo cha kipindi kinaangaliwa
         # ndani ya `award_money`. Ada ya uanachama ni tofauti — ni
         # malipo ya wajibu, kwa hiyo hupata kiasi kimoja bila kupimwa
-        # kwa ukubwa wake.
+        # kwa ukubwa wake — lakini kikomo kile kile kinamhusu.
         from programs.models import PointTransaction
-        from programs import points as pts
 
         if self.purpose == "ada":
-            PointTransaction.objects.create(
-                member=self.member, kind=pts.PointKind.MONEY,
-                points=pts.MEMBERSHIP_FEE_POINTS,
-                reason=str(_("Ada ya uanachama")), source=self.receipt_no)
+            PointTransaction.award_membership_fee(self.member, source=self.receipt_no)
         else:
             # Jina la aina ya mchango linatoka kwenye katalogi
             # (`core/data/giving.py`), si kwenye `choices` za field —

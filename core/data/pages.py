@@ -39,6 +39,10 @@ def footer_menu():
         {"label": "Matukio",     "url": "/matukio-yetu/"},
         {"label": "Picha na Video", "url": "/picha/"},
         {"label": "Mawasiliano", "url": "/mawasiliano/"},
+        #: Mlango wa viongozi haukuwa na njia yoyote ya kuufikia kutoka
+        #: kwenye tovuti — ilihitajika kujua URL. Kiongozi hawezi kubahatisha
+        #: `/ingia/viongozi/`.
+        {"label": "Ingia kama Kiongozi", "url": "/ingia/viongozi/"},
     ]
 
 

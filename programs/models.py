@@ -121,6 +121,11 @@ class PointTransaction(TimeStamped):
     # -- Kutoa ---------------------------------------------------------------
     @classmethod
     def award(cls, member, rule, multiplier=1, source="", by=None, approved_by=None):
+        if source and cls.objects.filter(member=member, rule=rule,
+                                         source=source).exists():
+            #: Risiti moja, sheria moja, pointi mara moja. Kinga dhidi ya
+            #: kidokezo cha mtoa huduma kinachorudiwa.
+            return None
         return cls.objects.create(
             member=member, rule=rule, kind=rule.kind,
             points=rule.points * multiplier,
@@ -137,6 +142,14 @@ class PointTransaction(TimeStamped):
         cha kipindi hapati zaidi, na anayekaribia kufika anapata
         zilizobaki tu. Anarudishiwa idadi halisi iliyotolewa.
         """
+        if source and cls.objects.filter(member=member, kind=pts.PointKind.MONEY,
+                                         source=source).exists():
+            #: Risiti moja hutoa pointi mara moja tu. Pesapal hupiga IPN
+            #: zaidi ya mara moja, na kivinjari kinapiga callback wakati
+            #: huo huo — bila ukaguzi huu muamala mmoja ungetoa pointi
+            #: mara mbili au tatu.
+            return None
+
         mult = PointBoost.multiplier_for(fund)
         want = pts.points_for_amount(amount, mult)
         if want <= 0:
@@ -151,6 +164,30 @@ class PointTransaction(TimeStamped):
         return cls.objects.create(
             member=member, kind=pts.PointKind.MONEY, points=give,
             reason=reason or str(_("Mchango")), source=source)
+
+    @classmethod
+    def award_membership_fee(cls, member, source=""):
+        """
+        Pointi za ada ya uanachama — kiasi kimoja, bila kupimwa kwa ukubwa.
+
+        Zilikuwa zinaundwa moja kwa moja kwa `objects.create(kind=MONEY)`,
+        jambo lililoruka `MONEY_CAP` kabisa. Mtu aliyelipa ada mara 40
+        alipata pointi 4,000 kwa TSh 400,000, wakati mchangiaji wa kawaida
+        alihitaji TSh 4,000,000 kufikia kikomo hicho hicho — kisha
+        akasimama. Sasa ada nayo inapitia kikomo kile kile.
+        """
+        if source and cls.objects.filter(member=member, kind=pts.PointKind.MONEY,
+                                         source=source).exists():
+            return None
+
+        used = cls.money_points(member)
+        give = min(pts.MEMBERSHIP_FEE_POINTS, max(pts.MONEY_CAP - used, 0))
+        if give <= 0:
+            return None
+
+        return cls.objects.create(
+            member=member, kind=pts.PointKind.MONEY, points=give,
+            reason=str(_("Ada ya uanachama")), source=source)
 
     @transaction.atomic
     def reverse(self, by=None, reason=""):
@@ -458,11 +495,6 @@ class Case(TimeStamped):
         return f"{self.reference} — {self.subject[:40]}"
 
     def save(self, *args, **kwargs):
-        if not self.reference:
-            from core.models import Sequence
-            year = timezone.localdate().year
-            seq = Sequence.next(f"case:{year}")
-            self.reference = f"TAT/{year}/{seq:04d}"
         # Nakili maeneo kutoka kwa mwanachama mara ya kwanza pekee.
         if not self.pk and self.member_id:
             self.ward = self.ward or self.member.ward
@@ -470,6 +502,23 @@ class Case(TimeStamped):
             self.region = self.region or self.member.region
             self.zone = self.zone or (self.member.region.zone
                                       if self.member.region else None)
+
+        if not self.reference:
+            #: `Sequence.next` inatumia `select_for_update`, ambayo Postgres
+            #: inakataa nje ya muamala. SQLite inainyamazia kimya, kwa hiyo
+            #: hili lilipita kwenye kompyuta ya maendeleo na kuvunja
+            #: production: kila mwanachama aliyejaribu kufungua tatizo
+            #: alipata 500, na mfumo mzima wa malalamiko ulikuwa umekufa.
+            #: Kila mahali pengine panapoita `Sequence.next` tayari
+            #: panatumia `transaction.atomic` — hapa pekee ndipo
+            #: palipokuwa pamesahaulika.
+            from core.models import Sequence
+            year = timezone.localdate().year
+            with transaction.atomic():
+                seq = Sequence.next(f"case:{year}")
+                self.reference = f"TAT/{year}/{seq:04d}"
+                super().save(*args, **kwargs)
+            return
         super().save(*args, **kwargs)
 
     # -- Hali ----------------------------------------------------------------

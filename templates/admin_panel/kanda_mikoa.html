@@ -5,7 +5,7 @@
 {% block page %}
   {% include "base/messages.html" %}
   <div class="pagehead">
-    <div><h2>{% trans "Mikoa na Halmashauri" %}</h2><p>{{ zone.name|tr }}</p></div>
+    <div><h2>{% trans "Mikoa na Halmashauri" %}</h2><p>{{ zone|tx:"name" }}</p></div>
   </div>
 
   <div class="grid grid--4">

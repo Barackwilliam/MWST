@@ -1345,3 +1345,1028 @@ kabla ya marekebisho. `pkill` kwanza.
 - `db.sqlite3.backup` iliyopo ina historia ya uhamishaji iliyochanganyika
   (`finance.0006` kabla ya `members.0009`). Ukiirudisha, utapata
   `InconsistentMigrationHistory`. Database mpya inajengeka safi.
+
+---
+
+## Ukaguzi mkubwa: maudhui ya static, mantiki na bugs
+
+Ulitaka mambo matatu: hakuna maudhui ya static yaliyofungwa kwenye
+template bila uhusiano na backend; mantiki irekebishwe; bugs zote
+zipatikane. Yafuatayo ndiyo yaliyopatikana na kufanywa.
+
+### SEHEMU 1 — FEDHA
+
+#### Mchangiaji wa dola alilipishwa mara 2,615
+
+`to_tzs()` ilibadilisha $100 kuwa TZS 261,500 na kuihifadhi kwenye
+`Contribution.amount` — sahihi. Lakini `Contribution.currency` ilibaki
+"USD", na njia zote mbili za malipo zilituma **kiasi cha TZS pamoja na
+alama ya fedha ya asili**:
+
+```python
+amount=gift.amount,                 # 261500 (TZS)
+currency=gift.currency or "TZS",    # "USD"
+```
+
+Pesapal ilimwonyesha mtu **$261,500**. EUR ingekuwa mara 2,840, KES mara
+20. Sasa ni `currency="TZS"` daima, kwa sababu `amount` tayari
+imeshabadilishwa.
+
+#### Malipo moja yaliweza kuhesabiwa mara mbili au tatu
+
+Pesapal hupiga IPN wakati ule ule kivinjari kinapiga callback; Selcom
+hupiga webhook wakati ukurasa wa kusubiri unauliza hali kila sekunde
+chache. Ubadilishaji wa hali ulikuwa **soma-kisha-andika bila kufuli**:
+
+```python
+if state == "confirmed" and gift.status != PaymentStatus.CONFIRMED:
+    gift.status = PaymentStatus.CONFIRMED
+    gift.save(update_fields=["status"])
+```
+
+`select_for_update` haikuwepo popote kwenye njia ya malipo. Nyuzi mbili
+zilisoma `pending` kwa wakati mmoja, zote zikaandika `confirmed`, na
+signal ikaendeshwa mara mbili:
+
+* `LedgerEntry` mbili kwa malipo moja — salio la mwanachama likaongezeka
+  maradufu
+* pointi mara mbili
+* `renew_term()` mara mbili — miaka 6 ya uanachama kwa malipo ya miaka 3
+* na kwa ombi jipya, `Application.activate()` mara mbili: **wanachama
+  WAWILI**, namba mbili, kadi mbili na akaunti mbili kwa mtu mmoja
+* risiti mbili za SMS, zote zikilipiwa na MUWESTA
+
+Sasa kuna `Contribution.settle()` — njia moja inayoshika kufuli la safu
+(`select_for_update`) kabla ya kubadilisha hali. Callback, IPN, webhook
+na kipima-hali zote zinapitia hapo.
+
+Ulinzi wa pili: kizuizi cha database kwenye `(gateway, gateway_ref)`.
+`idempotency_key` ilikuwepo kwenye model tangu mwanzo lakini
+**haikuandikwa kamwe**, kwa hiyo kizuizi chake hakikushika chochote.
+
+#### Kidokezo kutoka nje kingeweza kurudisha nyuma uamuzi wa afisa
+
+`/pesapal/ipn/` haina saini wala ukaguzi wa IP. Ukaguzi ulikuwa
+`gift.status != CONFIRMED`, ambayo `cancelled` inaikidhi. Afisa
+akighairi malipo ya udanganyifu, mtu yeyote angeweza kuyarudisha kwa
+kuomba URL moja. Tawi la `failed` lilikuwa halina ukaguzi wa hali
+kabisa — mchango uliokwisha ingia leja ungeweza kugeuzwa `failed`.
+
+Sasa `GATEWAY_MUTABLE = (PENDING,)`: kidokezo kinaweza kubadilisha
+mchango unaosubiri pekee. Uamuzi wa afisa ni wa mwisho.
+
+#### Kughairi hakukurudisha chochote
+
+Kughairi kulibadilisha `status` pekee. Leja na pointi zilibaki. Afisa
+akighairi malipo ya TZS 500,000 (hundi iliyokataliwa), dashibodi ilisoma
+TZS 0 huku leja ikisoma TZS 500,000 — na leja ndiyo hati ya mwisho.
+
+`LedgerEntry.reverses` na `PointTransaction.reverse()` zilikuwepo tangu
+mwanzo, hazikuwa zinaitwa. Sasa `reverse_posting()` inaziita. Leja
+haifutwi; kosa linarekebishwa kwa ingizo la kinyume.
+
+#### Selcom ilikuwa imekufa kabisa kwenye `/lipa/`
+
+```python
+phone = (gift.donor.phone if gift.donor else "") or ""
+```
+
+`/lipa/` **haiweki `donor` kabisa** — inaweka `donor_phone`. Kwa hiyo
+kila malipo ya ada kwa Selcom yalisimama hapo, na mtu akaambiwa "mchango
+wako umehifadhiwa" bila njia yoyote ya kulipa. Sasa kuna `contact_phone`
+na `contact_email` zinazosoma mahali pote. `donor_email` imeongezwa —
+Pesapal inahitaji njia MOJA ya mawasiliano, na `/lipa/` ilikuwa haitumi
+yoyote.
+
+#### Kikomo cha pointi kilikuwa kinaepukika
+
+Ada ilitoa pointi 100 bila kupimwa, kwa `objects.create(kind=MONEY)` —
+ikiruka `MONEY_CAP` kabisa. Mtu aliyelipa ada mara 40 alipata pointi
+4,000 kwa TSh 400,000; mchangiaji wa kawaida alihitaji TSh 4,000,000
+kufikia kikomo hicho, kisha akasimama. Sasa ada nayo inapitia kikomo.
+
+Pia: `award()` na `award_money()` sasa zinakataa kutoa pointi mara mbili
+kwa risiti ile ile.
+
+#### Hesabu za fedha zilikuwa zinapoteza shilingi
+
+`months_price` ilibadilisha `Decimal` kuwa `float` kisha ikatumia
+`round()`, ambayo ni **banker's rounding**. Ada ya 5,000 kwa miezi 3
+(punguzo 5%) ni 14,250; `round(142.5)` ilitoa 142, si 143 — bei ikawa
+14,200. JavaScript ya ukurasa ule ule ilionyesha 14,300. **Bei
+iliyoonyeshwa haikulingana na iliyolipishwa.**
+
+`recurrence_total` ilikata desimali kabla ya kubadilisha fedha: $10.99 ×
+miezi 3 × 0.95 = $31.3215 ikawa $31, kisha ikazidishwa kwa 2,615 — TZS
+841 zikipotea kila muamala.
+
+Vyote sasa ni `Decimal` na `ROUND_HALF_UP`, na vinalingana na JavaScript.
+
+#### Viwango vya fedha vilikuwa vya kubuni
+
+Maelezo ya `core/data/giving.py` yenyewe yalisema viwango "ni vya MFANO
+tu na havisasishwi" — huku `to_tzs()` ikivitumia kwa michango HALISI.
+Kila shilingi iliyoingia kutoka nje ya nchi ilipimwa kwa kiwango cha
+kubuni. Sasa kuna jedwali `ExchangeRate` (`/mfumo/viwango-fedha/`).
+
+**TAZAMA**: viwango vya kuanzia bado ni vya mfano. Vibadilishe kabla ya
+kupokea michango ya fedha za nje.
+
+### SEHEMU 2 — USALAMA
+
+#### Daftari lote la michango lilisomeka
+
+```python
+if request.session.get("mwst_last_gift") != receipt and not request.user.is_authenticated:
+    raise Http404
+```
+
+`and not request.user.is_authenticated` ilimaanisha **mtu YEYOTE
+aliyeingia** — hata mhisani aliyejisajili mwenyewe dakika iliyopita —
+aliweza kusoma risiti zote. Namba zinafuatana
+(`MUWESTA-M-000001, -000002...`), kwa hiyo jina la mtoaji, kiasi, mfuko
+na hali ya kila mchango vilisomeka kwa loop moja.
+
+Pia `/pesapal/callback/?OrderMerchantReference=<risiti>` iliweka namba
+hiyo kwenye session ya mgeni na kumpeleka kwenye risiti. Bila akaunti
+yoyote.
+
+Sasa: risiti inasomeka na aliyechangia kwenye kipindi hiki, mwenye
+rekodi, au afisa. Callback inakubali `OrderTrackingId` pekee — UUID ya
+Pesapal, isiyokisiwa.
+
+#### Taarifa za waombaji wote zilivunwa kwa loop
+
+`/lipa/?ombi=APP/MUWESTA/2026/0007` ilijaza jina, simu na barua pepe ya
+mwombaji. Namba zinafuatana: `0001` hadi `9999`. Sasa kiungo lazima kiwe
+na saini (`pay_token`), ambayo hutolewa kwenye SMS pekee.
+
+> Hapa nilifanya kosa nilipokuwa narekebisha: nilitumia
+> `signing.dumps()`, ambayo huingiza MUDA ndani ya saini — saini
+> ilibadilika kila sekunde, na kiungo cha SMS kingekufa mara moja.
+> Jaribio langu la kwanza lilipita kwa sababu lilitengeneza na kutumia
+> saini ndani ya sekunde moja. Sasa ni `salted_hmac`, ambayo ni imara.
+
+#### OTP ilikuwa imezimika kimya kimya
+
+`sms.send_code()` inarudisha `False` **kila mara** NextSMS isipokuwa
+imewekwa. Ukaguzi wa "SMS imeshindwa" ulimruhusu mtu aingie bila code —
+ulikusudiwa kwa hitilafu ya muda, lakini usanidi usiokuwepo si hitilafu
+ya muda. Kila afisa aliingia bila hatua ya pili, huku dashibodi ikisema
+OTP imewashwa. Mwenye nenosiri lililoibiwa la afisa aliingia moja kwa
+moja.
+
+Sasa: mwanachama bado anaruhusiwa (kumfungia nje kwa kosa letu si
+sahihi), lakini **afisa anakataliwa**, na msimamizi anaambiwa nini cha
+kufanya.
+
+Pia: sheria ya "maafisa: kila mara" ilikuwa inaangalia `user.is_staff` —
+bendera inayowekwa na amri za mstari wa amri pekee. Afisa aliyeundwa
+kupitia `/mfumo/watumiaji/` hakuipata, kwa hiyo alipitia njia ya kifaa
+kinachoaminika cha siku 30. Maafisa wawili wenye jukumu moja walikuwa na
+ulinzi tofauti kabisa. Sasa inaangalia JUKUMU.
+
+#### Afisa wa wadau angeweza kutengeneza wanachama
+
+`staff_required` inakubali kila jukumu lisilo la mwanachama. Kuthibitisha
+malipo ya `ada` kunazalisha mwanachama, kadi na akaunti ya kuingia — kwa
+hiyo afisa asiyehusika na fedha kabisa angeweza kutengeneza uanachama
+bila senti kuingia. Sasa kuna `MONEY_ROLES`.
+
+Vivyo hivyo `reset_login`: ilikuwa haijazuiwa kabisa. Afisa yeyote
+angeweza kurejesha nenosiri la mwanachama yeyote, kusoma nenosiri la
+muda kwenye ujumbe ule ule, na kuingia kama mtu huyo. Ilikuwa pia
+inamfufua mwanachama aliyesimamishwa (`is_active = True`). Sasa ni
+msimamizi pekee, na `is_active` haiguswi.
+
+#### Ufinyu wa kanda haukuwepo kwenye vitendo
+
+Orodha zilichuja kwa mkoa; vitendo havikuchuja. Mratibu wa kanda moja
+angeweza kuidhinisha ombi la kanda nyingine, kuthibitisha malipo ya
+mwanachama asiye wake, na kusoma risiti yoyote — kwa POST yenye `pk`.
+Dashibodi ya taifa nayo ilikuwa wazi kabisa. Kupakua CSV ya wahisani
+hakukuwa na ufinyu **kabisa**, tofauti na kila kitu kingine.
+
+#### Mengineyo
+
+* **Mwenyekiti wa kata alisoma malalamiko dhidi yake mwenyewe.** Orodha
+  ya mazungumzo ilichuja kwa ngazi; ukurasa wa mazungumzo moja ulikagua
+  eneo pekee. Kiongozi angeweza kusoma — na kujibu ndani ya —
+  mazungumzo ambayo mwanachama alifungua na UONGOZI WA TAIFA.
+* **Kuteka historia ya michango kwa jina.** Kujisajili kama mhisani
+  kulihamisha michango YOTE yenye jina lile lile. Jina si siri. Sasa
+  lazima simu au barua pepe ilingane.
+* **Maombi mawili, wanachama wawili.** `AWAITING_PAYMENT` ilikuwa nje ya
+  orodha ya hali zinazozuia ombi jipya. Pia hakukuwa na kizuizi cha
+  database kwenye kitambulisho, simu wala barua pepe — sasa kipo.
+* **Kiasi cha msaada kilichukuliwa kutoka POST bila ukaguzi.** `abc`
+  ilivunja ukurasa; `-50000` iliingia; kiasi kikubwa kuliko kilichoombwa
+  kiliingia.
+* **Nenosiri la Supabase lilikuwa wazi** kwenye `settings.py`, na
+  maelezo yake yenyewe yakikiri lipo kwenye historia ya git. Limeondolewa;
+  production sasa inalazimika kuwa na `DATABASE_URL`.
+  **Nywila bado ipo kwenye historia ya git — ibadilishe Supabase.**
+* **`SECRET_KEY` ya mfano ilipita ulinzi.** Ukaguzi ulitafuta kiambishi
+  `django-insecure-` pekee; chaguo-msingi halikuwa nalo. Deploy
+  iliyosahau funguo ingeanza production ikiwa na funguo iliyochapishwa
+  kwenye repo — session ya msimamizi mkuu ingeweza kughushiwa, na
+  kidakuzi cha kifaa kinachoaminika (kuruka OTP) pia.
+* **`*.onrender.com` ilikuwa asili inayoaminika ya CSRF.** Render ni
+  mwenyeji wa pamoja — programu yoyote ya bure pale ingeweza kutuma POST
+  kwenye `/maombi/<pk>/approve/`.
+* **`ALLOWED_HOSTS = *`** iliruhusu Host-header injection: kiungo cha
+  kubadilisha nenosiri hujengwa kutoka `request.get_host()`.
+* **Faili zilizopakiwa zilikuwa 404 kwenye production.** WhiteNoise
+  inahudumia `STATIC_ROOT` pekee. Afisa alipakia picha, akaambiwa
+  "imefanikiwa", picha haikuonekana popote.
+* **Fomula kwenye CSV.** Jina lililoandikwa `=HYPERLINK(...)` lilikuwa
+  linatekelezwa kwenye Excel ya afisa.
+* **`_alert_login` MBILI.** Ya pili ilififisha ya kwanza, kwa hiyo arifa
+  ya barua pepe haikuwahi kutumwa — huku ufafanuzi wa ya kwanza ukisema
+  inatumwa.
+* **Mtumiaji aliyeundwa `/mfumo/watumiaji/` hakuweza kuingia kamwe** —
+  fomu haina uwanja wa nenosiri, kwa hiyo `password=""` ilihifadhiwa.
+  Hakuna kosa lililoonekana popote.
+
+#### Bug iliyokuwa inavunja production pekee
+
+`Case.save()` iliita `Sequence.next` — inayotumia `select_for_update` —
+**bila `transaction.atomic`**. SQLite inainyamazia kimya; Postgres
+inatoa `TransactionManagementError`. Kila mwanachama aliyejaribu kufungua
+tatizo alipata 500. Mfumo mzima wa malalamiko ulikuwa umekufa kwenye
+production na ulifanya kazi vizuri kwenye kompyuta ya maendeleo. Kila
+mahali pengine panapoita `Sequence.next` tayari palikuwa sahihi — hapa
+pekee ndipo palipokuwa pamesahaulika.
+
+### SEHEMU 3 — MAUDHUI YA STATIC
+
+#### Mistari 2,049 ya namba za kubuni imeondolewa
+
+`core/mockdata.py`, `core/data/dashboards.py`, `core/data/outreach.py`,
+`core/data/common.py::REGIONS`, `core_data/`, `core/finance_models.py`,
+`templates/base/wadau.html`.
+
+Ndani yake: wanachama "142,718", "TZS 136,450,000", mgawanyo wa
+wanachama kwa mikoa 26, majina ya wafadhili wasiokuwepo ("Muslim Aid
+International — TZS 328,500,000"), risiti za kubuni, na namba ya
+kitambulisho `19901234567890` pamoja na barua pepe ya mtu.
+
+Hazikuwa zikitumika na ukurasa wowote, lakini zilikuwa **mtego**: mtu
+akitafuta namba kwenye msimbo angeziamini, na `ctx = dashboards.national()`
+moja ingezirudisha kwenye tovuti. Maelezo ya faili yenyewe yalikiri:
+"Namba zote zimechukuliwa moja kwa moja kutoka kwenye picha za muundo."
+
+#### Namba za kubuni zilizokuwa zikionekana LEO
+
+`seed.py` iliandika takwimu za picha za muundo kwenye database:
+"wanafunzi 1,240 wamefadhiliwa", "kambi 18 za afya mwaka huu", "visima 34
+vimechimbwa". Zilionekana `/huduma/` kama **beji ya kijani ya
+uthibitisho** — mgeni aliziamini. Sasa ni tupu, na beji haionekani
+zikiwa hazipo.
+
+Vivyo hivyo viongozi wanne wa kubuni. Orodha rasmi ipo kwenye migration
+`content/0004_muwesta_leaders.py`, na `seed` ilikuwa ikiiongezea majina
+ya kubuni baada ya migration kuiweka. Sasa migration ndiyo chanzo pekee.
+
+#### Beji za menyu
+
+Msimamizi aliona "128" karibu na *Maombi ya Uanachama*, afisa aliona
+"18" — **milele**. Zilikuwa maandishi ndani ya `navs.py`. Mtu
+aliyefungua ukurasa akakuta maombi matatu alijua namba hizo ni za
+urembo, na kuanzia hapo hakuamini namba nyingine yoyote kwenye mfumo.
+Sasa ni hesabu halisi, ndani ya eneo lake, na `None` zikiwa hakuna.
+
+#### Ramani ilikuwa inadanganya
+
+Legend ilisema "Zaidi ya 10,000", "5,000 - 10,000"... lakini `tz_map`
+haipaki rangi kwa idadi kamili — inapaka kwa **uwiano na mkoa mkubwa**.
+Mkoa wa wanachama 25, ukiwa ndio mkubwa, ulipakwa rangi ambayo legend
+iliiita "zaidi ya 10,000". Sasa legend inahesabiwa kutoka kwenye data
+halisi.
+
+#### Vihesabio vilivyopewa majina yasiyo sahihi
+
+| Kilichosemwa | Kilichohesabiwa | Sasa |
+|---|---|---|
+| Mikoa Tunayofanya Kazi | mikoa YOTE ya Tanzania (26) | mikoa yenye wanachama (15) |
+| Wilaya Tulizofikia | wilaya ZOTE (184) | wilaya zenye wanachama (20) |
+| Miradi Inayoendelea | miradi YOTE | inayoendelea pekee |
+| Matukio Mwaka Huu | matukio YOTE tangu mwanzo | ya mwaka huu |
+| Wanufaika kwa Mwezi | usajili WOTE tangu mwanzo | wa mwezi huu |
+
+#### Maudhui yaliyokuwa yamefungwa kwenye template
+
+* **Jina, kauli mbiu na maadili ya shirika** yalikuwa yameandikwa kwenye
+  `base.html`, `sidebar.html`, `footer.html`, `idcard.html`,
+  `dashboard.html`, `login.html` na `verify.html` — kila mahali kwa
+  maneno yake. `SiteSetting` ilikuwepo na ilihaririwa; hakuna
+  kilichobadilika. Sasa vyote vinasoma pale.
+* **Huduma tano za footer** zilikuwa zimeandikwa, zote zikielekeza
+  mahali pamoja. Sasa zinatoka jedwali la Huduma.
+* **Kadi tatu za huduma kwenye `/kuhusu/`** zilikuwa zimeandikwa ndani
+  ya HTML wakati jedwali lipo.
+* **Aya za Qur'an** zilikuwa ndani ya HTML na ndani ya
+  `core/data/verses.py`, huku jedwali la `Verse` likiwepo na
+  likihaririwa `/mfumo/aya/` — lakini likisomwa na dashibodi pekee.
+  Uwanja wa `slot` umeongezwa.
+* **"Maeneo Sita ya Huduma"** — kichwa kilisema "Sita" wakati gridi
+  inazunguka jedwali lenye idadi yoyote.
+* **"pointi 1 kwa kila TSh 1,000"** ilikuwa imeandikwa kwenye
+  `pointi.html`, ikirudia `SHILLINGS_PER_POINT`. Bodi ikibadilisha
+  kiwango, sentensi aliyoisoma mwanachama ingebaki ya zamani — kwenye
+  lugha zote mbili.
+* **"miaka 18"** ilikuwa imeandikwa mara mbili: kwenye ukaguzi na kwenye
+  HTML. Sasa ni `MIN_JOIN_AGE`.
+* **`www.muslimwelfare.or.tz`** ilikuwa imeandikwa kwenye
+  `vifurushi.html`, karibu kabisa na simu na barua pepe zinazotoka
+  `SiteSetting`.
+* **Mifano ya namba za kumbukumbu** (`APP/MUWESTA/2026/0001`) ilikuwa na
+  "MUWESTA" na "2026" ndani yake.
+* **Mwaka `2026`** ulikuwa chaguo-msingi la hakimiliki kwenye footer.
+* **Beji ya bahasha** ilikuwa `None` daima — haikuweza kuonekana kamwe,
+  hata ujumbe ukiwepo. Mtumiaji aliisoma kama "huna ujumbe", si kama
+  "hakijakamilika". Beji ya arifa iliyo pembeni yake ilikuwa halisi.
+
+#### Ukurasa wa mawasiliano
+
+Namba TANO zilichapishwa hadharani; **NNE zilikuwa `123 456`** — namba
+za mfano kwenye ukurasa wa mawasiliano wa shirika. Barua pepe zilikuwa
+`@mwst.or.tz` wakati sehemu nyingine za mfumo zinatumia
+`@muslimwelfare.or.tz`. Hakuna aliyeweza kuzirekebisha bila deploy.
+
+Sasa: jedwali la `ContactChannel` (`/mfumo/mawasiliano/`). Bila rekodi,
+ukurasa unarudi kwenye simu na barua pepe kuu za mipangilio — si kwenye
+namba za mfano.
+
+#### Nyaraka za kisheria
+
+Zilitaja **`https://mwiso.onrender.com`** kama tovuti rasmi ya shirika,
+na **`S.L.P. 0000, Dodoma`** kama anwani ya posta. Tarehe ya kuanza
+kutumika ilikuwa imeandikwa, kwa hiyo kuisasisha kulihitaji deploy.
+
+Sasa zinatoka `SiteSetting`. Uwanja usiojazwa **haujachapishwi kabisa** —
+ni bora kukosa mstari kuliko kuchapisha anwani ya majaribio kwenye hati
+inayofunga kisheria.
+
+**Weka tovuti halisi** `/mfumo/mipangilio/` — kwa sasa mstari wa
+"Tovuti" hauonekani kwenye nyaraka.
+
+#### Habari hazikuweza kusomwa
+
+`News.body` — habari yenyewe — ilihifadhiwa na kuhaririwa, lakini
+haikuwa na ukurasa. Kila "Soma Zaidi" kilirudi `/habari/`, ukurasa ule
+ule uliokuwa na kiungo hicho. Ukurasa `/habari/<id>/` umeongezwa.
+
+Vivyo hivyo **Masharti ya Huduma**: yalitumia kiolezo kimoja na sera
+nyingine lakini hayakuwa na chip yake, kwa hiyo yalionekana kama
+ukurasa uliopotea.
+
+### Kilichojaribiwa
+
+* Kurasa **240** kwa majukumu sita (admin, usajili, malipo, michango,
+  wadau, mwanachama): zote 200. Vipengele **41** vya `/mfumo/`: vyote
+  vinafunguka na kuruhusu kuongeza.
+* `settle()` ikiitwa mara tatu mfululizo: leja **1**, pointi **1**.
+* Mchango uliogharikiwa + kidokezo `confirmed` → hakikubadilika.
+* Kughairi → salio 100,000 → 50,000; wito wa pili haukubadilisha kitu.
+* Malipo 50 ya ada → pointi zilisimama kwenye kikomo (awali 5,000).
+* Nakala ya `gateway_ref` → `IntegrityError`.
+* Risiti ya mtu mwingine: **404** kwa mgeni na kwa mwanachama.
+* `/pesapal/callback/?OrderMerchantReference=<risiti>`: **404**.
+* `/lipa/?ombi=<ref>` bila saini: hakuna taarifa binafsi; na saini:
+  inajaza.
+* Kuthibitisha malipo: `wadau` imezuiwa, `usajili` imezuiwa, `malipo`
+  imeruhusiwa.
+* `reset_login`: `registration` imezuiwa, `admin` imeruhusiwa.
+* Beji ya menyu: **14**, sawa na maombi halisi yanayosubiri.
+* Kufungua tatizo: `TAT/2026/0001` — na `Sequence.next` sasa ipo ndani
+  ya muamala.
+* Barua pepe ya kubadilisha nenosiri: jina la shirika linatoka database.
+* Hakuna kufurika kwa mlalo kwenye 360px wala 390px kwenye kurasa 13.
+* Hakuna maandishi ya maoni yanayovuja.
+* Maneno mapya 43 yametafsiriwa; `compilemessages` → **1,879**.
+
+### Mambo ambayo hayajafanywa, na sababu
+
+* **Maudhui marefu ya `core/data/`** — sera ya faragha, masharti, aina
+  za uanachama, faida 16, wajibu 8 — bado yapo kwenye Python.
+  Yanapitia kwenye view kwenda kwenye template (si "static kwenye
+  template"), lakini hayahaririki bila deploy. Kuyahamisha ni kazi ya
+  awamu yake yenyewe: yanahitaji model yenye vipengele na mpangilio, si
+  uwanja mmoja wa maandishi.
+* **Slaidi za aya za ukurasa wa mbele** zina poster za picha
+  zinazorejewa kwa jina la faili la static. Kuzihamisha kunahitaji
+  kupakia picha, si uwanja wa maandishi tu.
+* **`SOMA.md` sehemu ya 1** bado inasema uingie kama `admin` kwenye
+  ukurasa wa umma. `core/views.py` inazuia superuser hapo **kwa
+  makusudi** — tumia akaunti ya jukumu (`usajili`, `malipo`...) au
+  Django admin. Sehemu hiyo inahitaji kusahihishwa.
+* **Kikomo cha majaribio ya kuingia** kipo kwenye `LocMemCache`, ambayo
+  ni ya proceso moja. Kwa gunicorn yenye watumishi N, kikomo halisi ni
+  `8 × N`, na kinafutika kila deploy. Kinahitaji Redis.
+
+---
+
+## Safari ya mwanachama, na ngazi za uongozi
+
+Ombi lilikuwa: kufuatilia hatua zote kuanzia mtu anapojisajili, kupitia
+malipo, hadi anapokabidhiwa akaunti na kitambulisho — na kukagua ngazi
+zote za uongozi ili kila kiongozi afanye jukumu lake.
+
+Nilifuatilia safari kwa kuiendesha, si kwa kuisoma. Kila hatua ilipimwa
+kwa script inayopiga fomu halisi, signal halisi na URL halisi.
+
+### SEHEMU 1 — SAFARI ILIKWAMA HATUA YA MWISHO
+
+**Mwanachama aliyelipa hakuweza kuingia. Hakuna mtu aliyeweza.**
+
+Hii ni bug moja, na ilizima hatua ya mwisho ya safari nzima kwa **kila
+mwanachama aliyejiunga kwa njia ya mtandao**.
+
+Mtiririko ulivyo: `Contribution` inathibitishwa → signal ya
+`post_save` → `apply_membership()` → `Application.activate()`.
+Ndani ya `activate()`:
+
+```python
+member.temp_password = member.create_login()
+```
+
+`create_login()` hutengeneza nenosiri la herufi kumi na kulirudisha.
+Linawekwa kama **sifa ya kumbukumbu** kwenye kitu cha Python. Si uwanja
+wa database.
+
+Tatizo ni MAHALI `activate()` inapoitwa: ndani ya callback ya Pesapal,
+au IPN, au webhook ya Selcom. Hakuna afisa mbele ya skrini. Request ile
+inaisha, kitu cha Python kinafutwa, na nenosiri linakwenda nalo.
+
+Ukurasa wa asante ulijaribu kulionyesha:
+
+```python
+"temp_password": getattr(member, "temp_password", None),
+```
+
+Lakini `changia_asante` inasoma `Contribution` upya kutoka database, kwa
+hiyo `member` ni kitu kipya kabisa. `getattr` ilirudisha `None` **kila
+mara, kwa kila mwanachama, bila kukosa**. Jaribio langu lilithibitisha:
+
+```
+[ BAYA ] member.temp_password baada ya kupakia upya DB: None
+[ BAYA ] Ukurasa wa asante unaonyesha nenosiri la muda: False
+   Kujaribu kuingia:
+     nenosiri='mwst2026'              -> imekataliwa
+     nenosiri='MUWESTA/B/000002/2026' -> imekataliwa
+```
+
+Na SMS? `send_membership_ready` ilisema kwa makusudi:
+
+> "Wasiliana na afisa upate taarifa za kuingia."
+
+Afisa hakuwa na taarifa hizo. Hazikuwa zimehifadhiwa mahali popote.
+Ujumbe wa `/jiunge/` ulikuwa ukiongeza ahadi ya tatu:
+
+> "utapigiwa simu na kupewa namba yako ya uanachama pamoja na **nenosiri
+> la kuingia kwenye mfumo**"
+
+Na Django admin ilikuwa na ya nne:
+
+> "Nenosiri la muda linapatikana **kwenye ukurasa wa ombi**."
+
+Halikuwa pale. Sehemu nne za mfumo zilikuwa zikielekeza mtu kwa nenosiri
+ambalo hakuna sehemu ya tano iliyokuwa nalo. Njia pekee ya kweli ilikuwa
+msimamizi kufungua ukurasa wa mwanachama na kubofya "Rejesha taarifa za
+kuingia" — na hakuna mahali palipokuwa kikimwambia afanye hivyo. Afisa wa
+usajili, ambaye ndiye anayeshughulika na mwanachama mpya, hana ruhusa
+hiyo hata kidogo.
+
+**Nilichofanya.** Sikuweka nenosiri kwenye SMS — uamuzi wa kutolituma
+uko kwenye msimbo kwa sababu nzuri (SMS haifutiki, simu hukopeshwa).
+Badala yake nenosiri linawekwa na mwanachama mwenyewe:
+
+* `Member.setup_token` — saini ya HMAC ya `pk` pamoja na **alama ya
+  nenosiri la sasa**. Nenosiri likiwekwa, alama inabadilika, na kiungo
+  kinakufa chenyewe. Hakuna tarehe ya mwisho ya kuhifadhi, hakuna rekodi
+  ya ziada, hakuna kiungo cha kutumika mara mbili.
+* `/anza/` (`weka_nenosiri`) — ukurasa wa kuweka nenosiri, unatumia
+  `SetPasswordForm` ya Django, kwa hiyo kanuni za nenosiri ni zile zile
+  za mfumo wote.
+* SMS ya "uanachama umeanza" sasa inakuwa na kiungo hicho.
+* Ukurasa wa asante unamwonyesha kitufe cha kuweka nenosiri — kwa
+  **mlipaji pekee** (`session["mwst_last_gift"]`), si kwa afisa
+  anayeruhusiwa kuona risiti. Kiungo kinaweka nenosiri; si cha kupita
+  kwa mtu wa tatu.
+* Ujumbe wote wanne wa uongo umesahihishwa kusema kinachotokea kweli.
+
+Sikutumia `signing.dumps` — ndiyo hitilafu niliyoifanya na kuirekebisha
+raundi iliyopita: huingiza muda ndani ya saini, saini inabadilika kila
+sekunde, na kiungo cha SMS kinakufa mara moja. `salted_hmac` haina muda.
+
+Baada ya marekebisho, safari yote ni safi:
+
+```
+[  OK  ] 1. Ombi: APP/MUWESTA/2026/0022 hali=pending
+[  OK  ] 2. Baada ya kuhakikiwa: hali=awaiting_payment
+[  OK  ] 4. Malipo yamethibitishwa -> mwanachama #22
+[  OK  ] 5. Namba ya uanachama: MUWESTA/B/000003/2026
+[  OK  ]    Kadi: MUWESTA/B/00031/2026 (inaisha 2029-09-25)
+[  OK  ]    Leja imeingizwa: #12
+[  OK  ]    Kuingia kwa namba ya uanachama: imefanikiwa
+[  OK  ]    Kiungo CHA ZAMANI kimekufa -> 302
+[  OK  ] 7. /mwanachama/ -> 200
+```
+
+**Kusitisha mwanachama hakukusitisha kitu.**
+
+Afisa akibofya "Sitisha", `Member.status` ilikuwa `suspended` —
+na hapo ndipo ilikoma. `user.is_active` haikuguswa, na hakuna mahali
+pengine hali hiyo ilikuwa ikiangaliwa. Jaribio:
+
+```
+[ BAYA ] Aliyesitishwa anaweza kuthibitishwa: True (user.is_active=True)
+[ BAYA ] login()=True, /mwanachama/ -> 200
+```
+
+Aliyesitishwa aliendelea kuingia, kuona kadi yake, kuomba msaada na
+kutuma malalamiko. Uamuzi wa afisa ulikuwa maandishi kwenye jedwali.
+
+Sasa kusitisha kunaweka `is_active=False` pia. `ModelBackend.get_user`
+inarudisha `None` kwa akaunti isiyo hai, kwa hiyo **hata kipindi
+kilichokuwa kimefunguliwa kinakoma kwenye ombi linalofuata** — bila
+kuhitaji ukaguzi kwenye kila mmoja wa view 14 za mwanachama.
+Kuhuisha kunarudisha. Muda kuisha (`expired`) HAKUZUII — mtu anahitaji
+kuingia ndio aweze kuhuisha.
+
+### SEHEMU 2 — NGAZI ZA UONGOZI
+
+**Ngazi tatu kati ya tano hazikuwa zinabana chochote.**
+
+`geo/scope.py` inajua ngazi zote tano na docstring yake inasema wazi
+kwamba mantiki hii haipaswi kuandikwa mahali pengine. Lakini
+`core/views.py` ilikuwa na nakala yake ya pili:
+
+```python
+def scope_regions(user):
+    zone = user_zone(user)
+    return None if zone is None else list(zone.regions...)
+```
+
+`None` = mikoa yote. `user_zone` inajua **kanda pekee**. Kwa hiyo
+kiongozi wa mkoa, wa wilaya na wa kata wote walipata "mikoa yote":
+
+```
+mratibu_kanda   views.scope_regions=4 mkoa       geo.scope_members=2/21
+mratibu_mkoa    views.scope_regions=MIKOA YOTE   geo.scope_members=1/21
+mratibu_wilaya  views.scope_regions=MIKOA YOTE   geo.scope_members=0/21
+mratibu_kata    views.scope_regions=MIKOA YOTE   geo.scope_members=0/21
+```
+
+Jukumu lenyewe linaitwa **"Mratibu wa Mkoa"**. Paneli mbili za mfumo
+mmoja zilikuwa na majibu mawili tofauti kwa swali moja: `/uongozi/`
+ilibana kwa usahihi, `/mfumo/` haikubana kabisa. Mwenyekiti wa kata
+mmoja aliona orodha ya wanachama wote wa nchi na namba zao za simu,
+aliweza kuwapakua CSV, na `_in_scope` ilimruhusu kuthibitisha malipo ya
+mtu wa mkoa wowote.
+
+`scope_regions` sasa inatoka `geo.scope`, ngazi zote tano. `_in_scope`
+inatumia `can_see_member` — si mkoa, kwa sababu kwa mwenyekiti wa kata
+mkoa ni eneo kubwa mno. Na orodha ya wanachama inapita `scope_members`,
+kwa hiyo mwenyekiti wa kata anaona kata yake, si mkoa wake. Asiye na
+wadhifa wala jukumu la makao makuu anaona **sifuri**, si nchi nzima —
+upande salama wa kukosea.
+
+**`?kanda=` ilikuwa wazi kwa yeyote.** Mratibu wa Kanda ya Mashariki
+aliandika `?kanda=kaskazini` na akapata dashibodi nzima ya kanda
+nyingine. Na mratibu asiye na kanda alionyeshwa `Zone.objects.first()` —
+kanda ya kwanza kwenye orodha, si yake, ila ilifunguka kama yake. Sasa
+`?kanda=` ni ya msimamizi pekee.
+
+**Nyadhifa za uongozi hazikuwa na ukurasa wowote.**
+
+`geo.Leadership` ndiyo inayoamua kila kitu: nani anaona wanachama gani,
+nani anapokea tatizo gani, nani anathibitisha ada ya nani. "Viongozi"
+kwenye menyu ilikuwa ikihariri `content.Leader` — orodha ya picha ya
+ukurasa wa "Kuhusu Sisi", isiyotoa ruhusa yoyote. Msimamizi hakuwa na
+njia ya kumteua mwenyekiti wa kata ndani ya mfumo; ilihitaji Django
+admin, ambayo mfumo huu hautumii. Ngazi zote tano zilikuwa kwenye
+msimbo, hazikuwa na mlango. Nimeongeza `/mfumo/uongozi/`; `clean()` ya
+model inakataa ngazi bila eneo, na nikaijaribu.
+
+**Kughairi malipo: mlango mmoja, matokeo mawili.** Afisa akighairi
+kwenye `/malipo/`, leja inarekebishwa kwa ingizo la kinyume. Kiongozi
+akighairi malipo yale yale kwenye `/uongozi/ada/`, `status` ilibadilika
+na leja ikabaki na pesa isiyokuwapo. Sasa njia zote mbili zinapitia
+`reverse_posting`, na kughairi mara ya pili hakuguse tena.
+
+### SEHEMU 3 — KILA AFISA NA KAZI YAKE
+
+`staff_required` inakubali kila jukumu lisilo la mwanachama. Nilipima
+majukumu 8 dhidi ya kurasa 16 na matokeo yalikuwa jedwali la "OK" tupu:
+**kila afisa alifikia kila ukurasa.**
+
+Vitendo, si kuona tu:
+
+* Afisa wa michango, wa wadau na wa ustawi wote wangeweza **kuidhinisha
+  ombi la uanachama** — hatua inayoruhusu mtu kulipa na kuwa mwanachama.
+* Yeyote angeweza **kusitisha au kufufua** mwanachama, na **kumtolea
+  kadi mpya**.
+* Yeyote angeweza **kupakua CSV** ya wanachama wote (majina, simu, namba
+  za vitambulisho, anwani), ya wahisani, na ya michango. CSV ni nakala
+  inayotoka nje ya mfumo — hakuna AuditLog baada ya kuhifadhiwa kwenye
+  simu ya mtu.
+* Yeyote angeweza **kutuma SMS kwa wanachama WOTE**.
+
+Sasa: usajili kwa usajili, fedha kwa fedha, wadau kwa wadau, ustawi kwa
+ustawi. Kutuma ujumbe kwa wote na kusitisha uanachama ni vya msimamizi
+na usimamizi. Majina ya makundi (`REG_ROLES`, `MONEY_ROLES`,
+`OUTREACH_ROLES`, `WELFARE_ROLES`) yanalingana na yale ya
+`core/registry.py` kwa makusudi — jukumu moja lisiwe na maana mbili
+kwenye sehemu mbili za mfumo mmoja.
+
+Afisa wa ustawi alikuwa akianzia `/taifa/` — dashibodi ya mfumo mzima,
+yenye takwimu za fedha zisizomhusu. Sasa anaanzia `/ustawi/`.
+
+**Menyu iliyobaki ikiahidi.** Kubana kurasa kunazalisha tatizo la pili:
+menyu na vitufe vinabaki vikionyesha viungo ambavyo mtu atakataliwa
+akibofya. `_filter_nav` ilikuwa ikichuja `/mfumo/` pekee.
+
+Sasa `role_required` inaandika orodha ya majukumu kwenye view yenyewe
+(`wrapper.mwst_roles`), na menyu inaisoma pale — **orodha moja, si
+nakala ya pili inayoweza kutofautiana** siku mtu atakapobadilisha
+kizuizi kimoja. Gridi ya "Vitendo vya Haraka" inapita ukaguzi ule ule:
+afisa wa ustawi alikuwa akiona "Rekodi Malipo" na "Tuma Ujumbe kwa
+Wote" kama vitufe vikubwa vya rangi — hatua za kwanza anazoziona
+akiingia — na kila kimoja kilimwambia hana ruhusa.
+
+Kwenye gridi hiyo nilipata pia:
+
+* `/mfumo/programs/assistancerequest/` — muundo wa Django admin
+  (`app/model`), si wa registry inayotumia slug. Kitufe **"Maombi ya
+  Msaada" kwenye dashibodi kuu kilikuwa kikitoa 404 kwa kila mtumiaji.**
+* "Tuma SMS kwa Wote" na "Tuma Email kwa Wote" — vitufe viwili, mahali
+  pamoja (`/ujumbe/` yenyewe inauliza njia).
+* "Ongeza Habari" ikielekeza `/media/`, yaani picha.
+* `<path ... href="/taifa/">` kwenye ramani — `href` kwenye `<path>`
+  haifanyi kitu kwenye SVG (kiungo kinahitaji `<a>`), kwa hiyo ilikuwa
+  markup iliyokufa ikielekeza kila mkoa kwenye dashibodi ya taifa.
+* Kichwa "Quick Actions" kilikuwa hakijatafsiriwa kwenye mfumo wa
+  Kiswahili.
+
+### Kilichojaribiwa
+
+Database mpya kabisa (`rm db.sqlite3 && migrate && seed`), kisha:
+
+* **Safari kamili** — ombi → kuhakikiwa → fomu ya malipo → `settle()` →
+  mwanachama, namba, akaunti ya leja, kadi, kipindi cha miaka 3, akaunti
+  ya kuingia → kuweka nenosiri → kuingia → `/mwanachama/`,
+  `/mwanachama/kadi/`, na kuhakiki kadi hadharani. **Vipimo 25, vyote
+  OK.** Kiungo cha zamani cha kuweka nenosiri kinakufa.
+* **Ngazi tano** — Taifa anaona 22/22, Kanda 2, Mkoa 1, Wilaya 0, Kata
+  0. Mazungumzo ya ngazi ya mkoa yanaonekana kwa mwenyekiti wa mkoa
+  **pekee**: taifa 404, kanda 404, wilaya 404, kata 404. Wadhifa
+  uliomalizika muda unamtoa mara moja (`/uongozi/` → 302).
+* **Majukumu 8 × kurasa 16**, pamoja na CSV kwa kila aina.
+* **Kutembea kurasa 71 kwa kila jukumu** — kurasa bovu **0**, na hakuna
+  kitufe au kiungo kinachoishia "Huna ruhusa" kwa majukumu yote manane.
+* **Fedha** — kughairi kwa afisa na kwa kiongozi kunatoa matokeo yale
+  yale (50,000 na 30,000 zimerudishwa), kughairi mara ya pili
+  hakubadilishi salio, na kiongozi wa eneo moja hagusi malipo ya
+  mwingine (404 upande wa uongozi, 302 upande wa watumishi).
+
+### Yaliyobaki
+
+* **Tafsiri ya Kiingereza ya sehemu ya uongozi haipo.**
+  `makemessages` inatoa msgid 276 zisizokuwa kwenye `.po` — nyingi ni za
+  `leader_views.py`, `leadership.py` na kiolezo za `/uongozi/`. Lakini
+  `.po` iliyopo ina msgid 1,878 ambazo `makemessages` **haizioni**
+  (inatoa 1,345 tu), kwa hiyo kuiandika upya kungeharibu tafsiri
+  zilizopo. Nimeongeza zangu 16 kwa mkono na kuacha zile 276; kuzimaliza
+  ni kazi ya awamu yake, inayoanza kwa kutafuta kwa nini
+  `makemessages` inakosa nusu ya faili.
+* **`Member.temp_password`** bado inawekwa na `activate()`. Haina madhara
+  (hakuna anayeisoma sasa), lakini ni sifa inayoahidi kitu
+  isichotoa — inafaa kuondolewa kabisa.
+* **`content.Leader` na `geo.Leadership`** zote zinaitwa "Viongozi"
+  kwenye paneli. Nimeitofautisha kwa lebo ("Nyadhifa za Uongozi"),
+  lakini majina mawili yanayokaribiana kwa vitu viwili tofauti kabisa
+  yatachanganya mtu tena.
+
+---
+
+## Tafsiri ya Kiingereza imekamilika
+
+Raundi iliyopita niliacha hii ikiwa haijakamilika, na nikaisema:
+sehemu yote ya uongozi haikuwa na tafsiri, na `makemessages` ilikuwa
+ikitoa msgid 1,345 wakati `.po` ilikuwa na 1,878 — kuiandika upya
+kungeharibu tafsiri zilizopo. Kwanza nilitafuta kwa nini.
+
+### Kwa nini `makemessages` inakosa nusu ya faili
+
+Mfumo huu hutafsiri herufi za DATABASE na za dict za Python, si za
+kiolezo pekee. Filter `tr` (`core/templatetags/mwst_tags.py`) huita
+`gettext()` kwa thamani inayotoka kwenye muktadha:
+
+```python
+@register.filter(name="tr")
+def tr(value):
+    return gettext(str(value))
+```
+
+Inatumika mara 224 kwenye kiolezo: `{{ k.label|tr }}`, `{{ a.label|tr }}`,
+`{{ r.name|tr }}`. Herufi zenyewe zipo kwenye `core/data/navs.py` na
+`core/queries.py` kama thamani za kawaida — HAZIJAZUNGUSHWA kwenye
+`_()`, na `xgettext` haiwezi kuzitambua. Kwa hiyo `.po` ilikuwa na
+mamia ya entries ambazo `makemessages` haizioni: si taka, ni ndizo
+zinazoendesha menyu na KPI zote.
+
+Kwa hiyo sikuiandika upya. Nilitengeneza nakala ya mradi kwenye
+`/tmp`, nikaendesha `makemessages` HUKO, nikalinganisha, na
+nikaongeza tu zinazokosekana kwenye `.po` halisi. Tafsiri 1,895
+zilizopo hazikuguswa hata moja.
+
+Sikutumia `msgcat` kuunganisha, ingawa ndiyo njia ya kawaida: ilikuwa
+inaweka **entries 180 kama `fuzzy`** (msgid ile ile na thamani mbili —
+moja tupu kutoka kwenye uchimbaji mpya). `msgfmt` huruka fuzzy kimya
+kimya, kwa hiyo tafsiri 180 zilizokuwa zinafanya kazi zingeacha
+kufanya kazi bila kosa lolote kuonekana. Pia `msgmerge` ingeweka
+zilizoandikwa kwa mkono kama `#~ obsolete`, yaani kuzitoa kabisa.
+
+### Herufi tatu zilizokuwa haziwezi kutafsiriwa kabisa
+
+Wakati wa kulinganisha nilikutana na entries ambazo msgid zao
+hazingeweza kulingana na ombi halisi — yaani zilikuwa hazina njia ya
+kutafsiriwa, hata mtu akiandika tafsiri.
+
+**1. `—` badala ya mstari mrefu** (`core/views.py`):
+
+```python
+"limehifadhiwa — afisa atawasiliana nawe."
+```
+
+Python inaibadilisha kuwa herufi moja (—) wakati wa kuendesha, lakini
+`xgettext` huihifadhi kama herufi sita za escape. msgid kwenye `.po`
+ilikuwa `...limehifadhiwa — afisa...` huku ombi halisi likiwa
+`...limehifadhiwa — afisa...`. Hazikulingana kamwe. Nimeweka herufi
+halisi.
+
+**2 na 3. `{% trans %}` yenye `\"` ndani** (`templates/member/viongozi.html`
+na kiolezo changu kipya):
+
+```django
+{% trans "...ni bora kutumia \"Toa Taarifa kwa Kiongozi\" badala ya..." %}
+```
+
+Django inaisoma vizuri wakati wa kuendesha, lakini `xgettext` huikata
+msgid kwenye backslash:
+
+```
+msgid "Ukiwa na tatizo linalohitaji ufuatiliaji, ni bora kutumia \\"
+```
+
+Kwa hiyo `makemessages` huzalisha entry iliyokatika kila inapoendeshwa.
+Nimeziandika kwa mkono kwa `\"` kwenye `.po` — ndipo zinapolingana na
+ombi halisi — na kuziacha kwenye kiolezo kama zilivyo, kwa sababu
+maandishi yanayoonekana ni sahihi. Ni sehemu mbili pekee kwenye mradi
+wote, na zinahitaji kubaki za mkono.
+
+### Herufi 21 za dict ambazo zilikuwa zimesahaulika
+
+Ukaguzi wa AST wa `core/data/navs.py` na `core/queries.py` ulionyesha
+lebo 21 zinazopita `|tr` bila entry yoyote — "Dashibodi ya Uongozi",
+"Wanachama Wote", "Wilaya Zinazohusika", "Kadi Zinazosubiri",
+"Uanachama Wangu" na nyingine. Menyu yote ya uongozi ilikuwa Kiswahili
+kwenye tovuti ya Kiingereza kwa sababu hii.
+
+`core/data/membership.py`, `about.py`, `legal.py`, `giving.py` na
+`verses.py` hazina tatizo hili — zina `lang` au `_en` zao, si gettext.
+
+### Sentensi zilizoundwa kwa f-string
+
+Sentensi inayoundwa kwa f-string haina msgid, kwa hiyo haiwezi
+kutafsiriwa — hata ikiwa sehemu zake zimo kwenye `.po`:
+
+```python
+"note": f"{pct(...)}% ya jumla ya wanachama"      # queries.py
+_kpi("Wanachama Wote", jumla, ..., f"Hai: {hai}")  # leadership.py
+_kpi("Matatizo Kwangu", wazi, ..., f"Ya haraka: {haraka}")
+```
+
+Zimebadilishwa kuwa `gettext("%(pct)s%% ya jumla ya wanachama") % {...}`
+na `_("Hai: %(n)s") % {...}`. Na `templates/admin_panel/media.html`
+ilikuwa na sentensi nzima ya Kiswahili bila `{% trans %}` kabisa.
+
+### Majina ya database yaliyokuwa yakisomwa vibaya
+
+Hii ni tofauti na tafsiri: thamani ilikuwa ipo, lakini kiolezo
+kilikuwa kikisoma uwanja usiofaa.
+
+`Zone` ina `name_en` na imejazwa ("Eastern Zone"), lakini kiolezo
+kilikuwa kikiandika `{{ zone.name|tr }}` — yaani kumwomba gettext
+atafsiri thamani ya database, ambayo haiko kwenye `.po`. Vivyo hivyo
+`Fund`: `{{ f.name }}`, `{{ g.fund.name }}`, na
+`{{ gift.fund.tx_name|default:gift.fund.name }}` — ambapo `tx_name`
+**haipo kabisa** kwenye model, kwa hiyo `default` ilitumika kila mara.
+
+Nimebadilisha kwenda `|tx:"name"`. Kwa `Zone` nimefanya zaidi:
+`__str__` yake sasa inarudisha `tx("name")`, kwa sababu kanda
+huonyeshwa kwa `str()` mahali pengi — orodha ya nyadhifa,
+`Leadership.area_name`, chaguo za fomu — na kurekebisha kila moja
+kungeacha zinazobaki. Mikoa, wilaya na kata hazina `name_en`; ni
+majina ya pekee, hayatafsiriwi.
+
+### Maoni yangu yalivuja kwenye HTML
+
+Ukaguzi wa mwisho ulinasa kosa nililolifanya raundi hii: niliandika
+maoni ya `{# ... #}` yenye mistari mingi kwenye kiolezo tatu.
+**`{# #}` ya Django ni ya mstari MMOJA.** Ikizidi, inavuja kama
+maandishi. Kwa hiyo `/mfumo/wanachama/`, `/mfumo/wadau/`, `/taifa/` na
+`/kanda/` zilikuwa zikichapisha maelezo yangu ya msimbo kwenye
+ukurasa — zikionekana kwa mtumiaji. Nimezibadilisha kuwa
+`{% comment %}`. Hii ni kosa lile lile lililoandikwa kwenye faili hii
+tangu awali kama la kujiepusha nalo; nililifanya tena.
+
+### Kilichojaribiwa
+
+* `msgfmt --check` — **msgid 2,190, zote zina tafsiri, hakuna fuzzy,
+  hakuna kosa la `%(...)s`**. (Zilikuwa 1,895.)
+* Kutembea **kurasa 59 kwa Kiingereza** (umma, uongozi ngazi mbili,
+  paneli ya watumishi, eneo la mwanachama) kwa kutafuta maneno ya
+  Kiswahili kwenye maandishi yanayoonekana. Kutoka mistari 20 hadi
+  **1** — na iliyobaki ni thamani ya Kiswahili ndani ya
+  `<textarea name="about">` kwenye ukurasa wa mipangilio, ambapo ndiyo
+  inayohaririwa. Sahihi.
+* Ukaguzi wa **kinyume**: Kiingereza kikivuja kwenye tovuti ya
+  Kiswahili — **mistari 0**.
+* Ukaguzi wa AST: lebo zinazopita `|tr` bila entry — **0**.
+* Kutembea **kurasa 71 × majukumu 8 × lugha 2 = mara 1,136** —
+  kurasa bovu 0, vitufe visivyoruhusiwa 0, kiolezo kilichovuja 0.
+* Ukaguzi wa kurudia wa safari na majukumu: **vipimo 23, vyote OK**
+  (ombi → malipo → kadi → nenosiri → kuingia; kusitisha; ngazi nne za
+  ufinyu; majukumu sita; kughairi leja).
+
+### Yaliyobaki
+
+* **Lugha haiwezi kubadilishwa kwa `Accept-Language` kwa makusudi**
+  (`core/middleware.py`) — Kiswahili ni lugha ya msingi hadi mtu
+  achague mwenyewe. Ni uamuzi, si hitilafu, lakini inamaanisha jaribio
+  la kivinjari lolote linahitaji kuweka cookie ya lugha.
+* **`{% trans %}` yenye `\"`** bado ni mtego: `makemessages` itazalisha
+  entries mbili zilizokatika kila inapoendeshwa. Zipuuze; zile za
+  kweli zimeandikwa kwa mkono. Kuziondoa kabisa kunahitaji kubadilisha
+  nukta mbili kwenye kiolezo (mfano " na "), yaani kubadilisha
+  maandishi mtu anayoyaona.
+* **`locale/sw`** ina msgid moja tu. Ni sahihi — Kiswahili ni lugha ya
+  chanzo, haihitaji katalogi.
+
+---
+
+## Milango miwili ya kuingia
+
+Ombi lilikuwa: fomu mbili za kuingia — moja ya wanachama, nyingine
+maalum kwa viongozi wa aina zote — na zitenganishwe.
+
+```
+/ingia/            wanachama, wahisani, wajitoleaji
+/ingia/viongozi/   viongozi wa aina zote
+```
+
+### "Viongozi wa aina zote" ni pande mbili
+
+Mfumo huu una aina mbili za uongozi zisizohusiana kimuundo:
+
+* **Nyadhifa za kuchaguliwa** (`geo.Leadership`) — mwenyekiti au katibu
+  wa kata, wilaya, mkoa, kanda, taifa. Jukumu lao la mfumo mara nyingi
+  ni `member`, na wanaingia kwa **namba ya uanachama**.
+* **Maafisa wa ofisi** (`Role`) — usajili, fedha, michango, ustawi,
+  wadau, mratibu, usimamizi. Wanaingia kwa **jina la mtumiaji**.
+
+Wote wanapitia mlango wa viongozi. `_is_leader_account()` inaangalia
+pande zote mbili; `_door_of()` inarudisha mlango unaomhusu mtu.
+
+### Mlango kwanza, nenosiri baadaye
+
+Hili ni jambo la usalama lililoamua muundo. Kama ukaguzi wa mlango
+ungefanyika BAADA ya kuthibitisha nenosiri, afisa aliyefika mlango wa
+wanachama angepata majibu mawili tofauti:
+
+* nenosiri sahihi → "nenda mlango wa viongozi"
+* nenosiri baya   → "nenosiri si sahihi"
+
+Tofauti hiyo yenyewe ingekuwa ikithibitisha nenosiri kwa yeyote
+anayelijaribu. Kwa hiyo mlango unaangaliwa **kwa kitambulisho pekee**,
+kabla nenosiri kuguswa — na majibu yanakuwa sawa:
+
+```
+[  OK  ] Nenosiri sahihi na lisilo sahihi hutoa jibu lile lile mlango usio wake
+```
+
+Kinachofichuka ni "kitambulisho hiki ni cha kiongozi" — jambo lililo
+wazi hata hivi (majina ya maafisa ni `usajili`, `malipo`; viongozi
+wameorodheshwa kwenye `/mwanachama/viongozi/`).
+
+### Kila mlango unafanya kazi yake
+
+Chips za majukumu zimegawanywa kwa `door`. Ukurasa wa wanachama
+haumwombi mtu jina la mtumiaji la ofisi; ukurasa wa viongozi
+**hauna mwaliko wa kujiunga** — wadhifa hutolewa na mfumo
+(`/mfumo/uongozi/`), si kwa kujiandikisha, na kumwambia mtu "jiunge"
+kungeahidi kitu ambacho ukurasa huo hauwezi kutoa. Kila mmoja una
+kiungo kimoja kidogo cha mlango mwingine.
+
+Fomu yenyewe ni faili moja (`public/_login_form.html`) inayotumiwa na
+milango yote miwili. Ulinzi — kikomo cha majaribio, kuzuia msimamizi
+mkuu, ukaguzi wa kusitishwa, code ya SMS, arifa ya kuingia — ni mwili
+mmoja (`_login_door`). Kuandika mara mbili ni kuhakikisha kwamba siku
+moja moja itasahihishwa na nyingine itabaki na hitilafu.
+
+Kurasa zilizolindwa zinaelekeza mlango sahihi: `staff_required`,
+`role_required` na `leader_required` zote zinaenda `/ingia/viongozi/`,
+na `@login_required` ya mwanachama inaenda `/ingia/`. Awali
+`leader_required` ilitumia `LOGIN_URL` (`/ingia/`), yaani ilimtupa
+kiongozi kwenye fomu ambayo akaunti yake inakataliwa.
+
+### Kiongozi anaishia eneo lake
+
+Kiongozi wa kata ana jukumu `member` na rekodi ya uanachama, kwa hiyo
+`home_url_name()` ilimpeleka `/mwanachama/` — hata baada ya kubofya
+"Kiongozi" na kuingia kwa nia ya kufanya kazi ya wadhifa wake. Mlango
+anaouchagua ni maelezo ya anachotaka, kwa hiyo sasa anaenda
+`/uongozi/`. Maafisa hawabadilishwi — `/usajili/`, `/malipo/` ni sahihi
+kwao. Na `?next=` inashinda vyote.
+
+### Hitilafu ya awali niliyoikuta njiani
+
+`_clear_pending()` ilikuwa inafuta `mwst_next` pamoja na kila kitu
+kingine, na iliitwa **mstari mmoja kabla ya** `_finish_login()` —
+ambaye ndiye anayeisoma. Kwa hiyo mtu aliyebofya kiungo cha ndani
+(`?next=/malipo/`), akaulizwa code ya SMS, alipelekwa ukurasa wake wa
+kawaida badala ya pale alipotaka kwenda. Kiungo alichobofya kilipotea
+kimya kimya **kila mara OTP ilipowashwa** — yaani kwa kila afisa, kila
+siku.
+
+Sasa `_clear_pending(keep_intent=True)` inaacha nia yake (aende wapi,
+kifaa kikumbukwe, alitoka mlango upi) kwa `_finish_login`, na inafuta
+vitufe vya "ni nani anasubiri" pekee.
+
+### Uthibitisho wa hatua mbili haukubadilika
+
+Maafisa: code kila mara. Viongozi wa kuchaguliwa: code kwenye kifaa
+kipya, kisha kifaa kinaaminika siku 30 — sawa na mwanachama. Hii ni kwa
+makusudi: hawana ofisi, wanatumia simu zao uwanjani, na code kila mara
+ingekuwa kero inayowafanya watafute njia ya kuzunguka. Paneli yao
+inaonyesha eneo lao pekee, si nchi nzima.
+
+### Kilichojaribiwa
+
+Vipimo **31, vyote OK**, kwenye database mpya:
+
+* Kurasa zote mbili zinafunguka na ni **tofauti**: "Eneo la Viongozi"
+  lipo upande mmoja pekee; mwaliko wa kujiunga upande mwingine pekee.
+* Chips: wanachama wanaona "Mwanachama" na hawaoni "Afisa"/"Msimamizi";
+  viongozi wanaona "Kiongozi"/"Msimamizi" na hawaoni "Mhisani".
+* Mtu akifika mlango usio wake — **pande zote sita** (mwanachama,
+  kiongozi wa kata, afisa × milango miwili) — anaelekezwa, na anaingia
+  mlango wake.
+* Nenosiri sahihi na baya hutoa jibu lile lile mlango usio wake.
+* `/uongozi/`, `/taifa/`, `/malipo/` → `/ingia/viongozi/?next=...`;
+  `/mwanachama/` → `/ingia/?next=...`.
+* Msimamizi mkuu bado amezuiwa pande zote mbili.
+* **OTP**: mlango, `next` na "Kumbuka mimi" vyote vinavuka hatua ya
+  code. Kiongozi → `/uongozi/`, afisa aliyeomba `/malipo/` → `/malipo/`.
+* Safari ya usajili bado nzima: ombi → malipo → kadi → kuweka nenosiri
+  → **`/ingia/`** (mlango wa wanachama) → `/mwanachama/kadi/`.
+* Kutembea kurasa 71 × majukumu 8 × lugha 2: **matatizo 0**.
+* Tafsiri 13 mpya; `.po` ina msgid **2,203**, zote zina tafsiri.
+  Kurasa zote mbili: Kiswahili safi, Kiingereza safi.
+
+### Yaliyobaki
+
+* **Fomu ndogo ya kuingia kwenye ukurasa wa mbele** (`home.html`)
+  inatuma kwa `/ingia/`. Kiongozi akiitumia anaelekezwa mlango wake —
+  inafanya kazi, lakini ni hatua ya ziada. Kuiondoa au kuigawa ni
+  uamuzi wa muonekano, sikuugusa.
+* **`LOGIN_URL` bado ni `/ingia/`**. Ni sahihi kwa `@login_required` ya
+  kurasa za mwanachama; kurasa za uongozi zina vizuizi vyao
+  vinavyoelekeza mlango wao. Kama view mpya ya uongozi itaongezwa kwa
+  `@login_required` peke yake, itaelekeza mlango usio sahihi — tumia
+  `leader_required` au `role_required`.
+
+### Nyongeza: mlango wa viongozi haukuonekana
+
+Fomu zote mbili zilikuwa zikifanya kazi, lakini ya viongozi haikuwa na
+**njia yoyote ya kuifikia** kutoka kwenye tovuti — kilikuwa sentensi
+ndogo chini ya ukurasa wa wanachama pekee. Kwa vitendo ilihitajika
+kujua URL `/ingia/viongozi/` kichwani, na hakuna kiongozi anayeweza
+kuibahatisha. Kutengeneza mlango na kutoueleza ni kama kutokuutengeneza.
+
+Sasa unafikiwa kwa njia nne:
+
+* **Footer ya kila ukurasa** — "Ingia kama Kiongozi"
+* **Menyu ya simu** (drawer) — kitufe chake. Header haigusi: ina nafasi
+  ya vitufe viwili pekee, na kuongeza cha tatu kunabana (imeandikwa
+  hivyo kwenye kiolezo tangu awali).
+* **Kitufe kwenye `/ingia/`**, chenye mstari wa kutenganisha — si
+  mwendelezo wa fomu, ni njia nyingine kabisa
+* **Kitufe cha kurudi** kwenye `/ingia/viongozi/`
+
+Imejaribiwa: kiungo kipo kwenye `/`, `/kuhusu/`, `/lipa/` na `/ingia/`
+kwa lugha zote mbili, na milango yote miwili bado inafanya kazi
+(afisa → `/usajili/`, mwanachama → anaelekezwa mlango wake).

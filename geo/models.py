@@ -24,7 +24,19 @@ class Zone(models.Model):
         verbose_name_plural = _("Kanda")
 
     def __str__(self):
-        return self.name
+        """
+        Jina kwa lugha inayotumika sasa.
+
+        `name_en` ipo na imejazwa ("Eastern Zone"), lakini kila mahali
+        kanda inaonyeshwa kwa `str()` — orodha ya nyadhifa, lebo ya
+        maeneo ya kiongozi (`Leadership.area_name`), chaguo za fomu —
+        ilikuwa ikitoa Kiswahili hata kwenye tovuti ya Kiingereza.
+        Kurekebisha kila sehemu kwa `|tx:"name"` kungeacha zile
+        zinazotumia `str()` bila kubadilika; hapa ndipo pa kurekebisha
+        mara moja. Mikoa, wilaya na kata hazina `name_en` — ni majina ya
+        pekee, hayatafsiriwi.
+        """
+        return self.tx("name")
 
     def tx(self, field):
         from django.utils.translation import get_language

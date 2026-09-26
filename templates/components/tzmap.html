@@ -3,7 +3,12 @@
 <svg class="tzmap" viewBox="4 6 84 90" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="Ramani ya wanachama kwa mikoa">
   {% for r in map_regions %}
-    <path d="{{ r.path }}" fill="{{ r.shade }}" href="/taifa/">
+    {% comment %}`href` kwenye `<path>` haifanyi kitu kwenye SVG — kiungo
+    kinahitaji `<a>`. Ilikuwa ikielekeza `/taifa/` kwa kila mkoa, yaani
+    hata mratibu wa kanda anayeona ramani yake alikuwa na "kiungo"
+    kwenda dashibodi ya taifa asiyoruhusiwa. Sasa ni umbo pekee, kama
+    ilivyokuwa ikifanya kazi tangu mwanzo.{% endcomment %}
+    <path d="{{ r.path }}" fill="{{ r.shade }}">
       <title>{{ r.name|tr }} — {{ r.members }}</title>
     </path>
   {% endfor %}

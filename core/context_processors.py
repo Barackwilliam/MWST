@@ -43,6 +43,26 @@ def social_links():
     return [{"icon": i, "label": lbl, "url": u} for i, lbl, u in rows if u]
 
 
+def footer_services(lang):
+    """
+    Huduma zinazoonekana kwenye footer.
+
+    Zilikuwa viungo vitano vilivyoandikwa ndani ya `base.html`, vyote
+    vikielekeza `/huduma/`. Ofisi ikiongeza huduma mpya au kubadilisha
+    jina, footer ilibaki na orodha ya zamani milele.
+    """
+    from django.core.cache import cache
+    from content.models import Service
+
+    key = f"mwst:footer-services:{lang[:2]}"
+    rows = cache.get(key)
+    if rows is None:
+        rows = [{"title": s.tx("title"), "cat": s.category}
+                for s in Service.objects.filter(is_active=True)[:5]]
+        cache.set(key, rows, 300)
+    return rows
+
+
 def brand(request):
     from content.models import SiteSetting
 
@@ -71,17 +91,37 @@ def brand(request):
         #: si kwenye code. Ofisi ikibadilisha namba ya simu au anwani,
         #: inabadilika kila mahali bila kuhitaji deployment mpya.
         "settings_obj": st,
-        "org_name": st.org_name or "Muslim Welfare Society of Tanzania",
-        "org_short": "MUWESTA",
+        "org_name": st.org_name,
+        #: Ilikuwa "MUWESTA" iliyoandikwa hapa. Sasa inatoka kwenye
+        #: mipangilio kama kila kitu kingine cha jina la shirika.
+        "org_short": st.org_short,
         "org_phone": phone,
         "org_phone_link": phone_link,
+        #: Namba ya msaada ya ukurasa wa malipo. Ilikuwa imeandikwa
+        #: ndani ya `core/queries.py`, tofauti na ile ya footer.
+        "org_phone_support": (st.phone_support or phone),
         "org_email": st.email or "",
+        "org_website": st.website or "",
+        "org_po_box": st.po_box or "",
+        "org_map_url": st.map_url or "",
+        "org_hours": ((st.working_hours_en if lang.startswith("en") else st.working_hours)
+                      or st.working_hours or ""),
         "social": social_links(),
+        "footer_services": footer_services(lang),
         "org_tagline": ((st.tagline_en if lang.startswith("en") else st.tagline)
-                        or st.tagline or "Imani kwa Vitendo, Huduma na Maendeleo kwa Binadamu"),
+                        or st.tagline),
         "org_address": ((st.address_en if lang.startswith("en") else st.address)
                         or st.address or ""),
-        "org_values": ["Imani", "Huruma", "Huduma", "Maendeleo"],
+        #: Maelezo mafupi ya `<meta name="description">` na ya footer.
+        #: Yalikuwa yameandikwa mara mbili ndani ya `base.html`.
+        "org_description": ((st.meta_description_en if lang.startswith("en")
+                             else st.meta_description)
+                            or st.meta_description
+                            or (st.about_en if lang.startswith("en") else st.about)
+                            or st.about or ""),
+        #: Ilikuwa orodha iliyoandikwa hapa, huku footer, sidebar na
+        #: kadi ya mwanachama zikiwa na nakala zao tatu tofauti.
+        "org_values": st.value_list("en" if lang.startswith("en") else "sw"),
         "i18n_js": {
             # Ujumbe huu unaonekana tu kwa vipengele vichache ambavyo
             # bado havijajengwa (SMS, barua pepe, PDF, ripoti za Excel).

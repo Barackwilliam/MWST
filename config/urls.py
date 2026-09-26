@@ -28,3 +28,18 @@ if DJANGO_ADMIN_URL:
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    #: WhiteNoise inahudumia `STATIC_ROOT` pekee. Faili zilizopakiwa —
+    #: picha za wanachama, picha za maombi, faili za maktaba — ziko
+    #: `MEDIA_ROOT`, kwa hiyo zote zilikuwa zikirudisha 404 kwenye
+    #: production. Afisa alipakia picha, akaambiwa "imefanikiwa", kisha
+    #: picha haikuonekana popote.
+    #:
+    #: Kuhudumia kwa Django si kwa kasi, lakini ni bora kuliko 404.
+    #: TAZAMA: disk ya Render inafutika kila deploy — kwa faili
+    #: zinazopaswa kudumu, tumia hifadhi ya nje (Supabase Storage au S3).
+    from django.views.static import serve
+
+    urlpatterns += [
+        path("media/<path:path>", serve, {"document_root": settings.MEDIA_ROOT}),
+    ]

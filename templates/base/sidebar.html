@@ -4,9 +4,9 @@
   {# ---------- Brand ---------- #}
   <a href="/" class="sidebar__brand">
     <img src="{% static 'img/mwst-logo.svg' %}" alt="" class="sidebar__mark">
-    <span class="sidebar__wordmark">MUWESTA</span>
-    <span class="sidebar__org">Muslim Welfare Society<br>of Tanzania</span>
-    <span class="sidebar__tagline">{% trans "Imani kwa Vitendo, Huduma na Maendeleo kwa Binadamu" %}</span>
+    <span class="sidebar__wordmark">{{ org_short }}</span>
+    <span class="sidebar__org">{{ org_name }}</span>
+    <span class="sidebar__tagline">{{ org_tagline }}</span>
   </a>
 
   {# ---------- Navigation ---------- #}

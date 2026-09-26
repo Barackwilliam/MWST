@@ -1,13 +1,13 @@
 {% extends "base/app.html" %}
 {% load i18n mwst_tags %}
-{% block title %}{{ zone.name|tr }}{% endblock %}
+{% block title %}{{ zone|tx:"name" }}{% endblock %}
 
 {% block page %}
   {% include "base/messages.html" %}
 
   <div class="pagehead">
     <div>
-      <h2>{{ zone.name|tr }}</h2>
+      <h2>{{ zone|tx:"name" }}</h2>
       <p>{% trans "Ofisi ya Kanda" %}: {{ zone.office }} ·
          {% blocktrans count n=zone.regions.count %}Mkoa {{ n }}{% plural %}Mikoa {{ n }}{% endblocktrans %}</p>
     </div>

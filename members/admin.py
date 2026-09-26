@@ -65,9 +65,15 @@ class ApplicationAdmin(admin.ModelAdmin):
         for app in queryset.filter(status__in=["pending", "review"]):
             app.approve(request.user)
             n += 1
+        #: Kiungo LAZIMA kiwe na saini (`k=`). Bila hiyo `/lipa/` haijazi
+        #: taarifa za mwombaji — ndiyo iliyozuia mtu kupitia namba za
+        #: maombi za watu wengine. Ujumbe huu ulikuwa ukitoa muundo
+        #: usiokamilika. Pia: hapa mwombaji HAJULISHWI; `/maombi/`
+        #: kwenye mfumo ndiyo inayotuma SMS.
         self.message_user(request, _(
-            "Maombi %(n)d yamehakikiwa. Sasa yanasubiri malipo ya ada — "
-            "wapewe kiungo cha /lipa/?ombi=<namba ya ombi>."
+            "Maombi %(n)d yamehakikiwa. Mwombaji HAJAJULISHWA kutoka hapa — "
+            "tumia ukurasa wa Maombi kwenye mfumo ili SMS ya kulipia itumwe, "
+            "au mpe kiungo cha /lipa/?ombi=<namba>&k=<saini>."
         ) % {"n": n})
 
     @admin.action(description=_("Kamilisha uanachama (ada imelipwa nje ya mfumo)"))
@@ -81,9 +87,15 @@ class ApplicationAdmin(admin.ModelAdmin):
         for app in queryset.filter(status="awaiting_payment", member__isnull=True):
             app.activate()
             n += 1
+        #: "Nenosiri la muda linapatikana kwenye ukurasa wa ombi"
+        #: HAIKUWA KWELI. `temp_password` ni sifa ya kumbukumbu ya muda
+        #: inayowekwa na `activate()` na kupotea na request; haihifadhiwi
+        #: kwenye database wala haionekani kwenye ukurasa wowote. Sasa
+        #: `activate()` inatuma kiungo cha kuweka nenosiri kwa SMS, na
+        #: mwanachama anajiwekea mwenyewe.
         self.message_user(request, _(
-            "Wanachama %(n)d wamekamilishwa. Nenosiri la muda linapatikana "
-            "kwenye ukurasa wa ombi."
+            "Wanachama %(n)d wamekamilishwa. Kila mmoja amepokea SMS yenye "
+            "kiungo cha kuweka nenosiri lake mwenyewe."
         ) % {"n": n})
 
     @admin.action(description=_("Kataa maombi"))

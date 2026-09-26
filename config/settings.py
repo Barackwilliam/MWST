@@ -38,12 +38,28 @@ def _load_env_file(path=BASE_DIR / ".env"):
 
 _load_env_file()
 
-SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-badilisha-kabla-ya-production")
+#: Chaguo-msingi hili ni la MAENDELEO pekee, na linagunduliwa na ukaguzi
+#: ulio chini ya faili hii. Kiambishi `django-insecure-` kimewekwa kwa
+#: makusudi: ukaguzi wa awali ulikuwa ukitafuta kiambishi hicho pekee,
+#: wakati chaguo-msingi halisi halikuwa nacho — kwa hiyo deploy
+#: iliyosahau `SECRET_KEY` ilianza production ikiwa na funguo
+#: iliyochapishwa kwenye repo hii. Mtu angeweza kughushi session ya
+#: msimamizi mkuu, kughushi kidakuzi cha kuaminika kwa kifaa (kuruka
+#: OTP), na kughushi token za kubadilisha nenosiri.
+_DEV_SECRET = "django-insecure-dev-only-badilisha-kabla-ya-production"
+SECRET_KEY = os.environ.get("SECRET_KEY", _DEV_SECRET)
 #: Chaguo-msingi ni production. Ukitaka kufanya kazi ndani ya kompyuta yako,
 #: weka DEBUG=True kwenye environment yako ya ndani (si kwenye Render).
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
+#: `*` ni salama kwa maendeleo pekee. Kwenye production inaruhusu
+#: Host-header injection: `PasswordResetView` hujenga kiungo cha
+#: kubadilisha nenosiri kutoka `request.get_host()`, kwa hiyo ombi
+#: lenye `Host: tovuti-mbaya.tld` hutengeneza barua pepe yenye kiungo
+#: kinachopeleka token kwa mshambuliaji.
+ALLOWED_HOSTS = [h.strip() for h in
+                 os.environ.get("ALLOWED_HOSTS", "*" if DEBUG else "").split(",")
+                 if h.strip()]
 CSRF_TRUSTED_ORIGINS = [
     o for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if o
 ]
@@ -126,31 +142,31 @@ if _DATABASE_URL:
             ssl_require=_DATABASE_URL.startswith("postgres"),
         )
     }
-else:
-    # Fallback ya Supabase. TAZAMA: nywila hii ipo kwenye git history —
-    # ibadilishe Supabase na uihamishie kwenye DATABASE_URL ya Render.
+elif DEBUG:
+    #: Maendeleo bila `DATABASE_URL`: SQLite ndani ya folda ya mradi.
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres.vgosiffobeoohticeuro',
-            'PASSWORD': 'Nyumbachap@123',
-            'HOST': 'aws-0-eu-west-3.pooler.supabase.com',
-            'PORT': '5432',
-            'OPTIONS': {'sslmode': 'require'},  # hii inaruhusu SSL
-
-            # MUHIMU KWA KASI. Bila hii, Django inaunda muunganisho MPYA
-            # kwa kila ombi — na muunganisho wa Postgres wenye SSL
-            # kwenda Ulaya unachukua 150-300ms. Ukurasa wenye maswali 30
-            # ulikuwa ukilipia gharama hiyo kabla hata swali la kwanza
-            # halijafika.
-            #
-            # Njia ya DATABASE_URL ilikuwa nayo tayari (`conn_max_age=600`);
-            # fallback hii — ndiyo inayotumika Render — haikuwa nayo.
-            'CONN_MAX_AGE': 600,
-            'CONN_HEALTH_CHECKS': True,
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+else:
+    #: Hapa palikuwa na nywila halisi ya Supabase iliyoandikwa wazi —
+    #: pamoja na mwenyeji na mtumiaji. Supabase pooler inafikika kutoka
+    #: mtandao wowote, kwa hiyo yeyote mwenye nakala ya msimbo huu
+    #: alikuwa na uwezo wa kusoma NA kuandika kwenye database halisi:
+    #: namba za vitambulisho, simu, anwani na leja nzima.
+    #:
+    #: Imeondolewa. Production sasa INALAZIMIKA kuwa na `DATABASE_URL`,
+    #: na ikikosekana mfumo unasimama kwa sauti badala ya kuunganisha
+    #: kimya kimya kwenye database ya mtu mwingine.
+    #:
+    #: MUHIMU: nywila iliyokuwa hapa ipo kwenye historia ya git.
+    #: Ibadilishe Supabase, si kuiondoa hapa tu.
+    raise RuntimeError(
+        "DATABASE_URL haijawekwa. Weka DATABASE_URL kwenye environment "
+        "variables za Render (Supabase -> Connection string -> URI)."
+    )
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -200,15 +216,32 @@ if not DEBUG:
     SESSION_EXPIRE_AT_BROWSER_CLOSE = False
     SESSION_COOKIE_AGE = 60 * 60 * 8        # saa 8
 
-    CSRF_TRUSTED_ORIGINS = [
-        f"https://{h.lstrip('.')}" for h in ALLOWED_HOSTS if h not in ("*", "")
-    ] + ["https://*.onrender.com"]
+    #: `https://*.onrender.com` ilikuwa imewekwa daima. Render ni
+    #: mwenyeji wa pamoja — yaani programu YOYOTE ya bure ya Render
+    #: ilikuwa asili inayoaminika kwa CSRF, na ingeweza kutuma POST
+    #: kwenye `/maombi/<pk>/approve/` au `/malipo/<pk>/confirm/`.
+    #: Sasa `*.onrender.com` inaingia tu ikiwa imeombwa kwa makusudi
+    #: kupitia `CSRF_TRUSTED_ORIGINS` ya environment.
+    CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(
+        [f"https://{h.lstrip('.')}" for h in ALLOWED_HOSTS if h not in ("*", "")]
+        + CSRF_TRUSTED_ORIGINS))
 
 # Onyo la mapema: SECRET_KEY ya mfano isitumike production
-if not DEBUG and SECRET_KEY.startswith("django-insecure-"):
+if not DEBUG and (SECRET_KEY == _DEV_SECRET
+                  or SECRET_KEY.startswith("django-insecure-")
+                  or len(SECRET_KEY) < 32):
     raise RuntimeError(
-        "SECRET_KEY ya mfano haiwezi kutumika production. "
-        "Weka SECRET_KEY halisi kwenye environment variables."
+        "SECRET_KEY ya mfano (au fupi mno) haiwezi kutumika production. "
+        "Weka SECRET_KEY halisi ya herufi 50+ kwenye environment variables."
+    )
+
+#: `ALLOWED_HOSTS` tupu kwenye production inamaanisha Django inakataa
+#: kila ombi kwa DisallowedHost — tovuti inaonekana imekufa bila sababu
+#: yoyote inayoeleweka kwenye log. Bora kusimama hapa na maelezo.
+if not DEBUG and not ALLOWED_HOSTS:
+    raise RuntimeError(
+        "ALLOWED_HOSTS haijawekwa. Weka majina ya tovuti yako kwenye "
+        "environment, mfano: ALLOWED_HOSTS=muwesta.or.tz,www.muwesta.or.tz"
     )
 
 

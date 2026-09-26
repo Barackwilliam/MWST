@@ -365,16 +365,25 @@ def send_application_approved(phone, reference, amount, url):
     return send(phone, text, reference="ombi-limehakikiwa")
 
 
-def send_membership_ready(phone, membership_no):
+def send_membership_ready(phone, membership_no, setup_url=""):
     """
     Malipo yamethibitishwa — uanachama umeanza.
 
-    NENOSIRI HALIPELEKWI kwa SMS. SMS haifutiki kwenye simu, na simu
-    hupotea au hukopeshwa. Afisa ndiye anayempa nenosiri la muda ana kwa
-    ana au kwa simu.
+    NENOSIRI LENYEWE HALIPELEKWI kwa SMS. SMS haifutiki kwenye simu, na
+    simu hupotea au hukopeshwa. Kinachopelekwa ni KIUNGO cha kuweka
+    nenosiri, ambacho hufa mara linapowekwa.
+
+    Awali ujumbe huu ulisema "wasiliana na afisa upate taarifa za
+    kuingia". Afisa hakuwa na taarifa hizo: nenosiri la muda
+    lilitengenezwa ndani ya callback ya Pesapal na kupotea nayo. Hakuna
+    mtu aliyeweza kuingia kwenye akaunti hiyo.
     """
-    text = (f"MUWESTA: Karibu! Uanachama wako umeanza. Namba yako: "
-            f"{membership_no}. Wasiliana na afisa upate taarifa za kuingia.")
+    if setup_url:
+        text = (f"MUWESTA: Karibu! Uanachama wako umeanza. Namba yako: "
+                f"{membership_no}. Weka nenosiri lako hapa: {setup_url}")
+    else:
+        text = (f"MUWESTA: Karibu! Uanachama wako umeanza. Namba yako: "
+                f"{membership_no}. Wasiliana na afisa upate taarifa za kuingia.")
     return send(phone, text, reference="uanachama-tayari")
 
 

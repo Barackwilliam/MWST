@@ -150,17 +150,17 @@ def dashboard(user):
         bila = sum(1 for r in rows if r["no_leader"])
         mbaya = max(rows, key=lambda r: r["cases"], default=None)
         ctx["kpis"] = [
-            _kpi(f"Maeneo Yangu", len(rows), "map-pin", "navy",
+            _kpi("Maeneo Yangu", len(rows), "map-pin", "navy",
                  bd["level_name"] if bd else ""),
             _kpi("Wanachama Wote", jumla, "users", "green",
-                 f"Hai: {hai}"),
+                 _("Hai: %(n)s") % {"n": hai}),
             _kpi("Hawana Kiongozi", bila, "user-plus",
                  "red" if bila else "green",
                  "Matatizo yao yanakuja kwako"),
             _kpi("Hawajalipa", kuisha, "clock", "gold" if kuisha else "green",
                  "Kwenye maeneo yako yote"),
             _kpi("Matatizo Kwangu", wazi, "alert", "gold" if wazi else "green",
-                 f"Ya haraka: {haraka}"),
+                 _("Ya haraka: %(n)s") % {"n": haraka}),
         ]
         ctx["worst"] = mbaya if mbaya and mbaya["cases"] else None
         ctx["recent_members"] = []
@@ -264,6 +264,27 @@ def member_broadcasts(member, limit=20):
         if member.region.zone_id:
             q |= Q(level=LeaderLevel.ZONE, zone_id=member.region.zone_id)
     return Broadcast.objects.filter(q).select_related("sender").order_by("-created_at")[:limit]
+
+
+def can_see_thread(user, thread):
+    """
+    Je, kiongozi huyu anaruhusiwa kufungua mazungumzo haya?
+
+    ORODHA ilikuwa imechujwa kwa ngazi (`threads_for_leader` hapa chini),
+    lakini UKURASA WA MAZUNGUMZO MOJA haukuwa — ulikagua eneo pekee.
+    Kwa hiyo mwenyekiti wa kata angeweza kupitia `?pk=` na kusoma —
+    hata kujibu ndani ya — mazungumzo ambayo mwanachama wa kata yake
+    alifungua na UONGOZI WA TAIFA. Mara nyingi mazungumzo hayo ni
+    malalamiko dhidi ya mwenyekiti huyo huyo.
+    """
+    from geo.scope import can_see_member
+
+    if not can_see_member(user, thread.member):
+        return False
+    if sees_everyone(user):
+        post = leader_area(user)
+        return thread.level == (post.level if post else LeaderLevel.NATIONAL)
+    return thread.level in {p.level for p in active_posts(user)}
 
 
 def threads_for_leader(user, limit=50):
@@ -567,7 +588,7 @@ def michango_rows(user, limit=150):
         "member", "fund").exclude(member__isnull=True))
     return [{
         "receipt": c.receipt_no, "member": c.member.full_name if c.member else "—",
-        "amount": int(c.amount), "fund": c.fund.name if c.fund else "—",
+        "amount": int(c.amount), "fund": c.fund.tx("name") if c.fund else "—",
         "purpose": c.get_purpose_display() if hasattr(c, "get_purpose_display") else c.purpose,
         "status": c.get_status_display(), "badge":
             {"confirmed": "ok", "pending": "warn"}.get(c.status, "muted"),

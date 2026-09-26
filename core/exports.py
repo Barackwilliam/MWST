@@ -11,6 +11,25 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 
+#: Herufi ambazo Excel na LibreOffice huzitafsiri kama mwanzo wa fomula.
+_FORMULA_START = ("=", "+", "-", "@", "\t", "\r")
+
+
+def _safe(value):
+    """
+    Zuia fomula kujipenyeza kwenye CSV.
+
+    Mwanachama anaweza kuandika jina lake kama
+    `=HYPERLINK("http://...", "bofya")`. Excel haioni maandishi \u2014 inaona
+    fomula, na inaitekeleza pale afisa anapofungua ripoti. Kuweka
+    apostrofi mbele kunaifanya Excel iione kama maandishi, na apostrofi
+    hiyo haionekani kwenye seli.
+    """
+    if isinstance(value, str) and value.startswith(_FORMULA_START):
+        return "'" + value
+    return value
+
+
 def csv_response(filename, headers, rows):
     """Tengeneza faili ya CSV inayoweza kupakuliwa."""
     stamp = timezone.localdate().strftime("%Y%m%d")
@@ -20,7 +39,7 @@ def csv_response(filename, headers, rows):
     writer = csv.writer(response)
     writer.writerow(headers)
     for row in rows:
-        writer.writerow(row)
+        writer.writerow([_safe(c) for c in row])
     return response
 
 

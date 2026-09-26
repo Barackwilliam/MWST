@@ -9,7 +9,10 @@
   <div class="section__head reveal">
     <span class="section__eyebrow">{% trans "Maeneo" %}</span>
     {% include "public/_ornament.html" %}
-    <h2 class="section__title">{% trans "Maeneo Sita ya Huduma" %}</h2>
+    {% comment %}Kichwa kilisema "Sita" wakati gridi iliyo chini yake
+    inazunguka jedwali lenye idadi yoyote. Ofisi ikiongeza huduma ya
+    saba, kichwa kingekuwa uongo.{% endcomment %}
+    <h2 class="section__title">{% blocktrans count n=services|length %}Eneo {{ n }} la Huduma{% plural %}Maeneo {{ n }} ya Huduma{% endblocktrans %}</h2>
   </div>
   <div class="tabs" data-tabs="#svc-grid">
     {% for f in filters %}
@@ -23,7 +26,9 @@
         <span class="feature__inner">
           <span class="feature__ico feature__ico--float tint-{{ s.tint }}"><svg><use href="#i-{{ s.icon }}"></use></svg></span>
           <h4>{{ s.title|tr }}</h4><p>{{ s.text|tr }}</p>
-          <span class="badge badge--ok" style="margin-top:12px">{{ s.stats|tr }}</span>
+          {% comment %}Beji hii ilikuwa ikionyeshwa daima, hata ikiwa
+          tupu. Sasa inatokea tu ikiwa kuna takwimu halisi.{% endcomment %}
+          {% if s.stats %}<span class="badge badge--ok" style="margin-top:12px">{{ s.stats|tr }}</span>{% endif %}
         </span>
       </article>
     {% endfor %}

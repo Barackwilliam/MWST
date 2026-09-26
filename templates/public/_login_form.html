@@ -1,0 +1,96 @@
+{% load i18n mwst_tags %}
+{% comment %}Fomu ya kuingia. Inatumiwa na milango yote miwili —
+`login.html` (wanachama) na `login_uongozi.html` (viongozi). Ulinzi,
+uwanja na hatua ni vile vile pande zote; kinachotofautiana ni nembo,
+maneno na viungo, ambavyo vipo kwenye kiolezo kinachoiita.
+
+Muktadha unaohitajika unatoka `_login_ctx(request, door)`.{% endcomment %}
+<form method="post" novalidate>
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ next }}">
+
+  {# --- 1. Chagua jukumu --- #}
+  <div class="auth__step">
+    <span class="auth__stepnum">1</span>
+    <span class="auth__steptext">{% trans "Chagua Jukumu Lako" %}</span>
+  </div>
+
+  <div class="rolepick">
+    {% for r in login_roles %}
+      <label class="rolepick__item{% if r.key == active_role %} is-on{% endif %}"
+             data-hint="{{ r.hint|tr }}">
+        <input type="radio" name="as" value="{{ r.key }}"
+               {% if r.key == active_role %}checked{% endif %}>
+        <span class="rolepick__tick"><svg width="12" height="12"><use href="#i-check"></use></svg></span>
+        <span class="rolepick__ico tint-{{ r.tint }}"><svg><use href="#i-{{ r.icon }}"></use></svg></span>
+        <span class="rolepick__label">{{ r.label|tr }}</span>
+      </label>
+    {% endfor %}
+  </div>
+  <p class="rolepick__hint" data-role-hint>{{ role_hint }}</p>
+
+  {# --- 2. Ingia --- #}
+  <div class="auth__step">
+    <span class="auth__stepnum">2</span>
+    <span class="auth__steptext">{% trans "Ingia" %}</span>
+  </div>
+
+  {% if form.non_field_errors %}
+    <div class="formerr">
+      <svg width="15" height="15"><use href="#i-alert"></use></svg>
+      <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+    </div>
+  {% endif %}
+
+  <div class="field" data-ident
+       data-staff-label="{{ ident_staff.label }}"
+       data-staff-ph="{{ ident_staff.placeholder }}"
+       data-staff-hint="{{ ident_staff.hint }}"
+       data-staff-icon="{{ ident_staff.icon }}"
+       data-public-label="{{ ident_public.label }}"
+       data-public-ph="{{ ident_public.placeholder }}"
+       data-public-hint="{{ ident_public.hint }}"
+       data-public-icon="{{ ident_public.icon }}">
+    {% comment %}Uwanja huu hubadilika kufuata jukumu lililochaguliwa hapo juu:
+    maafisa huingia kwa jina la mtumiaji, wanachama, wahisani na viongozi
+    wa kuchaguliwa kwa namba ya uanachama au barua pepe. Seva hutoa maneno
+    ya jukumu la sasa; JavaScript hubadilisha pale mtu anapobofya jukumu
+    lingine. Bila JavaScript, uwanja bado unafanya kazi.{% endcomment %}
+    <label class="field__label" for="id_username" data-ident-label>
+      {{ ident.label }}
+    </label>
+    <span class="authfield">
+      <svg width="17" height="17"><use href="#i-{{ ident.icon }}" data-ident-icon></use></svg>
+      <input type="text" name="username" id="id_username" required autofocus
+             autocapitalize="none" autocorrect="off" spellcheck="false"
+             autocomplete="{{ ident.autocomplete }}"
+             value="{{ username_value|default:'' }}"
+             placeholder="{{ ident.placeholder }}" data-ident-input>
+    </span>
+    <small class="field__hint" data-ident-hint>{{ ident.hint }}</small>
+  </div>
+
+  <div class="field">
+    <label class="field__label" for="id_password">{% trans "Nenosiri" %}</label>
+    <span class="authfield">
+      <svg width="17" height="17"><use href="#i-lock"></use></svg>
+      <input type="password" name="password" id="id_password" required
+             autocomplete="current-password"
+             placeholder="{% trans 'Weka nenosiri lako' %}">
+      <button type="button" data-toggle-pw aria-label="{% trans 'Onyesha nenosiri' %}">
+        <svg width="17" height="17"><use href="#i-eye"></use></svg>
+      </button>
+    </span>
+  </div>
+
+  <div class="auth__row">
+    <label class="checkline">
+      <input type="checkbox" name="remember" value="1"> <span>{% trans "Kumbuka Mimi" %}</span>
+    </label>
+    <a href="{% url 'core:password_reset' %}">{% trans "Umesahau nywila?" %}</a>
+  </div>
+
+  <button type="submit" class="btn btn--primary btn--block auth__submit">
+    <svg><use href="#i-lock"></use></svg> {% trans "INGIA" %}
+  </button>
+</form>

@@ -38,10 +38,13 @@
 
           <div class="dcard__left">
             <div class="dcard__brand">
-              <b>MUWESTA</b>
+              <b>{{ org_short }}</b>
             </div>
-            <div class="dcard__org">{% trans "Muslim Welfare Society of Tanzania" %}</div>
-            <div class="dcard__tagline">{% trans "Imani kwa Vitendo, Huduma na Maendeleo kwa Binadamu" %}</div>
+            {% comment %}Jina na kauli mbiu zinatoka SiteSetting. Zilikuwa
+            zimeandikwa hapa, kwa hiyo ofisi ikibadilisha kauli mbiu, kadi
+            ya kidijitali ya mwanachama ilibaki na ya zamani.{% endcomment %}
+            <div class="dcard__org">{{ org_name }}</div>
+            <div class="dcard__tagline">{{ org_tagline }}</div>
 
             <div class="dcard__fields">
               <div>
@@ -151,7 +154,7 @@
             <div style="font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px">
               <svg width="13" height="13" style="color:var(--gold-500)"><use href="#i-star"></use></svg>{% trans "Pointi Zako Sasa" %}</div>
             <b style="display:block;font-size:30px;font-weight:700;letter-spacing:-.03em;margin:6px 0 2px" class="num">{{ points.current }}</b>
-            <span style="font-size:11.5px;color:var(--muted)">{% trans "Pointi za MUWESTA" %}</span>
+            <span style="font-size:11.5px;color:var(--muted)">{% blocktrans %}Pointi za {{ org_short }}{% endblocktrans %}</span>
             <div style="margin-top:10px;font-size:11.5px;color:var(--muted)">{% trans "Pointi Ulizopata Mwezi Huu" %}</div>
             <b style="color:var(--ok);font-size:16px">{{ points.earned_this_month }} <svg width="12" height="12"><use href="#i-arrow-up"></use></svg></b>
           </div>

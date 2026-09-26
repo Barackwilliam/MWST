@@ -36,7 +36,7 @@
               {% trans "Kitambulisho (NIDA), barua pepe na picha — si lazima sasa" %}</span>
           </div>
           <span class="reqbox__note">
-            {% trans "Lazima uwe na umri wa miaka 18 au zaidi. Malipo ya ada yatafanyika baada ya ombi lako kuidhinishwa — usilipe chochote sasa." %}
+            {% blocktrans with n=min_age %}Lazima uwe na umri wa miaka {{ n }} au zaidi. Malipo ya ada yatafanyika baada ya ombi lako kuidhinishwa — usilipe chochote sasa.{% endblocktrans %}
           </span>
         </div>
 

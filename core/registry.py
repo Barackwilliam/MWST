@@ -21,6 +21,19 @@ from accounts.models import Role
 ADMINS = [Role.SUPER_ADMIN, Role.ADMIN]
 ADMINS_PLUS = ADMINS + [Role.MANAGEMENT]
 
+#: Majukumu yanayoruhusiwa kugusa fedha na kadi.
+#:
+#: `allowed()` hurudisha True kwa kipengele KISICHO na `roles` — na
+#: vipengele 26 kati ya 34 havikuwa navyo. Matokeo: afisa wa usajili
+#: angeweza kuingia `/mfumo/matumizi/mpya/` na kuandika matumizi dhidi
+#: ya mfuko wa Zaka, au kujitengenezea kadi ya uanachama. Matrix ya
+#: ruhusa iliyo kwenye `management/commands/ruhusa.py` ilikuwa sahihi,
+#: lakini paneli hii haikuwa ikiisoma kabisa.
+MONEY = ADMINS_PLUS + [Role.FINANCE, Role.CONTRIBUTIONS]
+REG = ADMINS_PLUS + [Role.REGISTRATION]
+OUTREACH = ADMINS_PLUS + [Role.OUTREACH, Role.CONTRIBUTIONS]
+WELFARE = ADMINS_PLUS + [Role.WELFARE]
+
 REGISTRY = {
     # ---------------- Uanachama ----------------
     "kategoria": {
@@ -43,12 +56,14 @@ REGISTRY = {
         "fields": ["member", "issued_on", "expires_on", "is_active", "printed"],
         "search": ["serial", "member__full_name", "member__membership_no"],
         "filters": ["is_active", "printed"],
+        "roles": REG,
     },
     "familia": {
         "model": "members.FamilyMember", "label": "Wanafamilia", "group": "Uanachama",
         "icon": "users", "columns": [("full_name", "Jina"), ("member", "Mwanachama"),
                                      ("relationship", "Uhusiano"), ("phone", "Simu")],
         "search": ["full_name", "member__full_name"],
+        "roles": REG,
     },
     "wanufaika": {
         "model": "members.Beneficiary", "label": "Wanufaika", "group": "Uanachama",
@@ -56,6 +71,7 @@ REGISTRY = {
                                      ("relationship", "Uhusiano"),
                                      ("percentage_share", "Asilimia")],
         "search": ["full_name", "member__full_name"],
+        "roles": WELFARE,
     },
 
     # ---------------- Fedha ----------------
@@ -67,6 +83,14 @@ REGISTRY = {
         "fields": ["name", "name_en", "code", "is_restricted", "colour", "icon",
                    "annual_target", "order"],
         "search": ["name", "code"], "roles": ADMINS,
+    },
+    "viwango-fedha": {
+        "model": "finance.ExchangeRate", "label": "Viwango vya Fedha", "group": "Fedha",
+        "icon": "coins", "columns": [("code", "Fedha"), ("name", "Jina"),
+                                     ("rate", "TZS kwa kipimo"), ("is_active", "Hai")],
+        "fields": ["code", "name", "symbol", "rate", "is_active", "order"],
+        "search": ["code", "name"],
+        "roles": MONEY,
     },
     "leja": {
         "model": "finance.LedgerEntry", "label": "Leja", "group": "Fedha",
@@ -82,6 +106,7 @@ REGISTRY = {
                                     ("project", "Mradi")],
         "fields": ["fund", "project", "title", "amount", "spent_on"],
         "search": ["title"], "filters": ["fund"],
+        "roles": MONEY,
     },
     "miradi": {
         "model": "finance.Project", "label": "Miradi", "group": "Fedha",
@@ -90,6 +115,7 @@ REGISTRY = {
         "fields": ["title", "title_en", "summary", "summary_en", "region", "status",
                    "target_amount", "scene", "start_date", "end_date"],
         "search": ["title"], "filters": ["status", "region"],
+        "roles": MONEY,
     },
     "kampeni": {
         "model": "finance.Campaign", "label": "Kampeni", "group": "Fedha",
@@ -99,6 +125,7 @@ REGISTRY = {
         "fields": ["title", "title_en", "summary", "summary_en", "fund", "project",
                    "target_amount", "start_date", "end_date", "scene", "is_active"],
         "search": ["title"], "filters": ["is_active"],
+        "roles": OUTREACH,
     },
     "wahisani": {
         "model": "finance.Donor", "label": "Wahisani na Wadau", "group": "Fedha",
@@ -108,6 +135,7 @@ REGISTRY = {
         "fields": ["name", "donor_type", "member", "region", "country", "phone",
                    "email", "is_partner", "is_active"],
         "search": ["name", "email", "phone"], "filters": ["donor_type", "is_partner"],
+        "roles": OUTREACH,
     },
 
     # ---------------- Programu ----------------
@@ -125,6 +153,7 @@ REGISTRY = {
         "columns": [("awarded_on", "Tarehe"), ("member", "Mwanachama"),
                     ("points", "Pointi"), ("reason", "Sababu"), ("source", "Chanzo")],
         "search": ["member__full_name", "reason", "source"],
+        "roles": MONEY,
     },
     "tuzo": {
         "model": "programs.Reward", "label": "Tuzo", "group": "Programu",
@@ -133,17 +162,20 @@ REGISTRY = {
         "fields": ["title", "title_en", "description", "description_en",
                    "points_required", "is_active"],
         "search": ["title"],
+        "roles": ADMINS_PLUS,
     },
     "aina-msaada": {
         "model": "programs.AssistanceType", "label": "Aina za Msaada", "group": "Programu",
         "icon": "hand-heart", "columns": [("name", "Jina"), ("icon", "Ikoni")],
         "fields": ["name", "name_en", "icon"], "search": ["name"],
+        "roles": WELFARE,
     },
     "aina-matukio": {
         "model": "programs.EventType", "label": "Aina za Matukio", "group": "Programu",
         "icon": "calendar", "columns": [("name", "Jina"), ("slug", "Msimbo"),
                                         ("scene", "Mchoro")],
         "fields": ["name", "name_en", "slug", "colour", "scene"], "search": ["name"],
+        "roles": ADMINS_PLUS,
     },
     "matukio": {
         "model": "programs.Event", "label": "Matukio", "group": "Programu",
@@ -179,6 +211,7 @@ REGISTRY = {
         "model": "content.NewsCategory", "label": "Kategoria za Habari", "group": "Maudhui",
         "icon": "folder", "columns": [("name", "Jina"), ("slug", "Msimbo")],
         "fields": ["name", "name_en", "slug"], "search": ["name"],
+        "roles": ADMINS_PLUS,
     },
     "matangazo": {
         "model": "content.Announcement", "label": "Matangazo", "group": "Maudhui",
@@ -193,6 +226,7 @@ REGISTRY = {
         "icon": "folder", "columns": [("name", "Jina"), ("scene", "Mchoro"),
                                       ("is_public", "Hadharani")],
         "fields": ["name", "name_en", "scene", "is_public"], "search": ["name"],
+        "roles": ADMINS_PLUS,
     },
     "media": {
         "model": "content.MediaItem", "label": "Picha na Video", "group": "Maudhui",
@@ -211,6 +245,7 @@ REGISTRY = {
                    "stats_line_en", "icon", "tint", "scene", "category", "order",
                    "is_active"],
         "search": ["title"],
+        "roles": ADMINS_PLUS,
     },
     "maswali": {
         "model": "content.Faq", "label": "Maswali Yanayoulizwa", "group": "Maudhui",
@@ -219,6 +254,7 @@ REGISTRY = {
         "fields": ["question", "question_en", "answer", "answer_en", "page",
                    "order", "is_active"],
         "search": ["question"], "filters": ["page"],
+        "roles": ADMINS_PLUS,
     },
     "viongozi": {
         "model": "content.Leader", "label": "Viongozi", "group": "Maudhui",
@@ -226,6 +262,7 @@ REGISTRY = {
                                     ("order", "Mpangilio"), ("is_active", "Hai")],
         "fields": ["full_name", "role", "role_en", "photo", "order", "is_active"],
         "search": ["full_name"],
+        "roles": ADMINS_PLUS,
     },
     "historia": {
         "model": "content.Milestone", "label": "Historia ya MUWESTA", "group": "Maudhui",
@@ -233,6 +270,7 @@ REGISTRY = {
                                      ("order", "Mpangilio")],
         "fields": ["year", "title", "title_en", "body", "body_en", "order"],
         "search": ["title", "year"],
+        "roles": ADMINS_PLUS,
     },
     "nguzo": {
         "model": "content.Pillar", "label": "Dira, Dhamira na Maadili", "group": "Maudhui",
@@ -240,16 +278,29 @@ REGISTRY = {
                                       ("order", "Mpangilio")],
         "fields": ["title", "title_en", "body", "body_en", "icon", "tint", "order"],
         "search": ["title"],
+        "roles": ADMINS_PLUS,
     },
     "aya": {
         "model": "content.Verse", "label": "Aya za Qur'an", "group": "Maudhui",
         "icon": "book", "columns": [("reference", "Rejea"), ("swahili", "Kiswahili"),
                                     ("is_active", "Hai"), ("order", "Mpangilio")],
-        "fields": ["arabic", "swahili", "swahili_en", "reference", "is_active", "order"],
+        "fields": ["arabic", "swahili", "swahili_en", "reference", "slot", "scene",
+                   "is_active", "order"],
         "search": ["reference", "swahili"],
+        "filters": ["slot"],
+        "roles": ADMINS_PLUS,
     },
 
     # ---------------- Mawasiliano ----------------
+    "mawasiliano": {
+        "model": "content.ContactChannel", "label": "Namba za Mawasiliano",
+        "group": "Mawasiliano", "icon": "phone",
+        "columns": [("kind", "Aina"), ("label", "Idara"), ("value", "Namba/Barua pepe"),
+                    ("is_active", "Hai"), ("order", "Mpangilio")],
+        "fields": ["kind", "label", "label_en", "value", "is_active", "order"],
+        "search": ["label", "value"], "filters": ["kind"],
+        "roles": ADMINS_PLUS,
+    },
     "ujumbe-mawasiliano": {
         "model": "content.ContactMessage", "label": "Ujumbe wa Mawasiliano",
         "group": "Mawasiliano", "icon": "mail",
@@ -310,6 +361,32 @@ REGISTRY = {
         "fields": ["name", "region", "district", "address", "phone", "email",
                    "contact_person", "is_head_office"],
         "search": ["name", "address"], "filters": ["region"],
+        "roles": ADMINS_PLUS,
+    },
+    #: NYADHIFA HALISI ZA UONGOZI. Hazikuwa na ukurasa wowote kwenye
+    #: mfumo.
+    #:
+    #: `geo.Leadership` ndiyo inayoamua kila kitu kwenye `/uongozi/`:
+    #: nani anaona wanachama gani, nani anapokea tatizo gani, nani
+    #: anaweza kuthibitisha ada ya nani, na sasa pia ufinyu wa mikoa
+    #: kwenye paneli ya watumishi. Lakini "Viongozi" kwenye menyu
+    #: ilikuwa ikihariri `content.Leader` — orodha ya picha ya ukurasa
+    #: wa "Kuhusu Sisi", isiyotoa ruhusa yoyote. Kwa hiyo msimamizi
+    #: hakuwa na njia ya kumteua mwenyekiti wa kata ndani ya mfumo
+    #: wenyewe; ilihitaji Django admin, ambayo mfumo huu haitumii.
+    #: Ngazi zote tano zilikuwepo kwenye msimbo, hazikuwa na mlango.
+    "uongozi": {
+        "model": "geo.Leadership", "label": "Nyadhifa za Uongozi",
+        "group": "Jiografia", "icon": "shield",
+        "columns": [("user", "Mtumiaji"), ("get_level_display", "Ngazi"),
+                    ("get_post_display", "Wadhifa"), ("area_name", "Eneo"),
+                    ("started_on", "Ameanza"), ("ended_on", "Amemaliza"),
+                    ("is_active", "Hai")],
+        "fields": ["user", "level", "post", "zone", "region", "district",
+                   "ward", "started_on", "ended_on", "note"],
+        "search": ["user__username", "user__first_name", "user__last_name"],
+        "filters": ["level", "post"],
+        "roles": ADMINS_PLUS,
     },
 
     # ---------------- Mfumo ----------------

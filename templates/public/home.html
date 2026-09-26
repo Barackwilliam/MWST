@@ -145,48 +145,119 @@
     </a>
   </div>
   {% else %}
-  <div class="loginpanel reveal">
-    <h3>{% trans "Ingia kwenye Mfumo" %}</h3>
-    <p>{% trans "Access your account" %}</p>
+  {% comment %}Kadi ya kuingia ina hatua mbili.
 
-    <form method="post" action="{% url 'core:login' %}">
-    {% csrf_token %}
-        {% if form.non_field_errors %}
-          <div class="formerr">
-            <svg width="15" height="15"><use href="#i-alert"></use></svg>
-            <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+  HATUA 1: mtu anachagua yeye ni nani.
+  HATUA 2: fomu inayolingana na chaguo lake.
+
+  SABABU: mwanachama huingia kwa NAMBA YA UANACHAMA; kiongozi na afisa
+  huingia kwa JINA LA MTUMIAJI. Fomu moja yenye "Namba / Barua pepe /
+  Jina" iliwachanganya wote wawili. Sasa kila mmoja anaona kile
+  kinachomhusu.
+
+  Kitufe cha pili ni pana kwa makusudi — kinajumuisha viongozi wa ngazi
+  zote, maafisa wa makao makuu na waratibu. Wote hawa huingia kwa jina
+  la mtumiaji, kwa hiyo fomu yao ni ile ile.
+  {% endcomment %}
+  <div class="loginpanel loginpanel--wizard reveal" data-login>
+
+    {# ---------- Hatua 1: chagua ---------- #}
+    <div class="lw__step is-on" data-login-step="chagua">
+      <span class="lw__crest" aria-hidden="true">
+        <svg width="24" height="24"><use href="#i-shield"></use></svg>
+      </span>
+      <h3>{% trans "Ingia kwenye Mfumo" %}</h3>
+      <p class="lw__lead">{% trans "Chagua namna unavyoingia" %}</p>
+
+      <div class="lw__picks">
+        <button type="button" class="lwpick" data-login-go="mwanachama">
+          <span class="lwpick__ico lwpick__ico--green">
+            <svg width="20" height="20"><use href="#i-user"></use></svg>
+          </span>
+          <span class="lwpick__txt">
+            <b>{% trans "Ingia kama Mwanachama" %}</b>
+            <small>{% trans "Kadi, malipo, michango na pointi zako" %}</small>
+          </span>
+          <svg class="lwpick__go" width="16" height="16"><use href="#i-arrow-right"></use></svg>
+        </button>
+
+        <button type="button" class="lwpick" data-login-go="kiongozi">
+          <span class="lwpick__ico lwpick__ico--gold">
+            <svg width="20" height="20"><use href="#i-user-check"></use></svg>
+          </span>
+          <span class="lwpick__txt">
+            <b>{% trans "Ingia kama Kiongozi" %}</b>
+            <small>{% trans "Viongozi, maafisa na waratibu" %}</small>
+          </span>
+          <svg class="lwpick__go" width="16" height="16"><use href="#i-arrow-right"></use></svg>
+        </button>
+      </div>
+
+      <a class="lw__join" href="{% url 'core:jiunge' %}">
+        {% trans "Bado si mwanachama?" %} <b>{% trans "Jiunge sasa" %}</b>
+      </a>
+    </div>
+
+    {# ---------- Hatua 2: fomu ---------- #}
+    {% for f in login_forms %}
+      <div class="lw__step" data-login-step="{{ f.key }}">
+        <button type="button" class="lw__back" data-login-back>
+          <svg width="15" height="15"><use href="#i-arrow-right"></use></svg>
+          {% trans "Rudi" %}
+        </button>
+
+        <span class="lw__crest lw__crest--{{ f.tint }}" aria-hidden="true">
+          <svg width="22" height="22"><use href="#i-{{ f.icon }}"></use></svg>
+        </span>
+        <h3>{{ f.title }}</h3>
+        <p class="lw__lead">{{ f.lead }}</p>
+
+        {% comment %}Kila fomu inaelekea MLANGO WAKE. Mifumo ni miwili
+        tofauti: `core:login` kwa wanachama, `core:leader_login` kwa
+        viongozi na maafisa. Fomu zote kuelekea mlango mmoja kungemtupa
+        afisa mahali ambapo akaunti yake inakataliwa.{% endcomment %}
+        <form method="post" action="{{ f.action }}">
+          {% csrf_token %}
+          {% if form.non_field_errors %}
+            <div class="formerr">
+              <svg width="15" height="15"><use href="#i-alert"></use></svg>
+              <span>{% for e in form.non_field_errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</span>
+            </div>
+          {% endif %}
+
+          <label class="loginfield">
+            <svg width="16" height="16"><use href="#i-{{ f.icon }}"></use></svg>
+            <input type="text" name="username" required autocapitalize="none"
+                   autocorrect="off" spellcheck="false" autocomplete="username"
+                   placeholder="{{ f.placeholder }}">
+          </label>
+
+          <label class="loginfield">
+            <svg width="16" height="16"><use href="#i-lock"></use></svg>
+            <input type="password" name="password" required
+                   autocomplete="current-password" placeholder="{% trans 'Nenosiri' %}">
+            <button type="button" data-toggle-pw aria-label="{% trans 'Kuonyesha nenosiri' %}">
+              <svg width="16" height="16"><use href="#i-eye"></use></svg>
+            </button>
+          </label>
+
+          <div class="loginpanel__row">
+            <label><input type="checkbox" name="remember"
+                          style="accent-color:var(--gold-500)"> {% trans "Kumbuka mimi" %}</label>
+            <a href="/nenosiri/sahau/">{% trans "Umesahau nywila?" %}</a>
           </div>
-        {% endif %}
-            <label class="loginfield">
-      <svg width="16" height="16"><use href="#i-user"></use></svg>
-      <input type="text" name="username" required autocapitalize="none"
-           autocorrect="off" spellcheck="false" autocomplete="username" placeholder="{% trans 'Namba ya Uanachama / Barua pepe' %}">
-    </label>
-    <label class="loginfield">
-      <svg width="16" height="16"><use href="#i-lock"></use></svg>
-      <input type="password" name="password" required autocomplete="current-password" placeholder="{% trans 'Nenosiri' %}">
-      <button type="button" data-toggle-pw aria-label="{% trans 'Kuonyesha nenosiri' %}">
-        <svg width="16" height="16"><use href="#i-eye"></use></svg>
-      </button>
-    </label>
 
-    <div class="loginpanel__row">
-      <label><input type="checkbox" style="accent-color:var(--gold-500)"> {% trans "Kumbuka mimi" %}</label>
-      <a href="/nenosiri/sahau/">{% trans "Umesahau nywila?" %}</a>
-    </div>
+          <button type="submit" class="btn btn--gold btn--block">
+            <svg><use href="#i-arrow-right"></use></svg> {% trans "Ingia" %}
+          </button>
+        </form>
 
-    <button type="submit" class="btn btn--gold btn--block">{% trans "Ingia" %}</button>
-    </form>
-
-    <p class="loginpanel__sep">— {% trans "Au ingia kama" %} —</p>
-    <div class="rolegrid">
-      {% for r in roles %}
-        <a href="{{ r.url }}" class="rolebtn">
-          <span class="rolebtn__ico tint-{{ r.tint }}"><svg><use href="#i-{{ r.icon }}"></use></svg></span>
-          <span>{{ r.label|tr }}</span>
-        </a>
-      {% endfor %}
-    </div>
+        <p class="lw__hint">
+          <svg width="13" height="13"><use href="#i-info"></use></svg>
+          {{ f.hint }}
+        </p>
+      </div>
+    {% endfor %}
   </div>
   {% endif %}
 </section>

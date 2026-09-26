@@ -1318,16 +1318,71 @@ TERMS_EN = {
 # ---------------------------------------------------------------------------
 #  API
 # ---------------------------------------------------------------------------
+#: Miezi kwa Kiswahili, kwa tarehe ya kuanza kutumika.
+_MONTHS_SW = ["Januari", "Februari", "Machi", "Aprili", "Mei", "Juni",
+              "Julai", "Agosti", "Septemba", "Oktoba", "Novemba", "Desemba"]
+
+
+def _live_doc(doc, lang):
+    """
+    Weka taarifa halisi za shirika ndani ya hati ya kisheria.
+
+    Zilikuwa zimeandikwa hapa juu na zilikuwa na makosa mawili mazito
+    kwa hati inayofunga kisheria:
+
+      * `S.L.P. 0000, Dodoma` — anwani ya posta ya mfano
+      * `https://mwiso.onrender.com` — anwani ya majaribio ya Render,
+        iliyotajwa kama tovuti rasmi ya shirika
+
+    Tarehe ya kuanza kutumika (`effective`) nayo ilikuwa imeandikwa,
+    kwa hiyo kuisasisha kulihitaji deploy. Sasa vyote vinatoka
+    `SiteSetting`, ambayo ofisi inaihariri yenyewe.
+    """
+    from content.models import SiteSetting
+
+    en = str(lang).startswith("en")
+    st = SiteSetting.get()
+    out = dict(doc)
+
+    rows = []
+    for label, value in doc["contact"]["lines"]:
+        key = label.lower()
+        if key in ("jina", "name"):
+            value = f"{st.org_name} ({st.org_short})"
+        elif key.startswith(("anwani ya makazi", "physical")):
+            value = (st.address_en if en else st.address) or value
+        elif key.startswith(("anwani ya posta", "postal")):
+            if not st.po_box:
+                continue        # bora kuiacha kuliko kuchapisha S.L.P. 0000
+            value = st.po_box
+        elif key in ("simu", "telephone"):
+            value = st.phone or value
+        elif key in ("barua pepe", "email"):
+            value = st.email or value
+        elif key in ("tovuti", "website"):
+            if not st.website:
+                continue        # bora kuiacha kuliko kutaja anwani ya majaribio
+            value = st.website
+        rows.append((label, value))
+    out["contact"] = {**doc["contact"], "lines": rows}
+
+    d = st.legal_effective_on
+    if d:
+        out["effective"] = (d.strftime("%d %B %Y") if en
+                            else f"{d.day:02d} {_MONTHS_SW[d.month - 1]} {d.year}")
+    return out
+
+
 def privacy(lang="sw"):
     """Sera ya Faragha kwa lugha husika."""
-    return PRIVACY_EN if str(lang).startswith("en") else PRIVACY_SW
+    return _live_doc(PRIVACY_EN if str(lang).startswith("en") else PRIVACY_SW, lang)
 
 
 def cookies(lang="sw"):
     """Sera ya Vidakuzi kwa lugha husika."""
-    return COOKIES_EN if str(lang).startswith("en") else COOKIES_SW
+    return _live_doc(COOKIES_EN if str(lang).startswith("en") else COOKIES_SW, lang)
 
 
 def terms(lang="sw"):
     """Masharti ya Huduma kwa lugha husika."""
-    return TERMS_EN if str(lang).startswith("en") else TERMS_SW
+    return _live_doc(TERMS_EN if str(lang).startswith("en") else TERMS_SW, lang)

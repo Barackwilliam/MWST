@@ -3,6 +3,7 @@ import secrets
 
 from django.conf import settings
 from django.db import models, transaction
+from django.utils.crypto import constant_time_compare
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -138,6 +139,23 @@ class Member(TimeStamped):
             models.Index(fields=["ward"]),
             models.Index(fields=["district"]),
         ]
+        constraints = [
+            #: Ulinzi pekee dhidi ya kurudia ulikuwa `ApplicationForm`,
+            #: ambayo inarukwa na fomu ya afisa, na `Application.activate`
+            #: ambayo huunda `Member` moja kwa moja. Bila kizuizi kwenye
+            #: database, mwanachama mmoja angeweza kuwa na rekodi mbili —
+            #: na `_find_user`, inayotumia `.first()`, ingeanza
+            #: kumpeleka mtu kwenye rekodi isiyo yake.
+            models.UniqueConstraint(
+                fields=["national_id"], condition=~models.Q(national_id=""),
+                name="uniq_member_national_id"),
+            models.UniqueConstraint(
+                fields=["phone"], condition=~models.Q(phone=""),
+                name="uniq_member_phone"),
+            models.UniqueConstraint(
+                fields=["email"], condition=~models.Q(email=""),
+                name="uniq_member_email"),
+        ]
 
     def __str__(self):
         return f"{self.full_name} ({self.membership_no})"
@@ -224,6 +242,54 @@ class Member(TimeStamped):
         Card.issue(self, expires_on=self.expires_on)
         return self.expires_on
 
+    # -- Kuweka nenosiri mara ya kwanza ------------------------------------
+    @property
+    def setup_token(self):
+        """
+        Saini inayoruhusu mwanachama kuweka nenosiri lake mwenyewe.
+
+        SABABU: `activate()` hutengeneza nenosiri la muda, lakini huitwa
+        ndani ya signal ya malipo — yaani wakati Pesapal inapiga callback,
+        pasipo afisa yeyote mbele ya skrini. Nenosiri lile lilikuwa
+        linabaki kwenye kumbukumbu ya request ile na kupotea nayo:
+        halihifadhiwi kwenye database, halipelekwi kwa SMS, na ukurasa wa
+        asante ukisoma tena kutoka database unapata `None`. Matokeo:
+        mwanachama alilipa, akapata namba na kadi, akaambiwa "wasiliana na
+        afisa" — na afisa mwenyewe hakuwa na nenosiri la kumpa. Akaunti
+        ilibaki na nenosiri ambalo HAKUNA MTU anayelijua.
+
+        Nenosiri halipelekwi kwa SMS (SMS haifutiki, simu hukopeshwa);
+        kinachopelekwa ni kiungo hiki, na mwanachama anaweka nenosiri
+        lake mwenyewe.
+
+        Alama ya nenosiri la sasa (`user.password`) imo ndani ya saini,
+        kwa hiyo kiungo hufa chenyewe mara nenosiri linapowekwa —
+        hakihitaji tarehe ya mwisho wala rekodi ya ziada.
+        """
+        from django.utils.crypto import salted_hmac
+
+        seed = f"{self.pk}:{self.user.password if self.user_id else ''}"
+        return salted_hmac("mwst.member.setup", seed).hexdigest()[:32]
+
+    @classmethod
+    def by_setup_token(cls, membership_no, token):
+        """Mwanachama anayelingana na saini hii, au `None`."""
+        if not (membership_no and token):
+            return None
+        member = (cls.objects.select_related("user")
+                  .filter(membership_no__iexact=membership_no).first())
+        if member is None or member.user_id is None:
+            return None
+        if not constant_time_compare(token, member.setup_token):
+            return None
+        return member
+
+    def setup_path(self):
+        """Njia ya kuweka nenosiri, pamoja na saini yake."""
+        from urllib.parse import quote
+        return (f"/anza/?no={quote(self.membership_no)}"
+                f"&k={self.setup_token}")
+
     def create_login(self, password=None):
         """
         Tengeneza akaunti ya kuingia kwa mwanachama huyu.
@@ -298,6 +364,12 @@ class ApplicationStatus(models.TextChoices):
     APPROVED = "approved", _("Imepitishwa")
     REJECTED = "rejected", _("Imekataliwa")
 
+
+#: Umri wa chini wa kujiunga. Ulikuwa umeandikwa mara mbili: kwenye
+#: ukaguzi wa fomu (`core/forms.py`) na kwenye sentensi ya HTML
+#: (`jiunge.html`). Bodi ikiubadilisha, sentensi aliyoisoma mwombaji
+#: ingebaki ikisema namba ya zamani.
+MIN_JOIN_AGE = 18
 
 class Application(TimeStamped):
     """Ombi la uanachama kabla halijaidhinishwa."""
@@ -377,6 +449,36 @@ class Application(TimeStamped):
         return int(self.category.registration_fee or 0) + \
             giving.months_price(self.category.monthly_fee, months)
 
+    @property
+    def pay_token(self):
+        """
+        Saini fupi inayoruhusu kiungo cha malipo kufungua taarifa za ombi.
+
+        `/lipa/?ombi=APP/MUWESTA/2026/0007` peke yake ilikuwa inajaza
+        jina, simu na barua pepe ya mwombaji kwenye fomu. Namba za maombi
+        zinafuatana, kwa hiyo mtu angeweza kupitia 0001 hadi 9999 na
+        kuvuna taarifa binafsi za kila mwombaji. Sasa kiungo lazima kiwe
+        na saini hii, ambayo hutolewa kwenye SMS pekee.
+
+        `salted_hmac`, si `signing.dumps`: `dumps` huingiza MUDA ndani ya
+        saini, kwa hiyo saini ilibadilika kila sekunde. Kiungo
+        kilichotumwa kwa SMS kingeacha kufanya kazi mara moja, na
+        mwombaji angebaki na kiungo kisichofungua chochote.
+        """
+        from django.utils.crypto import salted_hmac
+
+        return salted_hmac("mwst.application.pay", self.reference).hexdigest()
+
+    @classmethod
+    def by_pay_token(cls, reference, token):
+        """Ombi linalolingana na saini hii, au `None`."""
+        if not (reference and token):
+            return None
+        app = cls.objects.filter(reference__iexact=reference).first()
+        if app is None or not constant_time_compare(token, app.pay_token):
+            return None
+        return app
+
     @transaction.atomic
     def approve(self, user=None):
         """
@@ -441,16 +543,25 @@ class Application(TimeStamped):
             self.reviewed_at = timezone.now()
         self.save(update_fields=["member", "status", "reviewed_at", "updated_at"])
 
-        # Mjulishe kwamba uanachama umeanza. NENOSIRI HALIPELEKWI kwa
-        # SMS — SMS haifutiki kwenye simu, na simu hupotea au
-        # hukopeshwa. Afisa ndiye anayempa nenosiri la muda.
+        # Mjulishe kwamba uanachama umeanza. NENOSIRI LENYEWE
+        # HALIPELEKWI kwa SMS — SMS haifutiki kwenye simu, na simu
+        # hupotea au hukopeshwa. Kinachopelekwa ni kiungo cha kuweka
+        # nenosiri lake mwenyewe (`setup_token`).
+        #
+        # Awali SMS hii haikuwa na kiungo, na nenosiri la muda
+        # lililotengenezwa hapa lilipotea pamoja na request ya callback.
+        # Mwanachama aliambiwa "wasiliana na afisa" kwa nenosiri ambalo
+        # afisa hakuwa nalo.
         #
         # SMS ikishindwa, uanachama unabaki ulivyo. Kutupa kosa hapa
         # kungerudisha nyuma (`atomic`) kila kitu — mtu angelipa,
         # asipate uanachama, kwa sababu mtandao ulikatika.
         try:
+            from django.conf import settings as _st
             from core import sms
-            sms.send_membership_ready(member.phone, member.membership_no)
+            sms.send_membership_ready(
+                member.phone, member.membership_no,
+                f"{getattr(_st, 'SITE_URL', '').rstrip('/')}{member.setup_path()}")
         except Exception:
             import logging
             logging.getLogger(__name__).exception(

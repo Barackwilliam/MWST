@@ -7,7 +7,7 @@ kimoja. Bei za uanachama HAZIPO hapa; zinatoka `members.Category`.
 `fund` ya kila aina ya mchango inaunganisha na `finance.Fund` iliyopo
 kwenye database. Ikikosekana, mfuko wa jumla unatumika.
 """
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 
 
 # ---------------------------------------------------------------------------
@@ -134,11 +134,16 @@ def recurrence_total(amount, key):
 
     Mtu anaingiza kiasi cha MWEZI MMOJA. Akichagua miezi 6, analipa
     mara sita, kasoro punguzo la asilimia 8.
+
+    Jumla inarudishwa kama `Decimal`, si `int`. Kukata desimali hapa
+    kulikuwa kunapoteza fedha kabla ya `to_tzs()` haijazidisha: $10.99
+    kwa miezi 3 na punguzo 5% ni $31.3215, ikakatwa kuwa $31, kisha
+    ikazidishwa kwa 2,615 — TZS 841 zikapotea kwa kila muamala.
     """
     spec = recurrence(key)
     gross = Decimal(str(amount or 0)) * spec["months"]
     net = gross * (Decimal(100) - Decimal(spec["discount"])) / Decimal(100)
-    return int(net)
+    return net.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 # ---------------------------------------------------------------------------
 #  Viwango vya haraka (TZS)
@@ -250,9 +255,9 @@ def is_soon(key):
 # ---------------------------------------------------------------------------
 #  Fedha
 #
-#  Viwango ni vya MFANO tu na havisasishwi. Vinatumika kubadilisha kiasi
-#  kwenda TZS ili kumbukumbu zote ziwe kwa sarafu moja. Ukiunganisha
-#  gateway halisi, chukua kiwango kutoka kwake badala ya hapa.
+#  Orodha hii ni ya KUANZIA tu. Viwango halisi vinatoka kwenye jedwali
+#  `finance.ExchangeRate`, ambalo mweka hazina anaweza kulisasisha.
+#  Hizi zinatumika pale tu jedwali likiwa tupu (mfano, kabla ya `seed`).
 # ---------------------------------------------------------------------------
 CURRENCIES = [
     {"code": "TZS", "name": "Tanzanian Shilling", "symbol": "TSh", "rate": 1},
@@ -311,13 +316,39 @@ def gateway_for(key):
     return spec.get("gateway", "") if spec else ""
 
 
+def currencies():
+    """
+    Fedha zinazokubalika, kutoka database.
+
+    Jedwali likiwa tupu tunarudi kwenye orodha ya kuanzia — tovuti
+    isisimame kwa sababu tu mtu hajaingiza viwango bado.
+    """
+    try:
+        from finance.models import ExchangeRate
+        rows = [{"code": r.code, "name": r.name, "symbol": r.symbol,
+                 "rate": r.rate}
+                for r in ExchangeRate.objects.filter(is_active=True)]
+    except Exception:           # database bado haijaandaliwa
+        rows = []
+    return rows or CURRENCIES
+
+
 def currency(code):
-    return _pick(CURRENCIES, "code", code) or CURRENCIES[0]
+    rows = currencies()
+    return _pick(rows, "code", code) or rows[0]
 
 
 def to_tzs(amount, code):
-    """Badilisha kiasi kwenda TZS kwa kiwango cha mfano."""
-    return (amount or 0) * currency(code)["rate"]
+    """
+    Badilisha kiasi kwenda TZS kwa kiwango kilichopo kwenye database.
+
+    Kumbuka: kiasi kilichorudishwa hapa ndicho kinachohifadhiwa kwenye
+    `Contribution.amount` NA ndicho kinachotumwa kwa mtoa huduma — kwa
+    hiyo mtoa huduma anapaswa kuambiwa "TZS", si fedha ya asili.
+    """
+    rate = Decimal(str(currency(code)["rate"]))
+    return (Decimal(str(amount or 0)) * rate).quantize(
+        Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
 # ---------------------------------------------------------------------------
@@ -396,13 +427,21 @@ def months_price(monthly_fee, months):
     """
     Bei ya miezi husika baada ya punguzo, imezungushwa hadi shilingi 100.
 
-    `monthly_fee` inatoka kwenye database kama `Decimal`, kwa hiyo tunaibadili
-    kuwa `float` kabla ya hesabu — Decimal na float hazichanganyiki.
+    Hesabu yote ni ya `Decimal`, si `float`. Toleo la awali lilibadilisha
+    kuwa `float` kisha likatumia `round()`, ambayo ni ya BANKER'S
+    ROUNDING — inazungusha .5 kwenda namba shufwa. Ada ya 5,000 kwa
+    miezi 3 (punguzo 5%) ilitoa 14,250; 142.5 ikazungushwa kuwa 142
+    badala ya 143, na bei ikawa 14,200. MUWESTA ilipoteza shilingi 50
+    kwa kila muamala wa aina hiyo, na namba iliyoonyeshwa kwenye
+    kivinjari (14,250) haikulingana na iliyolipishwa.
+
+    `ROUND_HALF_UP` ndiyo inayotarajiwa na mtu anayeangalia bei.
     """
     n = clamp_months(months)
-    gross = float(monthly_fee or 0) * n
-    net = gross * (100 - discount_for(n)) / 100.0
-    return int(round(net / 100.0) * 100)
+    gross = Decimal(str(monthly_fee or 0)) * n
+    net = gross * (Decimal(100) - Decimal(discount_for(n))) / Decimal(100)
+    hundreds = (net / Decimal(100)).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
+    return int(hundreds * 100)
 
 
 

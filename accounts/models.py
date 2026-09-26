@@ -29,7 +29,10 @@ ROLE_HOME = {
     Role.REGISTRATION: "core:usajili",
     Role.FINANCE: "core:malipo",
     Role.CONTRIBUTIONS: "core:michango",
-    Role.WELFARE: "core:national",
+    #: Afisa wa ustawi alikuwa akipelekwa `/taifa/` — dashibodi ya
+    #: mfumo mzima, yenye takwimu za fedha na usajili zisizomhusu.
+    #: Kazi yake ni maombi ya msaada, na ndiko anakoanzia sasa.
+    Role.WELFARE: "core:assistance_review",
     Role.OUTREACH: "core:wadau",
     Role.COORDINATOR: "core:coordinator",
     Role.MEMBER: "core:member_dashboard",

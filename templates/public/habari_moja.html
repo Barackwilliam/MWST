@@ -1,0 +1,62 @@
+{% extends "public/base.html" %}
+{% load i18n mwst_tags %}
+{% block title %}{{ item|tx:"title" }}{% endblock %}
+
+{% block body %}
+<section class="section">
+  <div class="anc__wrap">
+    <a href="{% url 'core:habari' %}" class="anc__back">
+      <svg width="15" height="15" style="transform:scaleX(-1)"><use href="#i-arrow-right"></use></svg>
+      {% trans "Habari zote" %}
+    </a>
+
+    <article class="anc reveal">
+      <header class="anc__head">
+        <div>
+          {% if item.category %}
+            <span class="badge badge--ok">{{ item.category|tx:"name" }}</span>
+          {% endif %}
+          <h1 class="anc__title">{{ item|tx:"title" }}</h1>
+          <span class="anc__meta">
+            <svg width="13" height="13" style="vertical-align:-1px"><use href="#i-calendar"></use></svg>
+            {{ item.published_on }}
+          </span>
+        </div>
+      </header>
+
+      {% if item.image %}
+        <img src="{{ item.image.url }}" alt="{{ item|tx:'title' }}" class="anc__img">
+      {% else %}
+        <span class="illus illus--wide">{% include "components/illus.html" with scene=item.scene %}</span>
+      {% endif %}
+
+      <div class="anc__body">
+        <p class="anc__lead">{{ item|tx:"summary" }}</p>
+        {% comment %}`body` ndiyo habari yenyewe. Ilikuwa ikihifadhiwa na
+        kuhaririwa, lakini haikuwa na ukurasa wa kuionyesha — kila
+        "Soma Zaidi" kilirudi kwenye orodha.{% endcomment %}
+        {% if item|tx:"body" %}
+          {{ item|tx:"body"|linebreaks }}
+        {% endif %}
+      </div>
+    </article>
+
+    {% if others %}
+      <div class="section__head" style="margin-top:42px">
+        <h3 class="section__title" style="font-size:19px">{% trans "Habari Nyingine" %}</h3>
+      </div>
+      <div class="grid grid--3">
+        {% for n in others %}
+          <a href="{% url 'core:habari_moja' n.id %}" class="card reveal">
+            <span class="illus illus--card">{% include "components/illus.html" with scene=n.scene %}</span>
+            <div class="card__body" style="padding:14px">
+              <h4 style="font-size:14px;font-weight:700;line-height:1.45">{{ n.title }}</h4>
+              <span class="rowlist__sub" style="margin-top:6px">{{ n.date }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

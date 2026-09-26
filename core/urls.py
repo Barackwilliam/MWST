@@ -4,6 +4,25 @@ from django.urls import path, reverse_lazy
 from . import views
 from . import leader_views as lv
 
+def _org_email_context():
+    """
+    Jina la shirika kwa barua pepe za mfumo.
+
+    `PasswordResetView` huunda barua pepe bila `request`, kwa hiyo
+    context processors HAZIENDESHI — ndiyo maana jina lilikuwa
+    limeandikwa ndani ya kiolezo. Thamani hapa ni za `lazy` kwa sababu
+    URLs hujengwa kabla database haijawa tayari.
+    """
+    from django.utils.functional import lazy
+
+    def _field(name):
+        from content.models import SiteSetting
+        return getattr(SiteSetting.get(), name, "")
+
+    text = lazy(_field, str)
+    return {"org_name": text("org_name"), "org_short": text("org_short")}
+
+
 urlpatterns = [
     # ---- Tovuti ya umma ----
     path("", views.home, name="home"),
@@ -11,6 +30,7 @@ urlpatterns = [
     path("uanachama/", views.uanachama, name="uanachama"),
     path("huduma/", views.huduma, name="huduma"),
     path("habari/", views.habari, name="habari"),
+    path("habari/<int:pk>/", views.habari_moja, name="habari_moja"),
     path("matukio-yetu/", views.matukio_umma, name="matukio_umma"),
     path("picha/", views.picha, name="picha"),
     path("mawasiliano/", views.mawasiliano, name="mawasiliano"),
@@ -38,7 +58,16 @@ urlpatterns = [
 
     # ---- Uthibitisho ----
     path("ingia/", views.login_view, name="login"),
+    #: Mlango wa viongozi — wa kuchaguliwa (kata hadi taifa) na maafisa
+    #: wa ofisi. Umetenganishwa na ule wa wanachama: fomu tofauti,
+    #: maneno tofauti, na kila mmoja humkatalia asiyemhusu kwa kumpa
+    #: kiungo cha mlango wake.
+    path("ingia/viongozi/", views.leader_login, name="leader_login"),
     path("toka/", views.logout_view, name="logout"),
+    #: Mwanachama mpya anaweka nenosiri lake mara ya kwanza. Kiungo
+    #: kinatoka kwenye SMS ya "uanachama umeanza"; bila ukurasa huu
+    #: akaunti ilibaki na nenosiri ambalo hakuna mtu analijua.
+    path("anza/", views.weka_nenosiri, name="weka_nenosiri"),
 
     # ---- Kurejesha nenosiri (views za Django) ----
     #: Hatua ya pili ya kuingia — code ya SMS.
@@ -75,9 +104,14 @@ urlpatterns = [
     path("mwanachama/viongozi/<str:level>/", lv.member_mazungumzo,
          name="member_mazungumzo"),
 
+    #: Barua pepe hii huundwa na `PasswordResetView`, si kwa `render()`,
+    #: kwa hiyo context processors HAZIENDESHI hapa. Jina la shirika
+    #: lilikuwa limeandikwa ndani ya kiolezo kwa sababu hiyo. Sasa
+    #: linapita kwa `extra_email_context`, na linatoka SiteSetting.
     path("nenosiri/sahau/", auth_views.PasswordResetView.as_view(
         template_name="public/password_reset.html",
         email_template_name="public/password_reset_email.txt",
+        extra_email_context=_org_email_context(),
         success_url=reverse_lazy("core:password_reset_done")),
         name="password_reset"),
     path("nenosiri/imetumwa/", auth_views.PasswordResetDoneView.as_view(

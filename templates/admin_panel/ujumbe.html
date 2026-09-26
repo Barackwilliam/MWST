@@ -6,7 +6,7 @@
   {% include "base/messages.html" %}
   <div class="pagehead">
     <div><h2>{% trans "Ujumbe kwa Wanachama" %}</h2>
-      <p>{% if zone %}{{ zone.name|tr }}{% else %}{% trans "Wanachama wote nchini" %}{% endif %}</p></div>
+      <p>{% if zone %}{{ zone|tx:"name" }}{% else %}{% trans "Wanachama wote nchini" %}{% endif %}</p></div>
   </div>
 
   <div class="grid grid--4">

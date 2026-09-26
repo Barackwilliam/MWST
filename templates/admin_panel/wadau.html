@@ -80,7 +80,12 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Michango ya Hivi Karibuni" %}</h3>
-        <a href="/michango/" class="link-more">{% trans "Tazama zote" %}</a>
+        {% comment %}`/michango/` ni ya maafisa wa fedha. Afisa wa wadau
+        anaona ukurasa huu lakini hana ruhusa ya daftari lote la
+        michango.{% endcomment %}
+        {% if can_see_contributions %}
+          <a href="/michango/" class="link-more">{% trans "Tazama zote" %}</a>
+        {% endif %}
       </div>
       <div class="card__body">
         <div class="rowlist">

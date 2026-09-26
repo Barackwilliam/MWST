@@ -2554,6 +2554,15 @@ img, picture, svg, video, canvas { max-width: 100%; }
   text-align: center; margin-top: 16px; font-size: 12.8px; color: var(--muted);
 }
 .auth__alt a, .auth__legal a { color: var(--g-600); font-weight: 600; }
+/* Mlango wa pili wa kuingia (wanachama <-> viongozi). Mstari wa juu
+   unatenganisha: si mwendelezo wa fomu, ni njia nyingine kabisa. */
+.auth__other {
+  margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line);
+  text-align: center;
+}
+.auth__otherlabel {
+  display: block; margin-bottom: 9px; font-size: 12.8px; color: var(--muted);
+}
 .auth__gift {
   display: flex; align-items: center; gap: 10px;
   padding: 12px 15px; margin-bottom: 20px; border-radius: var(--r-lg);
@@ -5923,3 +5932,111 @@ html { overflow-x: clip; }
 .gv__pay.is-soon { padding-block: 9px; opacity: .72; }
 .gv__pay.is-soon .gv__payico { transform: scale(.88); }
 .gv__pay.is-soon .gv__paytxt small { display: none; }
+
+/* ==========================================================================
+   KADI YA KUINGIA — HATUA MBILI
+   --------------------------------------------------------------------------
+   Hatua 1: mtu anachagua yeye ni nani.
+   Hatua 2: fomu inayolingana na chaguo lake.
+
+   Sababu ya kugawa: mwanachama huingia kwa NAMBA YA UANACHAMA, kiongozi
+   kwa JINA LA MTUMIAJI. Fomu moja yenye "Namba / Barua pepe / Jina"
+   iliwachanganya wote wawili, na milango yenyewe ni miwili tofauti.
+   ========================================================================== */
+.loginpanel--wizard { position: relative; overflow: hidden; }
+
+.lw__step { display: none; animation: lwIn .26s cubic-bezier(.22, 1, .36, 1); }
+.lw__step.is-on { display: block; }
+@keyframes lwIn {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* --- Nembo ya juu --- */
+.lw__crest {
+  width: 46px; height: 46px; margin: 0 auto 13px; border-radius: 15px;
+  display: grid; place-items: center; color: var(--gold-500);
+  background: rgba(255, 255, 255, .09);
+  border: 1px solid rgba(255, 255, 255, .14);
+}
+.lw__crest--green { color: #7ee2b8; }
+.lw__crest--gold  { color: var(--gold-500); }
+
+.lw__lead {
+  margin-top: 3px; font-size: 12.5px; line-height: 1.5;
+  color: rgba(255, 255, 255, .68);
+}
+
+/* --- Machaguo mawili --- */
+.lw__picks { display: grid; gap: 10px; margin: 20px 0 16px; }
+
+.lwpick {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 14px 15px; cursor: pointer; text-align: left;
+  border-radius: 15px; color: #fff;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .13);
+  transition: background .16s, border-color .16s, transform .16s;
+}
+.lwpick:hover {
+  background: rgba(255, 255, 255, .11);
+  border-color: rgba(255, 255, 255, .26);
+  transform: translateY(-2px);
+}
+.lwpick:active { transform: none; }
+
+.lwpick__ico {
+  width: 42px; height: 42px; flex: none; border-radius: 13px;
+  display: grid; place-items: center;
+}
+.lwpick__ico--green {
+  background: linear-gradient(150deg, #17a674, #0c563a); color: #fff;
+}
+.lwpick__ico--gold {
+  background: linear-gradient(150deg, var(--gold-500), #a8842a); color: #fff;
+}
+
+.lwpick__txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.lwpick__txt b { font-size: 13.5px; font-weight: 700; color: #fff; }
+.lwpick__txt small {
+  font-size: 11.5px; line-height: 1.45; color: rgba(255, 255, 255, .6);
+}
+.lwpick__go { flex: none; color: rgba(255, 255, 255, .45); transition: transform .16s, color .16s; }
+.lwpick:hover .lwpick__go { color: var(--gold-500); transform: translateX(3px); }
+
+/* --- Kiungo cha kujiunga --- */
+.lw__join {
+  display: block; text-align: center; padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  font-size: 12.5px; color: rgba(255, 255, 255, .62);
+}
+.lw__join b { color: var(--gold-500); }
+.lw__join:hover b { text-decoration: underline; text-underline-offset: 3px; }
+
+/* --- Kurudi --- */
+.lw__back {
+  position: absolute; top: 0; left: 0; z-index: 2;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 11px 6px 8px; cursor: pointer;
+  border-radius: var(--r-full); border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .78);
+  font-family: inherit; font-size: 11.5px; font-weight: 600;
+  transition: background .15s, color .15s;
+}
+.lw__back:hover { background: rgba(255, 255, 255, .14); color: #fff; }
+.lw__back svg { transform: rotate(180deg); }
+
+/* --- Dokezo chini ya fomu --- */
+.lw__hint {
+  display: flex; align-items: flex-start; gap: 7px; margin-top: 13px;
+  padding: 9px 11px; border-radius: 11px;
+  background: rgba(255, 255, 255, .05);
+  font-size: 11px; line-height: 1.5; color: rgba(255, 255, 255, .6);
+}
+.lw__hint svg { flex: none; margin-top: 2px; color: var(--gold-500); }
+
+@media (max-width: 560px) {
+  .lwpick { padding: 12px 13px; gap: 10px; }
+  .lwpick__ico { width: 38px; height: 38px; }
+  .lwpick:hover { transform: none; }
+}

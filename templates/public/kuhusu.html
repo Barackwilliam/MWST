@@ -100,11 +100,16 @@
 </section>
 
 <section class="section section--dark pat--gold">
-  <div class="ayah reveal" style="max-width:720px;margin:0 auto 34px;border-color:rgba(212,175,55,.35)">
-    <div class="ayah__ar">وَتَعَاوَنُوا۟ عَلَى ٱلْبِرِّ وَٱلتَّقْوَىٰ</div>
-    <div class="ayah__tr">{% trans "Na msaidiane katika heri na taqwa." %}</div>
-    <div class="ayah__ref">Al-Ma'idah: 2</div>
-  </div>
+  {% comment %}Aya inatoka jedwali la Aya (`/mfumo/aya/`). Ilikuwa
+  imeandikwa hapa ndani ya HTML, wakati jedwali lilikuwepo na
+  linahaririwa — kubadilisha pale hakukugusa ukurasa huu.{% endcomment %}
+  {% if verse %}
+    <div class="ayah reveal" style="max-width:720px;margin:0 auto 34px;border-color:rgba(212,175,55,.35)">
+      <div class="ayah__ar">{{ verse.arabic }}</div>
+      <div class="ayah__tr">{{ verse.swahili }}</div>
+      <div class="ayah__ref">{{ verse.reference }}</div>
+    </div>
+  {% endif %}
   <div class="counters">
     {% for c in counters %}
       <div class="reveal">
@@ -169,19 +174,16 @@
     {% include "public/_ornament.html" %}
     <h2 class="section__title">{% trans "Tunavyogusa Jamii" %}</h2>
   </div>
+  {% comment %}Kadi hizi zilikuwa zimeandikwa hapa — huduma tatu zenye
+  maelezo yao — wakati jedwali la Huduma lipo na linaonyeshwa
+  `/huduma/`. Ofisi ikiongeza huduma, ukurasa huu ulibaki nyuma.{% endcomment %}
   <div class="grid grid--3">
-    <a href="{% url 'core:huduma' %}" class="arch-card reveal">
-      <span class="illus illus--tall"><span class="illus__cap">{% trans "Elimu na Mafunzo" %}</span>{% include "components/illus.html" with scene="elimu" %}</span>
-      <span class="arch-card__body"><span class="arch-card__text">{% trans "Ufadhili wa masomo na mafunzo ya ufundi kwa vijana." %}</span></span>
-    </a>
-    <a href="{% url 'core:huduma' %}" class="arch-card reveal">
-      <span class="illus illus--tall"><span class="illus__cap">{% trans "Huduma za Afya" %}</span>{% include "components/illus.html" with scene="afya" %}</span>
-      <span class="arch-card__body"><span class="arch-card__text">{% trans "Kambi za afya bure na msaada wa matibabu." %}</span></span>
-    </a>
-    <a href="{% url 'core:huduma' %}" class="arch-card reveal">
-      <span class="illus illus--tall"><span class="illus__cap">{% trans "Maji Safi na Salama" %}</span>{% include "components/illus.html" with scene="maji" %}</span>
-      <span class="arch-card__body"><span class="arch-card__text">{% trans "Uchimbaji wa visima katika maeneo yenye uhaba." %}</span></span>
-    </a>
+    {% for sv in services %}
+      <a href="{% url 'core:huduma' %}#{{ sv.cat }}" class="arch-card reveal">
+        <span class="illus illus--tall"><span class="illus__cap">{{ sv.title }}</span>{% include "components/illus.html" with scene=sv.scene %}</span>
+        <span class="arch-card__body"><span class="arch-card__text">{{ sv.text }}</span></span>
+      </a>
+    {% endfor %}
   </div>
 </section>
 

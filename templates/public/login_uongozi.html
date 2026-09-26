@@ -1,0 +1,60 @@
+{% extends "public/base.html" %}
+{% load static i18n mwst_tags %}
+{% block title %}{% trans "Ingia — Eneo la Viongozi" %}{% endblock %}
+
+{% block body %}
+<div class="section" style="padding-bottom:0">{% include "base/messages.html" %}</div>
+
+<section class="section auth">
+  <div class="auth__wrap">
+
+    {# ---------------- Nembo na kaulimbiu ---------------- #}
+    <div class="auth__brand reveal">
+      <img src="{% static 'img/mwst-logo.svg' %}" alt="{{ org_short }}" width="92" height="92">
+      <b>{{ org_short }}</b>
+      <h1>{% trans "Eneo la Viongozi" %}</h1>
+      <p class="auth__tagline">
+        {% trans "Kata, Wilaya, Mkoa, Kanda, Taifa — na maafisa wa ofisi" %}
+      </p>
+      <span class="auth__rule">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0 15 9l9 3-9 3-3 9-3-9-9-3 9-3z"/></svg>
+      </span>
+    </div>
+
+    {# ---------------- Kadi ya kuingia ---------------- #}
+    <div class="auth__card reveal">
+      <div class="auth__head">
+        <span class="auth__ico tint-gold">
+          <svg width="22" height="22"><use href="#i-shield"></use></svg>
+        </span>
+        <h2>{% trans "Ingia kwa Wadhifa Wako" %}</h2>
+        <p>{% trans "Ukurasa huu ni wa viongozi na maafisa pekee." %}</p>
+      </div>
+
+      {% include "public/_login_form.html" %}
+
+      <p class="auth__safe">
+        <svg width="17" height="17"><use href="#i-shield"></use></svg>
+        {% trans "Eneo hili lina taarifa binafsi za wanachama. Utaombwa code ya SMS kwenye kifaa kipya, na kila kuingia kunaandikwa kwenye kumbukumbu." %}
+      </p>
+
+      {% comment %}HAKUNA mwaliko wa kujiunga hapa. Wadhifa wa uongozi
+      hutolewa na mfumo (`/mfumo/uongozi/`), si kwa kujiandikisha
+      mwenyewe — kumwambia mtu "jiunge" kungeahidi kitu ambacho ukurasa
+      huu hauwezi kutoa.{% endcomment %}
+      <p class="auth__alt">
+        {% trans "Hujapewa wadhifa bado? Wasiliana na ofisi ya MUWESTA." %}
+      </p>
+
+      <div class="auth__other">
+        <span class="auth__otherlabel">{% trans "Wewe ni mwanachama au mhisani?" %}</span>
+        <a href="{% url 'core:login' %}" class="btn btn--ghost btn--block">
+          <svg><use href="#i-user"></use></svg>
+          {% trans "Ingia Kwenye Akaunti Yako" %}
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

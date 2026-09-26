@@ -1499,3 +1499,39 @@
     }
   });
 })();
+
+/* ==========================================================================
+   KADI YA KUINGIA — HATUA MBILI
+   ========================================================================== */
+(function () {
+  "use strict";
+  var box = document.querySelector("[data-login]");
+  if (!box) return;
+
+  var steps = box.querySelectorAll("[data-login-step]");
+
+  function show(key) {
+    for (var i = 0; i < steps.length; i++) {
+      steps[i].classList.toggle(
+        "is-on", steps[i].getAttribute("data-login-step") === key);
+    }
+    /* Kielekezi kiende kwenye sehemu ya kwanza ya kujaza — mtu asilazimike
+       kubofya tena baada ya kuchagua. */
+    var input = box.querySelector(".lw__step.is-on input[name='username']");
+    if (input) setTimeout(function () { input.focus(); }, 180);
+  }
+
+  box.addEventListener("click", function (e) {
+    var go = e.target.closest("[data-login-go]");
+    if (go) { show(go.getAttribute("data-login-go")); return; }
+    if (e.target.closest("[data-login-back]")) show("chagua");
+  });
+
+  /* Fomu ikirudi na kosa, mtu abaki kwenye fomu aliyoitumia — si
+     kurudishwa mwanzo kuchagua tena. */
+  var err = box.querySelector(".formerr");
+  if (err) {
+    var step = err.closest("[data-login-step]");
+    if (step) show(step.getAttribute("data-login-step"));
+  }
+})();

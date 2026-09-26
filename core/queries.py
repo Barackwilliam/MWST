@@ -119,29 +119,48 @@ def _month_bounds(offset=0):
 # ===========================================================================
 #  MSIMAMIZI MKUU — TAIFA
 # ===========================================================================
-def national(year=None):
+def national(year=None, region_ids=None):
+    """
+    Dashibodi ya taifa.
+
+    `region_ids` iliongezwa kwa sababu mratibu wa kanda alikuwa
+    amezuiwa kuona orodha ya wanachama wa kanda nyingine, lakini
+    ukurasa huu — wenye jumla za nchi nzima, mgawanyo wa mikoa yote na
+    mapato yote — ulikuwa wazi kwake.
+    """
     today = timezone.localdate()
     year = year or today.year
     this_m, next_m = _month_bounds(0)
     prev_m, _unused = _month_bounds(1)
 
     members = Member.objects.all()
+    apps = Application.objects.all()
+    if region_ids is not None:
+        members = members.filter(region_id__in=region_ids)
+        apps = apps.filter(region_id__in=region_ids)
+
     total = members.count()
     total_prev = members.filter(joined_on__lt=this_m).count()
     new_this = members.filter(joined_on__gte=this_m).count()
     new_prev = members.filter(joined_on__gte=prev_m, joined_on__lt=this_m).count()
-    pending = Application.objects.filter(status__in=[ApplicationStatus.PENDING,
-                                                     ApplicationStatus.REVIEW]).count()
+    pending = apps.filter(status__in=[ApplicationStatus.PENDING,
+                                      ApplicationStatus.REVIEW]).count()
 
     pay = confirmed(Payment.objects.all())
+    if region_ids is not None:
+        pay = pay.filter(member__region_id__in=region_ids)
     fees_month = pay.filter(paid_at__date__gte=this_m).aggregate(s=Sum("amount"))["s"] or 0
     fees_prev = pay.filter(paid_at__date__gte=prev_m,
                            paid_at__date__lt=this_m).aggregate(s=Sum("amount"))["s"] or 0
     contrib = confirmed(Contribution.objects.all())
+    if region_ids is not None:
+        contrib = contrib.filter(member__region_id__in=region_ids)
     rev_year = ((pay.filter(paid_at__year=year).aggregate(s=Sum("amount"))["s"] or 0) +
                 (contrib.filter(received_at__year=year).aggregate(s=Sum("amount"))["s"] or 0))
-    points_year = PointTransaction.objects.filter(awarded_on__year=year)\
-        .aggregate(s=Sum("points"))["s"] or 0
+    pts_qs = PointTransaction.objects.filter(awarded_on__year=year)
+    if region_ids is not None:
+        pts_qs = pts_qs.filter(member__region_id__in=region_ids)
+    points_year = pts_qs.aggregate(s=Sum("points"))["s"] or 0
 
     d1, dir1 = delta(total, total_prev)
     d2, dir2 = delta(new_this, new_prev or 1)
@@ -170,7 +189,8 @@ def national(year=None):
     counts = {row["region_id"]: row["n"]
               for row in members.values("region_id").annotate(n=Count("id"))}
     regions = [{"name": r.name, "members": counts.get(r.pk, 0), "x": r.map_x, "y": r.map_y}
-               for r in refdata.regions()]
+               for r in refdata.regions()
+               if region_ids is None or r.pk in region_ids]
 
     # -- Mifuko --
     fund_totals = {row["fund_id"]: row["s"] for row in
@@ -222,14 +242,18 @@ def national(year=None):
         "top_regions": top_regions,
         "regions": regions,
         "activities": _recent_activity(),
-        "quick_actions": {"title": "Quick Actions", "cols": 3, "items": [
+        #: "Quick Actions" ilikuwa haijatafsiriwa, na vipengele viwili
+        #: ("Tuma SMS kwa Wote", "Tuma Email kwa Wote") vilikuwa
+        #: vinaelekeza mahali pamoja — `/ujumbe/` yenyewe inamwuliza mtu
+        #: njia anayotaka. "Ongeza Habari" ilikuwa inaelekeza `/media/`,
+        #: yaani picha, si habari.
+        "quick_actions": {"title": "Vitendo vya Haraka", "cols": 3, "items": [
             {"label": "Jumla ya Ripoti", "icon": "chart-bar", "tint": "green", "url": "/pakua/malipo/"},
             {"label": "Ripoti za Mikoa", "icon": "map", "tint": "navy", "url": "/pakua/mikoa/"},
             {"label": "Ripoti za Wilaya", "icon": "file", "tint": "purple", "url": "/pakua/wanachama/"},
-            {"label": "Tuma SMS kwa Wote", "icon": "message", "tint": "teal", "url": "/ujumbe/"},
-            {"label": "Tuma Email kwa Wote", "icon": "mail", "tint": "orange", "url": "/ujumbe/"},
+            {"label": "Tuma Ujumbe kwa Wote", "icon": "message", "tint": "teal", "url": "/ujumbe/"},
             {"label": "Tangaza Habari", "icon": "megaphone", "tint": "gold", "url": "/mfumo/matangazo/mpya/"},
-            {"label": "Ongeza Habari", "icon": "image", "tint": "green", "url": "/media/"},
+            {"label": "Ongeza Habari", "icon": "file", "tint": "green", "url": "/mfumo/habari/mpya/"},
             {"label": "Pakia Picha", "icon": "upload", "tint": "navy", "url": "/media/pakia/"},
             {"label": "Ongeza Matukio", "icon": "calendar", "tint": "red", "url": "/matukio/"},
         ]},
@@ -1061,7 +1085,12 @@ def superadmin(year=None):
             {"label": "Wanachama Hai",
              "value": num(Member.objects.filter(status=MemberStatus.ACTIVE).count()),
              "icon": "user-check", "tint": "navy",
-             "note": f"{pct(Member.objects.filter(status=MemberStatus.ACTIVE).count(), Member.objects.count() or 1)}% ya jumla ya wanachama"},
+             #: Ilikuwa f-string, kwa hiyo sentensi iliyoundwa
+             #: haikuwa na msgid — haikuweza kutafsiriwa kamwe.
+             "note": gettext("%(pct)s%% ya jumla ya wanachama") % {
+                 "pct": pct(Member.objects.filter(
+                     status=MemberStatus.ACTIVE).count(),
+                     Member.objects.count() or 1)}},
             {"label": "Jumla ya Michango",
              "value": tzs(confirmed(Contribution.objects.all()).aggregate(s=Sum('amount'))['s'] or 0),
              "icon": "coins", "tint": "gold", "money": True},
@@ -1085,7 +1114,11 @@ def superadmin(year=None):
             {"label": "Ongeza Mwanachama", "icon": "user-plus", "tint": "green", "url": "/usajili/"},
             {"label": "Rekodi Malipo", "icon": "cash", "tint": "navy", "url": "/malipo/"},
             {"label": "Ongeza Mchango", "icon": "hand-heart", "tint": "teal", "url": "/michango/"},
-            {"label": "Maombi ya Msaada", "icon": "heart", "tint": "purple", "url": "/mfumo/programs/assistancerequest/"},
+            #: Kilikuwa `/mfumo/programs/assistancerequest/` — muundo wa
+            #: Django admin (`app/model`), si wa registry hii
+            #: inayotumia slug. Kiungo hiki kilikuwa kikitoa 404 kwa
+            #: kila mtumiaji, kwenye dashibodi kuu.
+            {"label": "Maombi ya Msaada", "icon": "heart", "tint": "purple", "url": "/ustawi/"},
             {"label": "Ongeza Tukio", "icon": "calendar", "tint": "gold", "url": "/matukio/"},
             {"label": "Tuma Ujumbe", "icon": "message", "tint": "green", "url": "/ujumbe/"},
             {"label": "Pakua Ripoti", "icon": "download", "tint": "orange", "url": "/pakua/wahisani/"},
@@ -1379,12 +1412,32 @@ def public_kuhusu():
                  "text": SiteSetting.get().tx("about")},
         "pillars": [{"title": p.tx("title"), "text": p.tx("body"), "icon": p.icon, "tint": p.tint}
                     for p in Pillar.objects.all()],
+        #: Vihesabio hivi vilikuwa vinasema uongo kwa namna tatu:
+        #:
+        #:  * "Mikoa Tunayofanya Kazi" ilihesabu MIKOA YOTE ya Tanzania
+        #:    iliyopo kwenye jedwali la marejeo, si mikoa tuliyofikia.
+        #:  * "Wilaya Tulizofikia" vivyo hivyo.
+        #:  * "Miradi Inayoendelea" ilihesabu miradi YOTE, ikiwa ni
+        #:    pamoja na iliyokamilika na isiyoanza.
+        #:
+        #: Sasa kila kimoja kinahesabu kile kinachokisema.
         "counters": [
             {"value": Member.objects.count(), "label": "Wanachama Nchini Kote"},
-            {"value": len(refdata.regions()), "label": "Mikoa Tunayofanya Kazi"},
-            {"value": _district_count(), "label": "Wilaya Tulizofikia"},
-            {"value": Project.objects.count(), "label": "Miradi Inayoendelea"},
+            {"value": (Member.objects.exclude(region__isnull=True)
+                       .values("region_id").distinct().count()),
+             "label": "Mikoa Tunayofanya Kazi"},
+            {"value": (Member.objects.exclude(district__isnull=True)
+                       .values("district_id").distinct().count()),
+             "label": "Wilaya Tulizofikia"},
+            {"value": Project.objects.filter(status="ongoing").count(),
+             "label": "Miradi Inayoendelea"},
         ],
+        "verse": _verse_for("kuhusu"),
+        #: Kadi tatu za huduma zilikuwa zimeandikwa ndani ya `kuhusu.html`
+        #: huku jedwali la Huduma likiwepo na likitumika `/huduma/`.
+        "services": [{"title": sv.tx("title"), "text": sv.tx("summary"),
+                      "scene": sv.scene, "cat": sv.category}
+                     for sv in Service.objects.filter(is_active=True)[:3]],
         "timeline": [{"year": m.year, "title": m.tx("title"), "text": m.tx("body")}
                      for m in Milestone.objects.all()],
         "leaders": [{"initials": l.initials, "name": l.full_name, "role": l.tx("role")}
@@ -1492,7 +1545,11 @@ def public_huduma():
                       "scene": p.scene, "over": p.progress() > 100}
                      for p in Project.objects.select_related("region").filter(status="ongoing")[:3]],
         "impact": [
-            {"value": EventRegistration.objects.count(), "label": "Wanufaika kwa Mwezi"},
+            #: Ilikuwa jumla ya usajili WOTE tangu mwanzo, ikiitwa "kwa
+            #: mwezi". Sasa ni wa mwezi huu kweli.
+            {"value": EventRegistration.objects.filter(
+                created_at__gte=_month_bounds(0)[0]).count(),
+             "label": "Wanufaika kwa Mwezi"},
             {"value": Project.objects.filter(status="ongoing").count(),
              "label": "Miradi Inayoendelea"},
             {"value": Member.objects.count(), "label": "Wanachama"},
@@ -1512,11 +1569,17 @@ def public_habari():
         "hero": {"eyebrow": "Habari", "scene": "mkutano",
                  "title": "Habari na Taarifa za MUWESTA",
                  "text": "Fuatilia shughuli, miradi, matangazo na fursa mbalimbali kutoka MUWESTA."},
-        "featured": {"title": featured.tx("title"), "date": featured.published_on.strftime("%d %B %Y"),
+        #: `id` iliongezwa ili "Soma Zaidi" ipate mahali pa kwenda.
+        #: Awali kila kiungo kilirudi `/habari/` — ukurasa ule ule —
+        #: kwa hiyo `News.body`, ambayo ndiyo habari yenyewe,
+        #: haikuwahi kusomeka na mtu yeyote.
+        "featured": {"id": featured.pk, "title": featured.tx("title"),
+                     "date": featured.published_on.strftime("%d %B %Y"),
                      "cat": featured.category.tx("name") if featured.category else "Habari",
                      "text": featured.tx("summary"), "scene": featured.scene} if featured else {},
         "filters": filters,
-        "items": [{"title": n.tx("title"), "date": n.published_on.strftime("%d %B %Y"),
+        "items": [{"id": n.pk, "title": n.tx("title"),
+                   "date": n.published_on.strftime("%d %B %Y"),
                    "cat": n.category.slug if n.category else "nyingine",
                    "cat_label": n.category.tx("name") if n.category else "Habari",
                    "text": n.tx("summary"), "scene": n.scene} for n in others[:9]],
@@ -1545,8 +1608,11 @@ def public_matukio():
         "past": [{"title": e.tx("title"), "date": e.start_at.strftime("%d %B %Y"),
                   "place": e.region.name if e.region else "—"}
                  for e in Event.objects.filter(status="done").order_by("-start_at")[:4]],
+        #: "Matukio Mwaka Huu" ilikuwa ikihesabu matukio YOTE tangu
+        #: mwanzo. Sasa inahesabu ya mwaka huu, kama jina lilivyosema.
         "stats": [
-            {"value": Event.objects.count(), "label": "Matukio Mwaka Huu"},
+            {"value": Event.objects.filter(start_at__year=now.year).count(),
+             "label": "Matukio Mwaka Huu"},
             {"value": EventRegistration.objects.count(), "label": "Washiriki Jumla"},
             {"value": Event.objects.exclude(region=None).values("region").distinct().count(),
              "label": "Mikoa Iliyofikiwa"},
@@ -1557,20 +1623,94 @@ def public_matukio():
 
 def public_mawasiliano():
     """
-    Ukurasa wa Mawasiliano.
+    Ukurasa wa Mawasiliano — taarifa zote kutoka database.
 
-    Muundo na taarifa zinatoka `core/data/pages.py` (bango rasmi la MUWESTA).
-    Maswali yanayoulizwa sana bado yanatoka database ili yaweze kuhaririwa
-    bila kugusa code.
+    Ulikuwa ukitoka `core/data/pages.py`, na kati ya namba tano
+    zilizochapishwa hadharani, NNE zilikuwa za mfano (`+255 684 123 456`
+    na wenzake). Barua pepe zilikuwa `@mwst.or.tz` wakati nyingine za
+    mfumo zinatumia `@muslimwelfare.or.tz`. Hakuna aliyeweza kuzirekebisha
+    bila deploy mpya.
+
+    Sasa: anwani, saa, ramani na mitandao kutoka `SiteSetting`; namba na
+    barua pepe kutoka `ContactChannel`; maswali kutoka `Faq`. Muundo wa
+    orodha (`lines`, `rows`) umebaki kama ulivyo ili kiolezo kisibadilike.
     """
+    from django.utils.translation import get_language
+    from content.models import ContactChannel
     from .data import pages as _pg
 
+    lang = (get_language() or "sw").lower()
+    en = lang.startswith("en")
+    st = SiteSetting.get()
     ctx = _pg.mawasiliano()
+
+    # ---- Anwani: SiteSetting + tawi kuu ----
+    from geo.models import Branch
+    head = Branch.objects.filter(is_head_office=True).first()
+    lines = [l.strip() for l in ((st.address_en if en else st.address) or "").split(",")
+             if l.strip()]
+    if head and head.address:
+        lines = [l.strip() for l in head.address.split(",") if l.strip()] or lines
+    if st.po_box:
+        lines.append(st.po_box)
+    ctx["address"].update({
+        "org": st.org_name,
+        "lines": lines or ctx["address"]["lines"],
+    })
+
+    # ---- Simu na barua pepe ----
+    channels = ContactChannel.objects.filter(is_active=True)
+    phones = [{"number": c.value, "label": c.tx("label")}
+              for c in channels if c.kind == "phone"]
+    emails = [c.value for c in channels if c.kind == "email"]
+    #: Bila rekodi kwenye jedwali, tunarudi kwenye simu na barua pepe
+    #: kuu za mipangilio — si kwenye namba za mfano zilizokuwa hapa.
+    if not phones:
+        phones = [{"number": v, "label": lbl} for v, lbl in
+                  [(st.phone, _("Ofisi")), (st.phone_alt, _("Maswali ya Jumla"))] if v]
+    if not emails:
+        emails = [v for v in (st.email, st.email_alt) if v]
+    ctx["phones"].update({"lines": phones, "whatsapp": st.whatsapp or st.phone})
+    ctx["emails"]["lines"] = emails
+
+    # ---- Saa za kazi ----
+    hours = (st.working_hours_en if en else st.working_hours) or ""
+    if hours:
+        ctx["hours"]["rows"] = [
+            {"day": part.split(":", 1)[0].strip(),
+             "time": part.split(":", 1)[1].strip() if ":" in part else "",
+             "closed": "fungw" in part.lower() or "closed" in part.lower()}
+            for part in hours.split(";") if part.strip()]
+
+    # ---- Ramani na mitandao ----
+    if st.map_url:
+        ctx["map"]["url"] = st.map_url
+    ctx["map"]["label"] = st.org_name
+    social = [{"icon": r["icon"], "name": r["label"], "handle": r["url"]}
+              for r in _social_rows(st)]
+    if social:
+        ctx["socials"]["rows"] = social
+
+    # ---- Aya ----
+    v = _verse_for("mawasiliano")
+    if v:
+        ctx["ayah"].update({"arabic": v["arabic"], "translation": v["swahili"],
+                            "ref": v["reference"]})
+
     db_faqs = [{"q": f.tx("question"), "a": f.tx("answer")}
                for f in Faq.objects.filter(page="mawasiliano", is_active=True)]
     if db_faqs:
         ctx["faqs"] = db_faqs
     return ctx
+
+
+def _social_rows(st):
+    """Mitandao iliyowekwa pekee. Isiyowekwa haionekani."""
+    wa = (st.whatsapp or "").replace(" ", "").replace("+", "")
+    rows = [("facebook", "Facebook", st.facebook), ("x-social", "X (Twitter)", st.twitter),
+            ("instagram", "Instagram", st.instagram), ("youtube", "YouTube", st.youtube),
+            ("whatsapp", "WhatsApp", f"https://wa.me/{wa}" if wa else "")]
+    return [{"icon": i, "label": lbl, "url": u} for i, lbl, u in rows if u]
 
 
 def public_jiunge():
@@ -1580,15 +1720,48 @@ def public_jiunge():
                              "Itachukua dakika chache tu."},
             "tiers": u["tiers"], "steps": u["steps"], "special": u["special"],
             "categories": refdata.categories(only_selectable=True),
+            #: Sentensi ya "miaka 18" ilikuwa imeandikwa kwenye HTML,
+            #: ikirudia sheria iliyo kwenye ukaguzi wa fomu.
+            "min_age": _min_join_age(),
             "regions_list": refdata.regions()}
 
 
+def _min_join_age():
+    from members.models import MIN_JOIN_AGE
+    return MIN_JOIN_AGE
+
+
+def _verse_row(v):
+    return {"arabic": v.arabic, "swahili": v.tx("swahili"),
+            "reference": v.reference, "scene": v.scene}
+
+
 def verse(index=0):
-    qs = list(Verse.objects.filter(is_active=True))
+    """Aya ya dashibodi (pembeni mwa menyu)."""
+    qs = list(Verse.objects.filter(is_active=True, slot="dashibodi"))
+    if not qs:
+        qs = list(Verse.objects.filter(is_active=True))
     if not qs:
         return None
-    v = qs[index % len(qs)]
-    return {"arabic": v.arabic, "swahili": v.tx("swahili"), "reference": v.reference}
+    return _verse_row(qs[index % len(qs)])
+
+
+def _verse_for(slot):
+    """
+    Aya ya ukurasa fulani wa umma.
+
+    Aya za kurasa za umma zilikuwa zimeandikwa ndani ya HTML
+    (`kuhusu.html`) na ndani ya `core/data/verses.py`, wakati jedwali la
+    `Verse` lilikuwepo na linahaririwa kwenye `/mfumo/aya/`. Mtu
+    aliyebadilisha aya pale hakuiona ikibadilika popote hadharani.
+    """
+    v = Verse.objects.filter(is_active=True, slot=slot).first()
+    return _verse_row(v) if v else None
+
+
+def verses_for(slot):
+    """Aya zote za ukurasa husika — kwa ajili ya slaidi za ukurasa wa mbele."""
+    return [_verse_row(v) for v in Verse.objects.filter(is_active=True, slot=slot)]
 
 
 # ===========================================================================
@@ -1753,6 +1926,12 @@ def member_points(member):
         } for row in pts.TIERS],
         "rules": [{"activity": r.tx("activity"), "points": str(r.points)}
                   for r in PointRule.objects.filter(is_active=True).order_by("order")],
+        #: Sentensi ya "pointi 1 kwa kila TSh 1,000" ilikuwa imeandikwa
+        #: ndani ya `pointi.html`, ikirudia `SHILLINGS_PER_POINT`. Bodi
+        #: ikibadilisha kiwango, msimbo ungebadilika lakini sentensi
+        #: iliyosomwa na mwanachama ingebaki ikisema kiwango cha zamani —
+        #: kwenye lugha zote mbili.
+        "shillings_per_point": num(int(pts.SHILLINGS_PER_POINT)),
         "chart": {"labels": MONTHS,
                   "data": monthly_series(txns, "awarded_on", "points",
                                          timezone.localdate().year)},
@@ -2389,8 +2568,10 @@ def public_lipa(lang="sw"):
     Data ya ukurasa wa kulipa ada. Bei zote zinatokana na
     `Category.monthly_fee` ili kusiwe na namba zilizoandikwa mkononi.
     """
+    from django.conf import settings
     from members.models import Category
 
+    _st = SiteSetting.get()
     tiers = list(Category.objects.filter(is_special=False, registration_fee__gt=0)
                  .order_by("order", "registration_fee"))
 
@@ -2423,7 +2604,7 @@ def public_lipa(lang="sw"):
         "purposes": _g.localise(_g.PURPOSES, lang),
         "providers": _g.localise(_g.PROVIDERS, lang),
         "provider_groups": _g.localise(_g.PROVIDER_GROUPS, lang),
-        "currencies": _g.CURRENCIES,
+        "currencies": _g.currencies(),
         "steps": [
             {"n": 1, "name": "Chagua",    "name_en": "Select"},
             {"n": 2, "name": "Taarifa",   "name_en": "Details"},
@@ -2437,8 +2618,16 @@ def public_lipa(lang="sw"):
             {"icon": "shield",      "title": "Salama na Kuaminika", "text": "Usimbaji wa SSL"},
             {"icon": "receipt",     "title": "Risiti ya Papo Hapo", "text": "Uthibitisho kwa barua pepe"},
             {"icon": "chart-line",  "title": "Uwazi",               "text": "Ripoti za matumizi"},
-            {"icon": "headset",     "title": "Msaada",              "text": "+255 769 600 102"},
+            #: Namba ilikuwa imeandikwa hapa, huku footer ya ukurasa huu
+            #: huu ikisoma `SiteSetting.phone`. Ofisi ikibadilisha namba,
+            #: ukurasa mmoja ungeonyesha namba mbili tofauti.
+            {"icon": "headset",     "title": "Msaada",
+             "text": (_st.phone_support or _st.phone)},
         ],
+        #: Mifano ya namba za kumbukumbu. Zilikuwa zimeandikwa kwenye
+        #: HTML zikiwa na "MUWESTA" na "2026" ndani yake.
+        "ref_example_new": f"APP/{settings.ID_PREFIX}/{timezone.localdate().year}/0001",
+        "ref_example_member": f"{settings.ID_PREFIX}/G/000123/{timezone.localdate().year}",
     }
 
 

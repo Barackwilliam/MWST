@@ -7,18 +7,48 @@ from core.mixins import Bilingual, TimeStamped
 
 
 class SiteSetting(Bilingual):
-    """Mipangilio ya jumla — rekodi moja tu."""
-    org_name = models.CharField(max_length=140, default="Muslim Welfare Society of Tanzania")
+    """
+    Mipangilio ya jumla — rekodi moja tu.
+
+    Hapa ndipo taarifa za shirika zinapoishi. Kila mahali pengine —
+    kichwa cha tovuti, footer, kadi ya mwanachama, nyaraka za kisheria —
+    panapaswa KUZISOMA hapa, si kuziandika upya. Awali anwani ilikuwa
+    imeandikwa mahali pa tatu tofauti kwa maneno matatu tofauti, na
+    nyaraka za kisheria zilikuwa zikitaja `mwiso.onrender.com` kama
+    tovuti rasmi.
+    """
+    org_name = models.CharField(_("Jina la Shirika"), max_length=140,
+                                default="Muslim Welfare Society of Tanzania")
+    #: Kifupi kinachotumika kwenye wordmark na namba za utambulisho.
+    org_short = models.CharField(_("Kifupi"), max_length=24, default="MUWESTA")
     tagline = models.CharField(max_length=200, default="Imani kwa Vitendo, Huduma na Maendeleo kwa Binadamu")
     tagline_en = models.CharField(max_length=200, blank=True)
+    #: Maneno manne ya msingi, yametenganishwa kwa koma. Yalikuwa
+    #: yameandikwa kwenye footer, sidebar na kadi kwa mkono.
+    values_line = models.CharField(
+        _("Maadili"), max_length=160, default="Imani, Huruma, Huduma, Maendeleo")
+    values_line_en = models.CharField(max_length=160, blank=True)
     about = models.TextField(blank=True)
     about_en = models.TextField(blank=True)
+    #: Sentensi moja ya maelezo — kwa `<meta name="description">` na
+    #: kwa footer. Ilikuwa imeandikwa mara mbili ndani ya `base.html`.
+    meta_description = models.CharField(_("Maelezo mafupi"), max_length=300, blank=True)
+    meta_description_en = models.CharField(max_length=300, blank=True)
     phone = models.CharField(max_length=24, default="+255 769 600 102")
     phone_alt = models.CharField(max_length=24, blank=True)
+    #: Namba ya msaada inayoonyeshwa kwenye ukurasa wa malipo. Ilikuwa
+    #: imeandikwa ndani ya `core/queries.py` huku footer ya ukurasa ule
+    #: ule ikisoma `SiteSetting.phone` — namba mbili tofauti, ukurasa mmoja.
+    phone_support = models.CharField(_("Simu ya Msaada"), max_length=24, blank=True)
     email = models.EmailField(default="info@muslimwelfare.or.tz")
     email_alt = models.EmailField(blank=True)
     address = models.CharField(max_length=200, default="Shariff PBZ House, Nyerere Square, Dodoma")
     address_en = models.CharField(max_length=200, blank=True)
+    po_box = models.CharField(_("S.L.P."), max_length=60, blank=True)
+    #: Tovuti rasmi. Nyaraka za kisheria zilikuwa zikitaja anwani ya
+    #: majaribio ya Render kama tovuti ya shirika.
+    website = models.URLField(_("Tovuti"), blank=True)
+    map_url = models.URLField(_("Kiungo cha Ramani"), blank=True)
     working_hours = models.CharField(max_length=120, default="Jumatatu - Ijumaa: 08:00 - 17:00")
     working_hours_en = models.CharField(max_length=120, blank=True)
     facebook = models.URLField(blank=True)
@@ -26,6 +56,10 @@ class SiteSetting(Bilingual):
     instagram = models.URLField(blank=True)
     youtube = models.URLField(blank=True)
     whatsapp = models.CharField(max_length=40, blank=True)
+    #: Tarehe ya kuanza kutumika kwa Sera ya Faragha, Vidakuzi na
+    #: Masharti. Ilikuwa imeandikwa ndani ya `core/data/legal.py`.
+    legal_effective_on = models.DateField(_("Nyaraka zinaanza kutumika"),
+                                          null=True, blank=True)
     storage_quota_gb = models.PositiveIntegerField(default=100)
     fundraising_target = models.DecimalField(max_digits=16, decimal_places=2, default=0)
 
@@ -59,12 +93,72 @@ class SiteSetting(Bilingual):
         super().save(*args, **kwargs)
         cache.delete("mwst:sitesetting")
 
+    def value_list(self, lang="sw"):
+        """Maadili kama orodha, tayari kwa kiolezo."""
+        raw = (self.values_line_en if lang == "en" and self.values_line_en
+               else self.values_line)
+        return [v.strip() for v in raw.split(",") if v.strip()]
+
+
+class ContactChannel(Bilingual):
+    """
+    Namba ya simu au barua pepe ya idara moja.
+
+    Ukurasa wa Mawasiliano ulikuwa unaonyesha namba TANO na barua pepe
+    TANO zilizoandikwa ndani ya `core/data/pages.py`. Kati ya namba
+    tano, NNE zilikuwa `123 456` — namba za mfano zilizochapishwa
+    hadharani kwenye ukurasa wa mawasiliano wa shirika. Barua pepe nazo
+    zilikuwa `@mwst.or.tz` wakati sehemu nyingine za mfumo zinatumia
+    `@muslimwelfare.or.tz`.
+
+    Sasa ofisi inaziongeza na kuziondoa yenyewe `/mfumo/mawasiliano/`.
+    """
+    KIND = [("phone", _("Simu")), ("email", _("Barua Pepe"))]
+
+    kind = models.CharField(_("Aina"), max_length=10, choices=KIND, default="phone")
+    label = models.CharField(_("Idara"), max_length=80)
+    label_en = models.CharField(max_length=80, blank=True)
+    value = models.CharField(_("Namba au Barua Pepe"), max_length=120)
+    is_active = models.BooleanField(_("Inatumika"), default=True)
+    order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ["kind", "order"]
+        verbose_name = _("Namba ya Mawasiliano")
+        verbose_name_plural = _("Namba za Mawasiliano")
+
+    def __str__(self):
+        return f"{self.label}: {self.value}"
+
 
 class Verse(Bilingual):
+    """
+    Aya ya Qur'an au Hadith.
+
+    Jedwali hili lilikuwepo na `queries.verse()` ilikuwa ikilisoma —
+    lakini kwa dashibodi za watumishi PEKEE. Ukurasa wa mbele na
+    ukurasa wa "Kuhusu" walikuwa na aya zao zilizoandikwa ndani ya
+    `core/data/verses.py` na ndani ya HTML, kwa hiyo mtu aliyebadilisha
+    aya kwenye mfumo hakuiona ikibadilika popote hadharani.
+
+    `slot` inaamua aya inaonekana wapi.
+    """
+    SLOT = [
+        ("home", _("Ukurasa wa mbele")),
+        ("kuhusu", _("Kuhusu Sisi")),
+        ("mawasiliano", _("Mawasiliano")),
+        ("uanachama", _("Uanachama")),
+        ("dashibodi", _("Dashibodi")),
+    ]
+
     arabic = models.TextField(_("Kiarabu"))
     swahili = models.CharField(_("Kiswahili"), max_length=240)
     swahili_en = models.CharField(max_length=240, blank=True)
     reference = models.CharField(max_length=60)
+    slot = models.CharField(_("Inaonekana wapi"), max_length=20,
+                            choices=SLOT, default="dashibodi")
+    #: Mchoro wa nyuma kwa aya za ukurasa wa mbele (`components/illus.html`).
+    scene = models.CharField(max_length=30, blank=True)
     is_active = models.BooleanField(default=True)
     order = models.PositiveSmallIntegerField(default=0)
 

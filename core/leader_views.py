@@ -33,8 +33,13 @@ def leader_required(view):
     anarudishwa kwenye ukurasa wake badala ya kuona ukurasa tupu.
     """
     @wraps(view)
-    @login_required
     def inner(request, *args, **kwargs):
+        #: `@login_required` ilimpeleka `LOGIN_URL` (`/ingia/`), yaani fomu
+        #: ya wanachama — ambapo akaunti ya kiongozi inakataliwa. Sehemu
+        #: hii ina mlango wake.
+        if not request.user.is_authenticated:
+            from django.urls import reverse
+            return redirect(f"{reverse('core:leader_login')}?next={request.path}")
         if not L.is_leader(request.user):
             messages.error(request, _("Huna wadhifa wa uongozi kwenye mfumo."))
             return redirect(request.user.home_url_name())
@@ -237,7 +242,7 @@ def mazungumzo(request):
 @leader_required
 def mazungumzo_moja(request, pk):
     thread = get_object_or_404(Thread.objects.select_related("member"), pk=pk)
-    if not can_see_member(request.user, thread.member):
+    if not L.can_see_thread(request.user, thread):
         raise Http404
 
     if request.method == "POST":
@@ -396,8 +401,21 @@ def ada_action(request, pk, action):
             messages.success(request, _("Malipo %(no)s yamethibitishwa.") % {
                 "no": payment.receipt_no})
     elif action == "cancel":
+        #: Kughairi kulikuwa kunabadilisha `status` pekee. Leja na pointi
+        #: zilibaki. Afisa akighairi kwenye `/malipo/` leja inarekebishwa
+        #: (`payment_action`), lakini kiongozi akighairi malipo yale yale
+        #: hapa haikurekebishwa — mlango mmoja, matokeo mawili tofauti,
+        #: na hesabu ya mfuko ikabaki na pesa isiyokuwapo.
+        from finance.models import reverse_posting
+
+        if payment.status == PaymentStatus.CANCELLED:
+            messages.info(request, _("Malipo haya tayari yameghairiwa."))
+            return redirect("core:leader_ada")
+        was_confirmed = payment.status == PaymentStatus.CONFIRMED
         payment.status = PaymentStatus.CANCELLED
         payment.save(update_fields=["status", "updated_at"])
+        if was_confirmed:
+            reverse_posting(payment, str(_("Malipo yameghairiwa")))
         AuditLog.record(request, "payment_cancelled_by_leader", payment)
         messages.info(request, _("Malipo %(no)s yameghairiwa.") % {
             "no": payment.receipt_no})

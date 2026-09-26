@@ -81,7 +81,7 @@
             <input class="input filterbar__f" name="q" value="{{ filters.q }}" placeholder="{% trans 'Jina au risiti' %}">
             <select class="select filterbar__f" name="fund">
               <option value="">{% trans "Aina zote" %}</option>
-              {% for f in funds_list %}<option value="{{ f.pk }}" {% if filters.fund == f.pk|stringformat:"s" %}selected{% endif %}>{{ f.name }}</option>{% endfor %}
+              {% for f in funds_list %}<option value="{{ f.pk }}" {% if filters.fund == f.pk|stringformat:"s" %}selected{% endif %}>{{ f|tx:"name" }}</option>{% endfor %}
             </select>
             <select class="select filterbar__f" name="status">
               <option value="">{% trans "Hali zote" %}</option>

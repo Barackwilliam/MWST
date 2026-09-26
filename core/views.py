@@ -5,6 +5,7 @@ Data zote zinatoka database kupitia `core.queries`.
 """
 import json
 import logging
+from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -31,7 +32,7 @@ from . import registry
 from . import refdata
 from .data import (about as about_data, giving, legal, membership as mem_data,
                    verses as verses_data,
-                   navs, pages as pg, tz_map)
+                   navs, pages as pg, tz_map, tz_legend)
 from .forms import (ApplicationForm, AssistanceForm, BeneficiaryForm,
                     BootstrapMixin, BroadcastForm,
                     ContactForm,
@@ -46,14 +47,6 @@ log = logging.getLogger(__name__)
 
 STAFF_ONLY = [r.value for r in Role if r not in (Role.MEMBER, Role.DONOR)]
 
-MAP_LEGEND = [
-    {"label": "Zaidi ya 10,000", "color": "#0d5433"},
-    {"label": "5,000 - 10,000", "color": "#12864a"},
-    {"label": "2,000 - 5,000", "color": "#4cbd83"},
-    {"label": "Chini ya 2,000", "color": "#c9e8d5"},
-]
-
-
 # ===========================================================================
 #  Msaada
 # ===========================================================================
@@ -67,22 +60,77 @@ def _active_year(request):
     return y if 2000 <= y <= this_year + 1 else this_year
 
 
+def _view_roles(url):
+    """
+    Majukumu yanayoruhusiwa kufungua URL hii, au `None` isipokuwa na
+    kizuizi.
+
+    Orodha inasomwa kutoka kwa `role_required` yenyewe (inaiweka kwenye
+    `mwst_roles`), si kutoka kwenye nakala ya pili hapa. Nakala ya pili
+    ingetofautiana na ukweli siku ya kwanza mtu atakapobadilisha
+    kizuizi kimoja tu.
+    """
+    from django.urls import Resolver404, resolve
+
+    try:
+        match = resolve(url.split("?")[0])
+    except (Resolver404, Exception):
+        return None
+    return getattr(match.func, "mwst_roles", None)
+
+
+def _gate_actions(ctx, user):
+    """
+    Ondoa "Vitendo vya Haraka" ambavyo mtumiaji hana ruhusa navyo.
+
+    Menyu ilichujwa (`_filter_nav`) lakini gridi ya vitendo kwenye
+    dashibodi haikuchujwa. Afisa wa ustawi alikuwa akiona "Rekodi
+    Malipo" na "Tuma Ujumbe kwa Wote" kama vitufe vikubwa vya rangi —
+    hatua ya kwanza anayoiona akiingia — na kila kimoja kilimwambia
+    hana ruhusa. Kitufe kisichobonyezwa ni ahadi ya bure.
+    """
+    qa = ctx.get("quick_actions")
+    if not qa or not user.is_authenticated:
+        return ctx
+    items = []
+    for it in qa.get("items", []):
+        url = it.get("url") or ""
+        if url.startswith("/mfumo/"):
+            parts = url.strip("/").split("/")
+            entry = registry.get_entry(parts[1]) if len(parts) > 1 else None
+            if entry is not None and not registry.allowed(entry, user):
+                continue
+        else:
+            roles = _view_roles(url)
+            if roles is not None and getattr(user, "role", "") not in roles:
+                continue
+        items.append(it)
+    ctx["quick_actions"] = {**qa, "items": items}
+    return ctx
+
+
 def _filter_nav(nav, user):
     """
-    Ondoa viungo vya `/mfumo/` ambavyo mtumiaji hana ruhusa navyo.
+    Ondoa viungo ambavyo mtumiaji hana ruhusa navyo.
 
-    Bila hii, nav ingeonyesha viungo vinavyoishia 404 kwa majukumu
-    yasiyoruhusiwa.
+    Awali ilikuwa inaangalia `/mfumo/` pekee. Baada ya kurudisha kila
+    ukurasa wa watumishi kwenye jukumu lake, menyu ilibaki ikionyesha
+    "Malipo", "Michango", "Wadau" na "Ujumbe kwa Wanachama" kwa afisa
+    wa ustawi — akibofya, anaambiwa hana ruhusa. Menyu isiyoaminika ni
+    mbaya kuliko menyu fupi.
     """
     def ok(item):
         url = item.get("url") or ""
-        if not url.startswith("/mfumo/"):
+        if not url.startswith("/"):
             return True
-        slug = url.strip("/").split("/")[1] if url.count("/") > 2 else None
-        if slug is None:
-            return True
-        entry = registry.get_entry(slug)
-        return entry is None or registry.allowed(entry, user)
+        if url.startswith("/mfumo/"):
+            slug = url.strip("/").split("/")[1] if url.count("/") > 2 else None
+            if slug is None:
+                return True
+            entry = registry.get_entry(slug)
+            return entry is None or registry.allowed(entry, user)
+        roles = _view_roles(url)
+        return roles is None or getattr(user, "role", "") in roles
 
     out = []
     for item in nav:
@@ -94,6 +142,69 @@ def _filter_nav(nav, user):
             item = {**item, "children": kept}
         elif not ok(item):
             continue
+        out.append(item)
+    return out
+
+
+def _msg_count(user, is_member):
+    """
+    Ujumbe ambao haujasomwa — kwa beji ya bahasha kwenye topbar.
+
+    Mwanachama: majibu ya viongozi kwenye mazungumzo yake.
+    Afisa: ujumbe wa fomu ya mawasiliano ambao haujasomwa.
+    """
+    if not user.is_authenticated:
+        return None
+    try:
+        if is_member:
+            member = getattr(user, "member", None)
+            if member is None:
+                return None
+            from programs.models import Message
+            n = Message.objects.filter(thread__member=member, from_leader=True,
+                                       read_at__isnull=True).count()
+        else:
+            from content.models import ContactMessage
+            n = ContactMessage.objects.filter(is_read=False).count()
+    except Exception:           # jedwali bado halipo (kabla ya migrate)
+        return None
+    return n or None
+
+
+def _nav_badges(user):
+    """
+    Namba zinazoonekana pembeni mwa viungo vya menyu.
+
+    Zilikuwa maandishi tu ndani ya `core/data/navs.py`: kila msimamizi
+    aliona "128" karibu na *Maombi ya Uanachama* na kila afisa aliona
+    "18" — milele, bila kujali kilichopo. Mtu aliyefungua ukurasa
+    akakuta maombi matatu alijua kwamba namba hizo ni za urembo, na
+    kuanzia hapo hakuamini namba nyingine yoyote kwenye mfumo.
+
+    Sasa ni hesabu halisi, ndani ya eneo la mtumiaji, na `None`
+    ikiwa hakuna kitu kinachosubiri — beji tupu ni kelele.
+    """
+    from members.models import Application, ApplicationStatus
+
+    apps = Application.objects.filter(
+        status__in=[ApplicationStatus.PENDING, ApplicationStatus.REVIEW])
+    regions = scope_regions(user)
+    if regions is not None:
+        apps = apps.filter(region_id__in=regions)
+    return {"maombi": apps.count() or None}
+
+
+def _apply_badges(nav, user):
+    """Bandika namba halisi kwenye viungo vinavyozitaka."""
+    badges = _nav_badges(user)
+    out = []
+    for item in nav:
+        children = item.get("children")
+        if children is not None:
+            item = {**item, "children": _apply_badges(children, user)}
+        key = item.get("key")
+        if key in badges:
+            item = {**item, "badge": badges[key]}
         out.append(item)
     return out
 
@@ -176,7 +287,12 @@ def _chrome(request, **kw):
     base = {
         "verse": q.verse(0),
         "notif_count": unread or None,
-        "msg_count": None,
+        #: Ilikuwa `None` daima — beji ya barua haikuweza kuonekana
+        #: kamwe, hata ujumbe ukiwepo. Mtumiaji aliisoma kama "huna
+        #: ujumbe", si kama "kipengele hiki hakijakamilika". Beji ya
+        #: arifa iliyo pembeni yake ilikuwa halisi, jambo lililofanya
+        #: udanganyifu uwe mkubwa zaidi.
+        "msg_count": _msg_count(user, is_member),
         # Mwanachama anaenda kwenye ukurasa wake; mtumishi anaenda kwenye usimamizi
         "notif_url": ("/mwanachama/taarifa/" if is_member
                       else "/mfumo/arifa/"),
@@ -189,26 +305,75 @@ def _chrome(request, **kw):
     }
     base.update(kw)
     if base.get("nav") and user.is_authenticated:
-        base["nav"] = _filter_nav(base["nav"], user)
+        base["nav"] = _apply_badges(_filter_nav(base["nav"], user), user)
     return base
 
 
-def _roles():
+def _login_forms():
+    """
+    Fomu mbili za kuingia kwenye ukurasa wa mbele.
+
+    Milango ni MIWILI tofauti (`login` na `leader_login`), kwa hiyo kila
+    fomu ina `action` yake. Tofauti si ya mapambo: mwanachama huingia
+    kwa NAMBA YA UANACHAMA, kiongozi kwa JINA LA MTUMIAJI. Fomu moja
+    yenye "Namba / Barua pepe / Jina" iliwachanganya wote wawili.
+
+    Kitufe cha kiongozi ni pana kwa makusudi — kinajumuisha viongozi wa
+    ngazi zote, maafisa wa makao makuu na waratibu. Wote hawa hupitia
+    mlango mmoja, kwa hiyo kuwagawa zaidi kungeongeza hatua bila faida.
+    """
     return [
-        {"label": "Mwanachama", "icon": "user", "url": reverse("core:login") + "?as=member",
+        {
+            "key": "mwanachama",
+            "action": reverse("core:login"),
+            "icon": "user",
+            "tint": "green",
+            "title": _("Karibu, Mwanachama"),
+            "lead": _("Ingia kuona kadi, malipo na pointi zako"),
+            "placeholder": _("Namba ya Uanachama au Barua pepe"),
+            "hint": _("Mfano: MUWESTA/B/000123/2026"),
+        },
+        {
+            "key": "kiongozi",
+            "action": reverse("core:leader_login"),
+            "icon": "user-check",
+            "tint": "gold",
+            "title": _("Karibu, Kiongozi"),
+            "lead": _("Viongozi wa ngazi zote, maafisa na waratibu"),
+            "placeholder": _("Jina la mtumiaji au Barua pepe"),
+            "hint": _("Tumia jina ulilopewa na ofisi, si namba ya uanachama."),
+        },
+    ]
+
+
+def _roles():
+    """
+    Kadi za "wewe ni nani?" kwenye ukurasa wa mbele.
+
+    Kila moja inaelekeza MLANGO WAKE. Awali zote zilielekeza `/ingia/`;
+    baada ya kutenganisha milango, kadi ya "Afisa" ingemtupa mtu kwenye
+    fomu ya wanachama, ambapo akaunti yake inakataliwa.
+    """
+    member = reverse("core:login")
+    leader = reverse("core:leader_login")
+    return [
+        {"label": "Mwanachama", "icon": "user", "url": member + "?as=member",
          "tint": "green", "desc": "Kadi, malipo, pointi na maombi yako"},
-        {"label": "Afisa", "icon": "briefcase", "url": reverse("core:login") + "?as=officer",
+        {"label": "Kiongozi", "icon": "shield", "url": leader + "?as=leader",
+         "tint": "green", "desc": "Kata, wilaya, mkoa, kanda na taifa"},
+        {"label": "Afisa", "icon": "briefcase", "url": leader + "?as=officer",
          "tint": "navy", "desc": "Usajili, malipo na michango"},
-        {"label": "Mratibu", "icon": "map", "url": reverse("core:login") + "?as=coordinator",
+        {"label": "Mratibu", "icon": "map", "url": leader + "?as=coordinator",
          "tint": "purple", "desc": "Wadau, wahisani na kampeni"},
-        {"label": "Msimamizi", "icon": "shield", "url": reverse("core:login") + "?as=admin",
+        {"label": "Msimamizi", "icon": "shield", "url": leader + "?as=admin",
          "tint": "red", "desc": "Mfumo mzima na mikoa yote"},
     ]
 
 
 def _pub(request, key, extra=None):
     ctx = {"site_menu": pg.menu(), "footer_menu": pg.footer_menu(),
-           "page_key": key, "roles": _roles()}
+           "page_key": key, "roles": _roles(),
+           "login_forms": _login_forms()}
     if extra:
         ctx.update(extra)
     return ctx
@@ -225,7 +390,10 @@ def _page(request):
 def staff_required(view):
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect(f"{reverse('core:login')}?next={request.path}")
+            #: Mlango wa viongozi, si wa wanachama. Ukurasa huu ni wa
+            #: watumishi — kumpeleka mtu kwenye fomu ya wanachama ni
+            #: kumtuma mahali ambapo akaunti yake inakataliwa.
+            return redirect(f"{reverse('core:leader_login')}?next={request.path}")
         if request.user.role not in STAFF_ONLY:
             messages.warning(request, _("Huna ruhusa ya kufikia ukurasa huu."))
             return redirect("core:member_dashboard")
@@ -233,6 +401,86 @@ def staff_required(view):
     wrapper.__name__ = view.__name__
     wrapper.__doc__ = view.__doc__
     return wrapper
+
+
+#: Majukumu yanayoruhusiwa kugusa fedha. `staff_required` inakubali KILA
+#: jukumu lisilo la mwanachama, kwa hiyo afisa wa wadau alikuwa na uwezo
+#: wa kuthibitisha malipo — na kuthibitisha malipo ya `ada` kunazalisha
+#: mwanachama, kadi na akaunti ya kuingia. Yaani afisa asiyehusika na
+#: fedha kabisa angeweza kutengeneza uanachama bila senti kuingia.
+MONEY_ROLES = [Role.SUPER_ADMIN, Role.ADMIN, Role.MANAGEMENT,
+               Role.FINANCE, Role.CONTRIBUTIONS]
+
+#: Majukumu yanayoweza kubadilisha akaunti ya mtu (kurejesha nenosiri).
+ACCOUNT_ROLES = [Role.SUPER_ADMIN, Role.ADMIN]
+
+#: Majukumu ya kila eneo la kazi. Yanalingana na yale ya
+#: `core/registry.py` kwa makusudi — jukumu moja lisiwe na maana mbili
+#: tofauti kwenye sehemu mbili za mfumo mmoja.
+#:
+#: `staff_required` inakubali KILA jukumu lisilo la mwanachama. Ukaguzi
+#: ulionyesha kwamba KILA ukurasa wa watumishi — malipo, michango,
+#: wadau, ustawi, kutuma ujumbe kwa wanachama wote, na kupakua CSV za
+#: wanachama, wahisani na michango — ulikuwa wazi kwa maafisa wote
+#: wanane. Afisa wa wadau angeweza kupakua daftari lote la wanachama;
+#: afisa wa usajili angeweza kupakua orodha ya wahisani; yeyote
+#: angeweza kutuma SMS kwa wanachama WOTE.
+ADMINS_ONLY = [Role.SUPER_ADMIN, Role.ADMIN]
+ADMINS_PLUS = ADMINS_ONLY + [Role.MANAGEMENT]
+REG_ROLES = ADMINS_PLUS + [Role.REGISTRATION]
+OUTREACH_ROLES = ADMINS_PLUS + [Role.OUTREACH, Role.CONTRIBUTIONS]
+WELFARE_ROLES = ADMINS_PLUS + [Role.WELFARE]
+ZONE_ROLES = ADMINS_PLUS + [Role.COORDINATOR]
+
+#: Kubadilisha hali ya uanachama (kusitisha / kufufua) ni uamuzi wa
+#: kinidhamu, si kazi ya kila siku ya usajili.
+MEMBER_STATUS_ROLES = ADMINS_PLUS
+
+
+def role_required(*roles):
+    """Kizuizi cha jukumu, juu ya `staff_required`."""
+    allowed = [r.value if hasattr(r, "value") else r for r in roles]
+
+    def outer(view):
+        def wrapper(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                return redirect(f"{reverse('core:leader_login')}?next={request.path}")
+            if request.user.role not in allowed:
+                messages.warning(request, _("Huna ruhusa ya kufanya kitendo hiki."))
+                return redirect(_back(request, reverse("core:dashboard")))
+            return view(request, *args, **kwargs)
+        wrapper.__name__ = view.__name__
+        wrapper.__doc__ = view.__doc__
+        #: Menyu (`_filter_nav`) inasoma hii ili isionyeshe kiungo
+        #: ambacho mtu atakataliwa akibofya. Ni orodha moja — ya hapa —
+        #: si nakala ya pili inayoweza kutofautiana.
+        wrapper.mwst_roles = allowed
+        return wrapper
+    return outer
+
+
+def _in_scope(user, member):
+    """
+    Je, mwanachama huyu yuko ndani ya eneo la mtumiaji?
+
+    Orodha (`wanachama`, `maombi`, `malipo`) zilikuwa zikichuja kwa
+    mkoa, lakini VITENDO havikuchuja — mratibu wa Kanda ya Kaskazini
+    angeweza kuthibitisha malipo ya mwanachama wa Mtwara kwa kutuma POST
+    yenye `pk` yake. Ukaguzi ulikuwa upande wa uongozi
+    (`can_touch_payment`) lakini haukuwa upande wa watumishi.
+
+    Ukaguzi unatoka `geo.scope.can_see_member`, si kwa mkoa. Kwa
+    mwenyekiti wa KATA, mkoa ni eneo kubwa mno: angeweza kugusa malipo
+    ya mtu wa kata nyingine ya mkoa wake. Ngazi inayotumika ni ile ya
+    wadhifa wake halisi.
+    """
+    from geo.scope import can_see_member, sees_everyone
+
+    if sees_everyone(user):
+        return True
+    if member is None:
+        return False
+    return can_see_member(user, member)
 
 
 # ===========================================================================
@@ -268,29 +516,6 @@ def _client_ip(request):
     return request.META.get("REMOTE_ADDR", "") or "?"
 
 
-def _alert_login(user, request, ok=True):
-    """
-    Mjulishe mtu kwamba akaunti yake imeguswa.
-
-    Arifa za kushindwa zina kikomo cha moja kwa saa. Bila kikomo, mtu
-    angeweza kujaza sanduku la barua pepe la mwanachama kwa kubandika
-    nenosiri lisilo sahihi mara elfu — kinga ingegeuka silaha.
-    """
-    from django.core.cache import cache
-    from . import mailer
-
-    if not (user.email or "").strip():
-        return
-    if not ok:
-        key = f"alert-fail:{user.pk}"
-        if cache.get(key):
-            return
-        cache.set(key, 1, 3600)
-    mailer.send_login_alert(
-        user.email, user.get_full_name() or user.username,
-        _client_ip(request), request.META.get("HTTP_USER_AGENT", ""), ok=ok)
-
-
 def _safe_next(request, fallback):
     """
     Zuia open redirect. `?next=https://tovuti-mbaya.com` ingemtoa mtumiaji
@@ -302,6 +527,23 @@ def _safe_next(request, fallback):
             nxt, allowed_hosts={request.get_host()},
             require_https=request.is_secure()):
         return nxt
+    return fallback
+
+
+def _back(request, fallback):
+    """
+    Rudi ulikotoka, lakini ndani ya tovuti hii tu.
+
+    Vitendo vya POST vilikuwa vikirudisha `HTTP_REFERER` moja kwa moja.
+    `_safe_next` ilikuwepo kwa ajili hii hasa — haikuwa ikitumika hapa.
+    """
+    from django.utils.http import url_has_allowed_host_and_scheme
+
+    ref = request.META.get("HTTP_REFERER") or ""
+    if ref and url_has_allowed_host_and_scheme(
+            ref, allowed_hosts={request.get_host()},
+            require_https=request.is_secure()):
+        return ref
     return fallback
 
 
@@ -337,26 +579,95 @@ def _find_user(identifier, password, request):
 #: (admin, usajili, mratibu_kaskazini...). Majukumu ya nje ya ofisi
 #: huingia kwa namba ya uanachama au barua pepe. Uwanja wa kwanza kwenye
 #: fomu hubadilika kufuata hili — mtu asiulizwe kitu asichokuwa nacho.
+#:
+#: `door` inaamua fomu ipi inaonyesha jukumu hili. Milango ni MIWILI na
+#: imetenganishwa kabisa:
+#:
+#:   `/ingia/`           -> wanachama, wahisani na wajitoleaji
+#:   `/ingia/viongozi/`  -> viongozi wa aina zote
+#:
+#: "Viongozi wa aina zote" ni pande mbili za mfumo huu, ambazo ni tofauti
+#: kabisa: nyadhifa za kuchaguliwa (`geo.Leadership` — mwenyekiti au
+#: katibu wa kata, wilaya, mkoa, kanda, taifa; jukumu lao mara nyingi ni
+#: `member`) na maafisa wa ofisi (`Role` — usajili, fedha, michango,
+#: ustawi, wadau, mratibu, usimamizi). Wote wanaingia kwenye mlango wa
+#: viongozi.
 LOGIN_ROLES = [
     {"key": "donor", "label": "Mhisani", "icon": "hand-heart", "tint": "green",
-     "staff": False,
+     "staff": False, "door": "member",
      "hint": "Ingia ili kuona kumbukumbu za michango yako yote."},
     {"key": "volunteer", "label": "Kujitolea", "icon": "users", "tint": "green",
-     "staff": False,
+     "staff": False, "door": "member",
      "hint": "Wajitoleaji hutumia akaunti ile ile ya mwanachama."},
     {"key": "member", "label": "Mwanachama", "icon": "user", "tint": "green",
-     "staff": False,
+     "staff": False, "door": "member",
      "hint": "Kadi yako, malipo, pointi na maombi yako."},
+    #: Kiongozi wa kuchaguliwa huingia kwa NAMBA YA UANACHAMA — ana rekodi
+    #: ya uanachama, hana jina la mtumiaji la ofisi.
+    {"key": "leader", "label": "Kiongozi", "icon": "shield", "tint": "green",
+     "staff": False, "door": "leader",
+     "hint": "Mwenyekiti au katibu wa kata, wilaya, mkoa, kanda au taifa."},
     {"key": "officer", "label": "Afisa", "icon": "briefcase", "tint": "gold",
-     "staff": True,
+     "staff": True, "door": "leader",
      "hint": "Usajili, malipo, michango na ustawi."},
     {"key": "coordinator", "label": "Mratibu", "icon": "map", "tint": "navy",
-     "staff": True,
+     "staff": True, "door": "leader",
      "hint": "Mikoa, wadau na kampeni za kanda yako."},
     {"key": "admin", "label": "Msimamizi", "icon": "shield", "tint": "purple",
-     "staff": True,
+     "staff": True, "door": "leader",
      "hint": "Mfumo mzima na mikoa yote."},
 ]
+
+#: Mlango wa kila jukumu, na jukumu la kwanza la kila mlango.
+DOOR_DEFAULT = {"member": "member", "leader": "officer"}
+
+
+def _door_roles(door):
+    return [r for r in LOGIN_ROLES if r["door"] == door]
+
+
+def _user_by_identifier(identifier):
+    """
+    Mtumiaji anayelingana na kitambulisho hiki, au `None`.
+
+    Hutafuta kwa jina la mtumiaji, barua pepe, au namba ya uanachama —
+    njia zote tatu ambazo `_find_user` hukubali. HAITHIBITISHI nenosiri;
+    inatumika kuamua MLANGO tu.
+    """
+    if not identifier:
+        return None
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    user = User.objects.filter(
+        Q(username__iexact=identifier) | Q(email__iexact=identifier)).first()
+    if user is not None:
+        return user
+    member = Member.objects.filter(
+        Q(membership_no__iexact=identifier) | Q(email__iexact=identifier)
+    ).select_related("user").first()
+    return member.user if member else None
+
+
+def _is_leader_account(user):
+    """
+    Je, akaunti hii ni ya kiongozi wa aina yoyote?
+
+    Pande mbili: jukumu la ofisi (`is_staff_role`) au wadhifa wa
+    kuchaguliwa unaotumika leo (`geo.Leadership`). Msimamizi mkuu wa
+    Django hahesabiwi hapa — hana mlango wa umma kabisa.
+    """
+    if user is None or not getattr(user, "is_authenticated", False):
+        return False
+    if getattr(user, "is_staff", False) or getattr(user, "is_staff_role", False):
+        return True
+    from geo.scope import active_posts
+    return bool(active_posts(user))
+
+
+def _door_of(user):
+    """Mlango unaomhusu mtumiaji huyu."""
+    return "leader" if _is_leader_account(user) else "member"
 
 #: Maneno ya uwanja wa kwanza kwa kila aina ya jukumu. Yapo hapa —
 #: si kwenye JavaScript — ili yapite kwenye tafsiri kama maandishi mengine.
@@ -378,19 +689,21 @@ IDENTIFIER_COPY = {
 }
 
 
-def _login_ctx(request, extra=None):
+def _login_ctx(request, door="member", extra=None):
     """
-    Muktadha wa ukurasa wa kuingia.
+    Muktadha wa ukurasa wa kuingia wa mlango mmoja.
 
     ONYO: jukumu lililochaguliwa ni MWONGOZO wa maonyesho tu. Jukumu halisi
     linatoka kwenye akaunti yenyewe (`user.role`) — mtu hawezi kupata ruhusa
-    za msimamizi kwa kubofya kitufe cha "Msimamizi".
+    za msimamizi kwa kubofya kitufe cha "Msimamizi". Vivyo hivyo mlango:
+    kufungua `/ingia/viongozi/` hakumfanyi mtu kuwa kiongozi.
     """
-    picked = (request.POST.get("as") or request.GET.get("as") or "member").lower()
-    keys = [r["key"] for r in LOGIN_ROLES]
+    roles = _door_roles(door)
+    keys = [r["key"] for r in roles]
+    picked = (request.POST.get("as") or request.GET.get("as") or "").lower()
     if picked not in keys:
-        picked = "member"
-    spec = next(r for r in LOGIN_ROLES if r["key"] == picked)
+        picked = DOOR_DEFAULT.get(door, keys[0])
+    spec = next(r for r in roles if r["key"] == picked)
 
     def copy(is_staff):
         row = IDENTIFIER_COPY[is_staff]
@@ -398,7 +711,8 @@ def _login_ctx(request, extra=None):
                 for k, v in row.items()}
 
     ctx = {
-        "login_roles": LOGIN_ROLES,
+        "login_roles": roles,
+        "door": door,
         "active_role": picked,
         "role_hint": gettext(spec["hint"]),
         #: Maneno ya sasa (yanayotolewa na seva) na yale ya upande wa pili
@@ -412,6 +726,27 @@ def _login_ctx(request, extra=None):
     if extra:
         ctx.update(extra)
     return _pub(request, "ingia", ctx)
+
+
+def _suspended_reason(user):
+    """
+    Sababu ya kumzuia kuingia, au `""` akiwa huru kuingia.
+
+    Afisa anapobofya "Sitisha" kwenye ukurasa wa mwanachama, hali ya
+    `Member` inakuwa `suspended` — LAKINI `user.is_active` haiguswi, na
+    hakuna mahali pengine hali hiyo ilikuwa ikiangaliwa. Kwa hiyo
+    mwanachama aliyesitishwa aliendelea kuingia, kuona kadi yake, kuomba
+    msaada na kutuma malalamiko kama kawaida. Uamuzi wa afisa haukuwa na
+    athari yoyote kwenye mfumo.
+
+    Muda ukiisha (`expired`) HAKUZUII — mtu anapaswa kuingia ndio aweze
+    kuhuisha uanachama wake. Ni kusitishwa pekee kunakofunga mlango.
+    """
+    member = getattr(user, "member", None)
+    if member is not None and member.status == MemberStatus.SUSPENDED:
+        return str(_("Uanachama wako umesitishwa. Wasiliana na ofisi ya "
+                     "MUWESTA kwa maelezo zaidi."))
+    return ""
 
 
 def _needs_code(user, request):
@@ -434,8 +769,20 @@ def _needs_code(user, request):
     # badala ya kumfungia nje milele — angalia `_start_login_code`.
     if not _phone_for(user):
         return False
-    if user.is_staff:
+    #: Ulikuwa `user.is_staff` — bendera ya Django inayowekwa na amri za
+    #: `ruhusa`/`watumishi` pekee. Afisa aliyeundwa kupitia
+    #: `/mfumo/watumiaji/` hapati bendera hiyo, kwa hiyo alikuwa
+    #: anapitia njia ya kifaa kinachoaminika cha siku 30 na hakuulizwa
+    #: code tena kamwe. Maafisa wawili wenye jukumu moja walikuwa na
+    #: ulinzi tofauti kabisa. `is_staff_role` inaangalia JUKUMU, ambalo
+    #: ndilo linaloamua anachoona.
+    if user.is_staff or user.is_staff_role:
         return True
+    #: Kiongozi wa kuchaguliwa (jukumu `member`) anaingia hapa. Anapata
+    #: code kwenye kifaa kipya, kisha kifaa kinaaminika siku 30 — sawa na
+    #: mwanachama. Hii ni kwa makusudi: hana ofisi, anatumia simu yake
+    #: uwanjani, na code kila mara ingekuwa kero inayomfanya atafute njia
+    #: ya kuzunguka. Paneli yake inaonyesha eneo lake pekee, si nchi nzima.
     return not _device_trusted(request, user)
 
 
@@ -473,7 +820,7 @@ def _remember_device(response, user):
 
 def _alert_login(user, request, ok=True):
     """
-    Mjulishe mtu kwa SMS kwamba akaunti yake imeguswa.
+    Mjulishe mtu kwa SMS na barua pepe kwamba akaunti yake imeguswa.
 
     Arifa za kushindwa zina kikomo cha moja kwa saa. Bila kikomo, mtu
     angeweza kujaza simu ya mwanachama kwa SMS kwa kubandika nenosiri
@@ -481,17 +828,28 @@ def _alert_login(user, request, ok=True):
     ingelipiwa na MUWESTA.
     """
     from django.core.cache import cache
-    from . import sms
+    from . import mailer, sms
 
     phone = _phone_for(user)
-    if not phone:
+    email = (user.email or "").strip()
+    if not (phone or email):
         return
     if not ok:
         key = f"alert-fail:{user.pk}"
         if cache.get(key):
             return
         cache.set(key, 1, 3600)
-    sms.send_login_alert(phone, user.get_full_name() or user.username, ok=ok)
+    if phone:
+        sms.send_login_alert(phone, user.get_full_name() or user.username, ok=ok)
+    #: Kulikuwa na `_alert_login` MBILI kwenye faili hii. Ya pili
+    #: ilififisha ya kwanza, kwa hiyo arifa ya barua pepe
+    #: (`mailer.send_login_alert`) haikuwahi kutumwa hata mara moja —
+    #: na aliyesoma ufafanuzi wa ya kwanza aliamini inatumwa.
+    #: Sasa ni moja, na inatumia njia zote mbili.
+    if email:
+        mailer.send_login_alert(
+            email, user.get_full_name() or user.username,
+            _client_ip(request), request.META.get("HTTP_USER_AGENT", ""), ok=ok)
 
 
 def _mask_phone(phone):
@@ -522,9 +880,22 @@ def _finish_login(request, user, trust_device=False):
     messages.success(request, _("Karibu, %(name)s!") % {
         "name": user.get_full_name() or user.username})
 
-    target = request.session.pop("mwst_next", "") or reverse(user.home_url_name())
+    #: Aliyeingia kwenye mlango wa viongozi anaenda kwenye eneo la
+    #: uongozi, si kwenye dashibodi ya mwanachama.
+    #:
+    #: Kiongozi wa kata ana jukumu `member` na rekodi ya uanachama, kwa
+    #: hiyo `home_url_name()` ilimpeleka `/mwanachama/` — hata pale
+    #: alipobofya "Kiongozi" na kuingia kwa nia ya kufanya kazi ya
+    #: wadhifa wake. Mlango anaouchagua ni maelezo ya anachotaka.
+    door = request.session.pop("mwst_door", "")
+    home = reverse(user.home_url_name())
+    if door == "leader" and not (user.is_staff or user.is_staff_role):
+        from core import leadership as _L
+        if _L.is_leader(user):
+            home = reverse("core:leader_dashboard")
+    target = request.session.pop("mwst_next", "") or home
     response = redirect(_safe_next(request, target))
-    if trust_device and not user.is_staff:
+    if trust_device and not (user.is_staff or user.is_staff_role):
         _remember_device(response, user)
     return response
 
@@ -539,7 +910,7 @@ def _start_login_code(request, user):
         messages.error(request, _(
             "Umeomba code nyingi mno kwa saa moja. Subiri kidogo kisha "
             "ujaribu tena."))
-        return redirect("core:login")
+        return redirect(_door_name(request))
 
     row, code = VerificationCode.issue(
         sms.msisdn(phone), CodePurpose.LOGIN, user=user, ip=_client_ip(request))
@@ -548,10 +919,43 @@ def _start_login_code(request, user):
     if not sent:
         # SMS imeshindwa. Kumfungia nje mtu mwenye nenosiri sahihi kwa
         # sababu ya hitilafu ya mtandao au salio lililoisha ni kumuadhibu
-        # kwa kosa letu. Tunaandika kwenye kumbukumbu badala yake.
+        # kwa kosa letu — kwa hiyo mwanachama anaruhusiwa kuendelea.
+        #
+        # LAKINI: NextSMS isipokuwa imewekwa kabisa, `send_code`
+        # inarudisha `False` KILA MARA. Hiyo si hitilafu ya muda — ni
+        # hitilafu ya usanidi, na ilikuwa inazima uthibitisho wa hatua
+        # mbili kwa maafisa wote kimya kimya, huku dashibodi ikiendelea
+        # kusema OTP imewashwa. Mtu mwenye nenosiri lililoibiwa la afisa
+        # aliingia moja kwa moja. Kwa maafisa, mlango unafungwa.
+        from . import sms as _sms
+
+        misconfigured = not _sms.is_configured()
+        if user.is_staff or user.is_staff_role:
+            log.error("Code ya kuingia haikutumwa kwa afisa %s — "
+                      "ameKATALIWA (usanidi: %s)",
+                      user.username, "haupo" if misconfigured else "upo")
+            AuditLog.record(
+                request,
+                "login_code_unconfigured" if misconfigured else "login_code_undelivered",
+                detail=user.username)
+            messages.error(request, _(
+                "Hatukuweza kutuma code ya usalama kwenye simu yako. Kwa "
+                "usalama wa taarifa za wanachama, hatuwezi kukuruhusu "
+                "kuingia bila code. Wasiliana na msimamizi wa mfumo."))
+            if misconfigured:
+                #: Msimamizi anayeweka mfumo mara ya kwanza anastahili
+                #: kuambiwa nini hasa cha kufanya, si kubaki amefungiwa
+                #: nje bila maelezo. Kuzima OTP ni uamuzi — si kitu
+                #: kinachopaswa kutokea chenyewe kimya kimya.
+                messages.info(request, _(
+                    "Kwa msimamizi: NEXTSMS haijawekwa. Weka funguo zake "
+                    "kwenye environment, au — ukikubali hatari yake — "
+                    "weka LOGIN_OTP_ENABLED=False kwa muda."))
+            return redirect(_door_name(request))
+
         log.error("Code ya kuingia haikutumwa kwa %s — ameruhusiwa kuingia",
                   user.username)
-        AuditLog.record(request, "login_code_failed", detail=user.username)
+        AuditLog.record(request, "login_code_undelivered", detail=user.username)
         messages.warning(request, _(
             "Hatukuweza kutuma code kwenye simu yako, kwa hiyo tumekuruhusu "
             "kuingia. Tafadhali mjulishe msimamizi."))
@@ -565,8 +969,41 @@ def _start_login_code(request, user):
     return redirect("core:login_code")
 
 
-def _clear_pending(request):
-    for k in ("mwst_pending_user", "mwst_pending_at", "mwst_remember", "mwst_next"):
+def _door_name(request):
+    """
+    Jina la URL ya mlango aliotoka mtu huyu.
+
+    Hatua ya code ni ombi lingine; bila hii, afisa aliyeshindwa
+    kuthibitisha alikuwa akirudishwa `/ingia/` — fomu ya wanachama,
+    ambapo akaunti yake inakataliwa. Alikuwa akizungushwa.
+    """
+    return ("core:leader_login"
+            if request.session.get("mwst_door") == "leader" else "core:login")
+
+
+#: Vitufe vya session vya hatua ya code. `PENDING` ni "ni nani anasubiri";
+#: `INTENT` ni "alitaka nini" — kifaa kikumbukwe, aende wapi, alitoka
+#: mlango upi. `_finish_login` ndiye anayesoma `INTENT`.
+PENDING_KEYS = ("mwst_pending_user", "mwst_pending_at")
+INTENT_KEYS = ("mwst_remember", "mwst_next", "mwst_door")
+
+
+def _clear_pending(request, keep_intent=False):
+    """
+    Safisha hatua ya code.
+
+    `keep_intent=True` huacha nia yake — inatumika pale code ILIPOKUBALIWA,
+    kwa sababu `_finish_login` bado anahitaji kujua aende wapi.
+
+    HITILAFU ILIYOKUWA HAPA: kazi hii ilikuwa inafuta `mwst_next` pamoja
+    na kila kitu kingine, na iliitwa MSTARI MMOJA kabla ya
+    `_finish_login`. Kwa hiyo mtu aliyebofya kiungo cha ndani
+    (`?next=/malipo/`), akaulizwa code, alipelekwa ukurasa wake wa
+    kawaida badala ya pale alipotaka kwenda. Kiungo alichobofya
+    kilipotea kimya kimya kila mara OTP ilipowashwa.
+    """
+    keys = PENDING_KEYS if keep_intent else PENDING_KEYS + INTENT_KEYS
+    for k in keys:
         request.session.pop(k, None)
 
 
@@ -584,19 +1021,20 @@ def login_code_view(request):
 
     pk = request.session.get("mwst_pending_user")
     started = request.session.get("mwst_pending_at")
+    mlango = _door_name(request)
     if not pk or not started:
-        return redirect("core:login")
+        return redirect(mlango)
 
     if timezone.now() - timezone.datetime.fromisoformat(started) > timedelta(minutes=15):
         _clear_pending(request)
         messages.error(request, _("Muda umeisha. Tafadhali ingia tena."))
-        return redirect("core:login")
+        return redirect(mlango)
 
     from django.contrib.auth import get_user_model
     user = get_user_model().objects.filter(pk=pk).first()
     if user is None:
         _clear_pending(request)
-        return redirect("core:login")
+        return redirect(mlango)
 
     phone = _phone_for(user)
     if request.method == "POST":
@@ -614,7 +1052,7 @@ def login_code_view(request):
         row, err = VerificationCode.verify(
             sms.msisdn(phone), CodePurpose.LOGIN, request.POST.get("code", ""))
         if err is None:
-            _clear_pending(request)
+            _clear_pending(request, keep_intent=True)
             return _finish_login(request, user, trust_device=True)
 
         AuditLog.record(request, "login_code_failed", detail=user.username)
@@ -628,7 +1066,7 @@ def login_code_view(request):
         "page_title": _("Thibitisha ni wewe"),
         "page_lead": _("Tumekutumia code ya tarakimu sita kwenye simu yako."),
         "submit_label": _("Ingia"),
-        "back_url": reverse("core:login"),
+        "back_url": reverse(mlango),
         "back_label": _("Rudi kuingia"),
         "target": _mask_phone(phone),
         "minutes": VerificationCode.TTL_MINUTES,
@@ -651,27 +1089,58 @@ def _safe_detail(identifier):
 
 def _alert_failed(identifier, request):
     """Tafuta mwenye akaunti hii na umjulishe kuhusu jaribio."""
-    if not identifier:
-        return
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
-    user = User.objects.filter(
-        Q(username__iexact=identifier) | Q(email__iexact=identifier)).first()
-    if user is None:
-        member = Member.objects.filter(
-            Q(membership_no__iexact=identifier) | Q(email__iexact=identifier)
-        ).select_related("user").first()
-        user = member.user if member else None
+    user = _user_by_identifier(identifier)
     if user is not None:
         _alert_login(user, request, ok=False)
 
 
-def login_view(request):
+#: Kiolezo cha kila mlango. Vyote viwili vinatumia `public/_login_form.html`
+#: kwa fomu yenyewe — ulinzi, uwanja na hatua ni vile vile; kinachotofautiana
+#: ni nembo, maneno na viungo.
+DOOR_TEMPLATE = {
+    "member": "public/login.html",
+    "leader": "public/login_uongozi.html",
+}
+
+
+def _wrong_door(request, user, door):
+    """
+    Ujumbe wa kumwelekeza mtu kwenye mlango wake, au `""` akiwa mahali sahihi.
+
+    Ukaguzi unafanyika KWA KITAMBULISHO, kabla nenosiri kuthibitishwa.
+    Sababu: kama tungeangalia baada ya kuthibitisha, afisa aliyefika
+    mlango wa wanachama akiwa na nenosiri sahihi angeambiwa "nenda
+    mlango mwingine", na akiwa na nenosiri lisilo sahihi angeambiwa
+    "nenosiri si sahihi" — tofauti hiyo yenyewe ingekuwa ikithibitisha
+    nenosiri. Kuangalia kabla huondoa tofauti hiyo kabisa.
+    """
+    if user is None:
+        return ""
+    mine = _door_of(user)
+    if mine == door:
+        return ""
+    if door == "member":
+        return str(_("Akaunti hii ni ya kiongozi. Tumia ukurasa wa "
+                     "kuingia wa viongozi."))
+    return str(_("Akaunti hii ni ya mwanachama. Tumia ukurasa wa kuingia "
+                 "wa wanachama."))
+
+
+def _login_door(request, door):
+    """
+    Hatua za kuingia kwa mlango mmoja.
+
+    Milango miwili, mwili mmoja: kikomo cha majaribio, kuzuia msimamizi
+    mkuu, ukaguzi wa kusitishwa, code ya SMS na arifa ni vile vile pande
+    zote mbili. Kuyaandika mara mbili ni kuhakikisha kwamba siku moja
+    moja itasahihishwa na nyingine itabaki na hitilafu.
+    """
     if request.user.is_authenticated:
         return redirect(request.user.home_url_name())
 
     from django.core.cache import cache
     cache_key = f"login-fail:{_client_ip(request)}"
+    template = DOOR_TEMPLATE[door]
 
     if request.method == "POST":
         attempts = cache.get(cache_key, 0)
@@ -679,10 +1148,24 @@ def login_view(request):
             messages.error(request, _(
                 "Umejaribu mara nyingi mno. Subiri dakika 15 kisha ujaribu tena, "
                 "au tumia \"Umesahau nenosiri?\"."))
-            return render(request, "public/login.html", _login_ctx(request))
+            return render(request, template, _login_ctx(request, door))
 
         identifier = (request.POST.get("username") or "").strip()
         password = request.POST.get("password") or ""
+
+        #: Mlango kwanza, nenosiri baadaye — angalia `_wrong_door`.
+        known = _user_by_identifier(identifier) if identifier else None
+        if known is not None and not known.is_superuser:
+            elsewhere = _wrong_door(request, known, door)
+            if elsewhere:
+                AuditLog.record(request, "login_wrong_door",
+                                detail=f"{known.username} -> {door}")
+                messages.info(request, elsewhere)
+                other = ("core:leader_login" if door == "member"
+                         else "core:login")
+                return redirect(f"{reverse(other)}"
+                                f"?next={_safe_next(request, '')}")
+
         user = _find_user(identifier, password, request) if identifier else None
 
         if user is not None and user.is_superuser:
@@ -694,10 +1177,22 @@ def login_view(request):
             AuditLog.record(request, "superuser_public_login_blocked",
                             detail=user.username)
             messages.error(request, _("Jina la mtumiaji au nenosiri si sahihi."))
-            return render(request, "public/login.html", _login_ctx(request))
+            return render(request, template, _login_ctx(request, door))
+
+        if user is not None:
+            blocked = _suspended_reason(user)
+            if blocked:
+                cache.delete(cache_key)
+                AuditLog.record(request, "login_blocked_suspended",
+                                detail=user.username)
+                messages.error(request, blocked)
+                return render(request, template, _login_ctx(request, door))
 
         if user is not None:
             cache.delete(cache_key)
+            #: Mlango unahifadhiwa kwa sababu hatua ya code ni ombi
+            #: lingine kabisa — `_finish_login` haiwezi kujua alitoka wapi.
+            request.session["mwst_door"] = door
             if _needs_code(user, request):
                 # Nenosiri ni sahihi, lakini bado hajaingia.
                 return _start_login_code(request, user)
@@ -722,7 +1217,24 @@ def login_view(request):
         else:
             messages.error(request, _("Jina la mtumiaji au nenosiri si sahihi."))
 
-    return render(request, "public/login.html", _login_ctx(request))
+    return render(request, template, _login_ctx(request, door))
+
+
+def login_view(request):
+    """Kuingia kwa wanachama, wahisani na wajitoleaji."""
+    return _login_door(request, "member")
+
+
+def leader_login(request):
+    """
+    Kuingia kwa viongozi wa aina zote.
+
+    Mlango tofauti kwa makusudi: nyadhifa za kuchaguliwa (kata, wilaya,
+    mkoa, kanda, taifa) na maafisa wa ofisi wote wanapitia hapa. Ukurasa
+    wa wanachama haumwomba mtu jina la mtumiaji la ofisi, na huu
+    haumwalike mtu kujiunga — kila mmoja unauliza kinachomhusu.
+    """
+    return _login_door(request, "leader")
 
 
 def logout_view(request):
@@ -731,6 +1243,53 @@ def logout_view(request):
     auth_logout(request)
     messages.info(request, _("Umetoka kwenye mfumo."))
     return redirect("core:home")
+
+
+def weka_nenosiri(request):
+    """
+    Mwanachama mpya anaweka nenosiri lake mara ya kwanza.
+
+    HII ILIKUWA HAIPO, na bila yake safari yote ya kujiunga ilikwama
+    hatua ya mwisho. `Application.activate()` huitwa na signal ya malipo
+    — yaani ndani ya callback ya Pesapal, pasipo afisa mbele ya skrini.
+    Nenosiri la muda lililotengenezwa hapo lilibaki kwenye kumbukumbu ya
+    request ile: halikuhifadhiwa, halikupelekwa kwa SMS, na ukurasa wa
+    asante ukisoma tena kutoka database ulipata `None`. Kila mwanachama
+    aliyejiunga kwa njia ya mtandao alikuwa na akaunti yenye nenosiri
+    ambalo hakuna mtu — wala yeye, wala afisa — anayelijua.
+
+    Saini kwenye kiungo ina alama ya nenosiri la sasa, kwa hiyo kiungo
+    hufa chenyewe mara nenosiri linapowekwa. Kiungo kilichotumwa mara
+    mbili hakiwezi kutumiwa mara ya pili.
+    """
+    from django.contrib.auth.forms import SetPasswordForm
+
+    no = (request.GET.get("no") or request.POST.get("no") or "").strip()
+    token = (request.GET.get("k") or request.POST.get("k") or "").strip()
+    member = Member.by_setup_token(no, token)
+    if member is None:
+        messages.error(request, _(
+            "Kiungo hiki hakifanyi kazi tena. Huenda nenosiri lako "
+            "lilikwisha wekwa — jaribu kuingia, au tumia \"Nimesahau "
+            "nenosiri\"."))
+        return redirect("core:login")
+
+    if request.method == "POST":
+        form = SetPasswordForm(member.user, request.POST)
+        if form.is_valid():
+            form.save()
+            AuditLog.record(request, "member_password_set", member)
+            messages.success(request, _(
+                "Nenosiri lako limewekwa. Sasa ingia kwa namba yako ya "
+                "uanachama %(no)s.") % {"no": member.membership_no})
+            return redirect("core:login")
+        messages.error(request, _("Tafadhali sahihisha makosa hapa chini."))
+    else:
+        form = SetPasswordForm(member.user)
+
+    return render(request, "public/weka_nenosiri.html", _pub(request, "ingia", {
+        "form": form, "member": member, "no": no, "k": token,
+    }))
 
 
 # ===========================================================================
@@ -761,6 +1320,27 @@ def huduma(request):
 
 def habari(request):
     return render(request, "public/habari.html", _pub(request, "habari", q.public_habari()))
+
+
+def habari_moja(request, pk):
+    """
+    Habari moja kamili.
+
+    Ukurasa huu haukuwepo. `News.body` — maudhui halisi ya habari —
+    ilihifadhiwa, ilihaririwa kwenye `/mfumo/habari/`, lakini haikuwa na
+    njia ya kuonekana: kila kitufe cha "Soma Zaidi" kilirudi kwenye
+    orodha ile ile.
+    """
+    from content.models import News
+
+    item = get_object_or_404(News, pk=pk, is_published=True)
+    others = (News.objects.filter(is_published=True).exclude(pk=item.pk)
+              .select_related("category")[:3])
+    return render(request, "public/habari_moja.html", _pub(request, "habari", {
+        "item": item,
+        "others": [{"id": n.pk, "title": n.tx("title"), "scene": n.scene,
+                    "date": n.published_on.strftime("%d %B %Y")} for n in others],
+    }))
 
 
 def matukio_umma(request):
@@ -804,7 +1384,12 @@ def _selcom_start(request, gift, description):
     from django.conf import settings as st
     from finance.gateways import selcom
 
-    phone = (gift.donor.phone if gift.donor else "") or ""
+    #: `contact_phone` inasoma `donor_phone` kwanza. Awali hapa
+    #: palikuwa `gift.donor.phone` pekee, na `/lipa/` HAIWEKI `donor`
+    #: kabisa — kwa hiyo kila malipo ya ada kwa Selcom yalisimama hapa
+    #: kabla hayajaanza, huku mtu akiambiwa "mchango wako umehifadhiwa"
+    #: bila njia yoyote ya kulipa.
+    phone = gift.contact_phone
     if not phone:
         messages.error(request, _(
             "Namba ya simu inahitajika kwa malipo ya simu. Mchango wako "
@@ -818,9 +1403,12 @@ def _selcom_start(request, gift, description):
             amount=gift.amount,
             buyer_name=gift.donor_name or "Mchangiaji",
             buyer_phone=phone,
-            buyer_email=(gift.donor.email if gift.donor else "") or "",
+            buyer_email=gift.contact_email,
             webhook_url=f"{st.SITE_URL}{reverse('core:selcom_webhook')}",
-            currency=gift.currency or "TZS",
+            #: `gift.amount` IMESHABADILISHWA kwenda TZS na `to_tzs()`.
+            #: Kutuma namba hiyo pamoja na alama ya fedha ya asili
+            #: kulimaanisha mtu aliyechangia $100 aliombwa $261,500.
+            currency="TZS",
         )
         # Hifadhi KABLA ya kutuma kidokezo: kidokezo kikigoma, bado
         # tunaweza kuuliza Selcom hali ya order hii.
@@ -840,6 +1428,33 @@ def _selcom_start(request, gift, description):
     return redirect("core:selcom_subiri", receipt=gift.receipt_no)
 
 
+def _may_see_gift(request, gift):
+    """
+    Je, huyu anaruhusiwa kuona risiti hii?
+
+    Ukaguzi wa awali ulikuwa `... and not request.user.is_authenticated`,
+    yaani MTU YEYOTE aliyeingia — hata mhisani aliyejisajili mwenyewe
+    dakika iliyopita — aliweza kusoma risiti zote. Namba za risiti
+    zinafuatana (MUWESTA-M-000001, -000002...), kwa hiyo daftari lote la
+    michango lilikuwa linasomeka kwa loop moja: jina la mtoaji, kiasi,
+    mfuko na hali.
+
+    Sasa ni tatu tu: aliyechangia kwenye kipindi hiki, mwenye rekodi
+    hiyo, au afisa.
+    """
+    if request.session.get("mwst_last_gift") == gift.receipt_no:
+        return True
+    user = request.user
+    if not user.is_authenticated:
+        return False
+    if user.is_staff or getattr(user, "is_staff_role", False):
+        return True
+    if gift.donor_id and gift.donor.user_id == user.pk:
+        return True
+    member = getattr(user, "member", None)
+    return bool(member and gift.member_id == member.pk)
+
+
 def _selcom_sync(gift):
     """
     Thibitisha hali halisi ya malipo kwa Selcom.
@@ -848,7 +1463,7 @@ def _selcom_sync(gift):
     inachukuliwa hapa, si kutoka kwenye kile kilichotumwa kwetu.
     """
     from finance.gateways import selcom
-    from finance.models import PaymentStatus
+    from finance.models import Contribution
 
     if not gift.gateway_ref:
         return gift
@@ -857,18 +1472,11 @@ def _selcom_sync(gift):
     except selcom.SelcomError:
         return gift
 
-    state = selcom.payment_status(body)
-    if state == "confirmed" and gift.status != PaymentStatus.CONFIRMED:
-        gift.status = PaymentStatus.CONFIRMED
-        ref = selcom.transaction_ref(body)
-        fields = ["status"]
-        if ref and ref != gift.gateway_ref:
-            gift.gateway_ref = ref
-            fields.append("gateway_ref")
-        gift.save(update_fields=fields)
-    elif state == "failed" and gift.status == PaymentStatus.PENDING:
-        gift.status = PaymentStatus.FAILED
-        gift.save(update_fields=["status"])
+    #: `Contribution.settle` inashika kufuli la safu kabla ya kubadilisha
+    #: hali. Bila hilo, webhook ya Selcom na kipima-hali cha ukurasa wa
+    #: kusubiri (kinachouliza kila sekunde chache) vilikuwa vinaweza
+    #: kubadilisha mchango ule ule kwa wakati mmoja.
+    gift, _changed = Contribution.settle(gift.pk, selcom.payment_status(body))
     return gift
 
 
@@ -882,7 +1490,7 @@ def selcom_subiri(request, receipt):
     from finance.models import Contribution, PaymentStatus
 
     gift = get_object_or_404(Contribution, receipt_no=receipt)
-    if request.session.get("mwst_last_gift") != receipt and not request.user.is_authenticated:
+    if not _may_see_gift(request, gift):
         raise Http404
 
     _selcom_sync(gift)
@@ -892,7 +1500,7 @@ def selcom_subiri(request, receipt):
     return render(request, "public/selcom_subiri.html",
                   _pub(request, "changia", {
                       "gift": gift,
-                      "phone": (gift.donor.phone if gift.donor else "") or "",
+                      "phone": gift.contact_phone,
                   }))
 
 
@@ -907,7 +1515,14 @@ def selcom_hali(request, receipt):
     from finance.models import Contribution
 
     gift = get_object_or_404(Contribution, receipt_no=receipt)
+    #: Ukaguzi huu haukuwepo. Kila ombi hapa linapiga simu ya nje kwa
+    #: Selcom (`order_status`, sekunde 20 za kusubiri), kwa hiyo mtu
+    #: yeyote aliyejua muundo wa namba ya risiti angeweza kumaliza
+    #: kiwango chetu cha Selcom kwa loop rahisi.
+    if not _may_see_gift(request, gift):
+        raise Http404
     _selcom_sync(gift)
+    gift.refresh_from_db()
     return JsonResponse({"status": gift.status})
 
 
@@ -956,11 +1571,18 @@ def _pesapal_start(request, gift, description):
             amount=gift.amount,
             description=description,
             callback_url=f"{st.SITE_URL}{reverse('core:pesapal_callback')}",
-            currency=gift.currency or "TZS",
+            #: TZS DAIMA. `gift.amount` tayari imepitishwa kwenye
+            #: `to_tzs()`, kwa hiyo kutuma alama ya fedha ya asili
+            #: kulikuwa kunaomba kiasi cha TZS kwa fedha hiyo: $100
+            #: kilikuwa $261,500, €100 kikawa €284,000.
+            currency="TZS",
             first_name=names[0] if names else "",
             last_name=names[1] if len(names) > 1 else "",
-            email=(gift.donor.email if gift.donor else "") or "",
-            phone=(gift.donor.phone if gift.donor else "") or "",
+            #: `/lipa/` haiweki `donor`, kwa hiyo kusoma `donor.email`
+            #: pekee kulipeleka Pesapal ombi lisilo na njia yoyote ya
+            #: mawasiliano — jambo ambalo `SubmitOrderRequest` inakataa.
+            email=gift.contact_email,
+            phone=gift.contact_phone,
         )
     except pesapal.PesapalError as exc:
         messages.error(request, _(
@@ -1038,7 +1660,7 @@ def _pesapal_sync(gift):
     kivinjari. Hali inathibitishwa hapa, si kutoka kwenye URL.
     """
     from finance.gateways import pesapal
-    from finance.models import PaymentStatus
+    from finance.models import Contribution
 
     if not gift.gateway_ref:
         return gift
@@ -1047,28 +1669,36 @@ def _pesapal_sync(gift):
     except pesapal.PesapalError:
         return gift
 
-    state = pesapal.map_status(body)
-    if state == "confirmed" and gift.status != PaymentStatus.CONFIRMED:
-        gift.status = PaymentStatus.CONFIRMED
-        gift.save(update_fields=["status"])
-    elif state in ("failed", "reversed"):
-        gift.status = PaymentStatus.FAILED
-        gift.save(update_fields=["status"])
+    #: Angalia `Contribution.settle` kwa sababu ya kufuli. Hapa kuna
+    #: jambo la ziada: hapo awali tawi la `failed` halikuwa na ukaguzi
+    #: wa hali, kwa hiyo mchango ULIOKWISHA thibitishwa na kuingia
+    #: leja ungeweza kugeuzwa `failed` na kidokezo kutoka nje.
+    gift, _changed = Contribution.settle(gift.pk, pesapal.map_status(body))
     return gift
 
 
 def pesapal_callback(request):
-    """Mtumiaji anarudishwa hapa baada ya kulipa."""
+    """
+    Mtumiaji anarudishwa hapa baada ya kulipa.
+
+    Mchango unatafutwa kwa `OrderTrackingId` PEKEE. Awali ilikuwa
+    ikikubali pia `OrderMerchantReference`, ambayo ni namba ya risiti
+    yetu inayofuatana (MUWESTA-M-000001, -000002...). Mtu yeyote
+    angeweza kuomba URL hii kwa namba yoyote, session yake ikapewa
+    ruhusa ya risiti hiyo, na daftari lote la michango likasomeka kwa
+    `for` loop. `OrderTrackingId` ni UUID inayotolewa na Pesapal —
+    haikisiwi.
+    """
     from finance.models import Contribution, PaymentStatus
 
-    tracking = request.GET.get("OrderTrackingId", "")
-    reference = request.GET.get("OrderMerchantReference", "")
+    tracking = (request.GET.get("OrderTrackingId") or "").strip()
     gift = (Contribution.objects.filter(gateway_ref=tracking).first()
-            or Contribution.objects.filter(receipt_no=reference).first())
+            if tracking else None)
     if gift is None:
         raise Http404
 
     _pesapal_sync(gift)
+    gift.refresh_from_db()
     request.session["mwst_last_gift"] = gift.receipt_no
     if gift.status == PaymentStatus.CONFIRMED:
         messages.success(request, _("Malipo yako yamekamilika. Asante!"))
@@ -1172,7 +1802,7 @@ def changia(request):
         "recurrences": giving.localise(giving.RECURRENCES, lang),
         "providers": giving.localise(giving.PROVIDERS, lang),
         "provider_groups": giving.localise(giving.PROVIDER_GROUPS, lang),
-        "currencies": giving.CURRENCIES,
+        "currencies": giving.currencies(),
         "presets": giving.PRESETS,
     }
 
@@ -1260,11 +1890,12 @@ def lipa(request):
                 purpose=totals["kind"],
                 recurrence="",
                 months=totals["months"],
-                method="pesapal" if data["provider"] == "pesapal" else data["provider"][:20],
+                method=data["provider"][:12],
                 note=(data.get("note") or "")[:200],
                 status=PaymentStatus.PENDING,
                 donor_name=data["full_name"],
-                donor_phone=data.get("phone", ""))
+                donor_phone=data.get("phone", ""),
+                donor_email=data.get("email", ""))
             AuditLog.record(request, "membership_payment", gift)
             request.session["mwst_last_gift"] = gift.receipt_no
             return _finish_payment(
@@ -1283,12 +1914,24 @@ def lipa(request):
         #   /lipa/?ombi=APP/MUWESTA/2026/0001
         ref = request.GET.get("ombi", "").strip()
         if ref:
-            app = Application.objects.filter(reference__iexact=ref).first()
+            #: Taarifa binafsi hujazwa tu ikiwa kiungo kina saini
+            #: iliyotoka kwenye SMS yetu, AU ikiwa afisa ndiye
+            #: aliyefungua. Bila hivyo mwombaji anaweza kuendelea
+            #: mwenyewe, lakini fomu haimwambii mtu yeyote taarifa za
+            #: mtu mwingine.
+            app = Application.by_pay_token(ref, request.GET.get("k", "").strip())
+            if app is None and request.user.is_authenticated \
+                    and request.user.role in STAFF_ONLY:
+                app = Application.objects.filter(reference__iexact=ref).first()
             if app and not app.member_id:
                 initial.update({"payer_type": "new", "membership_no": app.reference,
                                 "full_name": app.full_name, "phone": app.phone,
                                 "email": app.email, "package": app.category.code,
                                 "include_registration": True})
+            elif app is None:
+                messages.info(request, _(
+                    "Ili taarifa zako zijazwe zenyewe, tumia kiungo "
+                    "kilichokuja kwenye ujumbe wa simu."))
 
         # Arifa ya muda kuisha inampeleka mtu hapa: /lipa/?huisha=1
         if request.GET.get("huisha"):
@@ -1315,7 +1958,7 @@ def changia_asante(request, receipt):
     gift = get_object_or_404(Contribution, receipt_no=receipt)
     # Risiti si siri kubwa, lakini haipaswi kuvinjariwa na mtu yeyote.
     # Tunaonyesha tu kama ndiyo mchango uliotolewa kwenye kipindi hiki.
-    if request.session.get("mwst_last_gift") != receipt and not request.user.is_authenticated:
+    if not _may_see_gift(request, gift):
         raise Http404
 
     has_account = bool(gift.donor and gift.donor.user_id)
@@ -1325,12 +1968,25 @@ def changia_asante(request, receipt):
     is_fee = gift.purpose == "ada"
     member = gift.member if is_fee else None
 
+    #: Kiungo cha kuweka nenosiri. Awali ukurasa huu ulikuwa ukijaribu
+    #: kuonyesha `member.temp_password` — sifa iliyowekwa kwenye
+    #: kumbukumbu ya request ya callback ya Pesapal, si kwenye database.
+    #: Ilikuwa `None` KILA MARA hapa, kwa sababu `gift` inasomwa upya
+    #: kutoka database. Sasa tunaonyesha kiungo chenye saini, na
+    #: MLIPAJI PEKEE ndiye anayekiona: si afisa, si mtu mwingine
+    #: anayeruhusiwa kuiona risiti. Kiungo kinaweka nenosiri, kwa hiyo
+    #: si cha kupita kwa mtu wa tatu.
+    setup_url = None
+    if member is not None and member.user_id \
+            and request.session.get("mwst_last_gift") == gift.receipt_no:
+        setup_url = member.setup_path()
+
     return render(request, "public/changia_asante.html",
                   _pub(request, "changia", {
                       "gift": gift,
                       "is_fee": is_fee,
                       "member": member,
-                      "temp_password": getattr(member, "temp_password", None),
+                      "setup_url": setup_url,
                       "has_account": has_account,
                       "show_invite": (not is_fee and not has_account
                                       and not request.user.is_authenticated),
@@ -1377,8 +2033,23 @@ def donor_register(request):
             donor.save()
 
             # Unganisha michango ya nyuma iliyotolewa kwa simu/barua pepe hiyo.
-            Contribution.objects.filter(donor__isnull=True).filter(
-                Q(donor_name__iexact=data["full_name"])).update(donor=donor)
+            #
+            # Ukaguzi ulikuwa wa JINA PEKEE. Jina si siri — linaonekana
+            # kwenye ukurasa wa shukrani na kwenye orodha ya wahisani.
+            # Mtu angeweza kujisajili kwa jina la mwingine na michango
+            # yote ya mtu huyo ikahamia kwake: akaiona, na mwenyewe
+            # akaipoteza. Sasa lazima simu au barua pepe ilingane, na
+            # jina liendelee kutumika kama kiungo cha ziada tu.
+            phone = (data["phone"] or "").strip()
+            match = Q(donor_email__iexact=data["email"])
+            if phone:
+                match |= Q(donor_phone=phone)
+            claimed = Contribution.objects.filter(donor__isnull=True).filter(match)
+            #: Risiti aliyoitumia kufungua akaunti inahesabika yenyewe —
+            #: ndiyo uthibitisho wa moja kwa moja kwamba ni wake.
+            if gift is not None and gift.donor_id is None:
+                claimed = claimed | Contribution.objects.filter(pk=gift.pk)
+            claimed.update(donor=donor)
 
             auth_login(request, user)
             AuditLog.record(request, "donor_signup", donor)
@@ -1488,11 +2159,17 @@ def jiunge(request):
 
             app = form.save()
             AuditLog.record(request, "application_submitted", app)
+            #: Awali ujumbe huu ulisema mtu "utapigiwa simu na kupewa
+            #: namba yako ya uanachama pamoja na nenosiri". Hakuna hatua
+            #: ya mfumo inayofanya hivyo: baada ya kuhakikiwa, hatua
+            #: inayofuata ni KULIPA, na namba ya uanachama hutolewa
+            #: malipo yakithibitishwa. Ahadi isiyo ya kweli inamfanya
+            #: mtu asubiri simu isiyokuja.
             messages.success(request, _(
                 "Ombi lako limepokelewa. Namba ya kumbukumbu ni %(ref)s — "
                 "iandike. Afisa wa usajili atahakiki taarifa zako, kisha "
-                "utapigiwa simu na kupewa namba yako ya uanachama pamoja na "
-                "nenosiri la kuingia kwenye mfumo."
+                "utapata ujumbe wenye kiungo cha kulipia ada. Namba yako ya "
+                "uanachama, kadi na akaunti hutolewa malipo yakithibitishwa."
             ) % {"ref": app.reference})
 
             # Hongera kwanza — inampa namba ya kumbukumbu na kumweleza
@@ -1527,9 +2204,15 @@ def _start_phone_check(request, app):
                                        ip=_client_ip(request))
     if not sms.send_code(app.phone, code, "phone", VerificationCode.TTL_MINUTES):
         log.error("Code ya kuthibitisha haikutumwa kwa %s", to)
+        #: Mstari ulikuwa umeandikwa kama escape ya Python (`\\u2014`).
+        #: Python inaibadilisha kuwa herufi moja wakati wa kuendesha,
+        #: lakini `xgettext` huihifadhi kama herufi sita za escape. Kwa
+        #: hiyo msgid kwenye `.po` haikulingana na maandishi halisi
+        #: yanayoombwa, na sentensi hii haikuwa na njia ya kutafsiriwa
+        #: kabisa. Herufi halisi hapa inaondoa tofauti hiyo.
         messages.info(request, _(
             "Hatukuweza kutuma code kwenye simu yako sasa hivi. Ombi lako "
-            "limehifadhiwa \u2014 afisa atawasiliana nawe."))
+            "limehifadhiwa — afisa atawasiliana nawe."))
         return redirect("core:jiunge")
 
     request.session["mwst_verify_ref"] = app.reference
@@ -1615,18 +2298,23 @@ def event_register(request, pk):
             messages.success(request, _("Umejiandikisha kwenye %(title)s.") % {"title": event.title})
         else:
             messages.error(request, _("Tafadhali jaza jina na namba ya simu."))
-    return redirect(request.META.get("HTTP_REFERER") or reverse("core:matukio_umma"))
+    return redirect(_back(request, reverse("core:matukio_umma")))
 
 
 def api_districts(request):
-    region = request.GET.get("region")
-    rows = District.objects.filter(region_id=region).values("id", "name") if region else []
+    #: `?region=abc` ilikuwa inatoa `ValueError` isiyoshikwa — yaani 500
+    #: kwa kila mtu aliyeandika kitu kisicho namba, na njia rahisi ya
+    #: kujaza log ya makosa.
+    region = (request.GET.get("region") or "").strip()
+    rows = (District.objects.filter(region_id=int(region)).values("id", "name")
+            if region.isdigit() else [])
     return JsonResponse({"results": list(rows)})
 
 
 def api_wards(request):
-    district = request.GET.get("district")
-    rows = Ward.objects.filter(district_id=district).values("id", "name") if district else []
+    district = (request.GET.get("district") or "").strip()
+    rows = (Ward.objects.filter(district_id=int(district)).values("id", "name")
+            if district.isdigit() else [])
     return JsonResponse({"results": list(rows)})
 
 
@@ -1655,19 +2343,22 @@ def card_verify(request, serial):
 # ===========================================================================
 #  DASHBOARDS
 # ===========================================================================
-@staff_required
+@role_required(*ADMINS_PLUS)
 def national(request):
-    ctx = q.national(year=_active_year(request))
+    ctx = _gate_actions(q.national(year=_active_year(request),
+                                   region_ids=scope_regions(request.user)),
+                        request.user)
     nav = (navs.coordinator("taifa") if user_zone(request.user)
            else navs.national("dashboard"))
     ctx.update(_chrome(request, nav=nav,
                        topbar_title="MUWESTA Membership Management System",
                        topbar_sub="Dashboard - Msimamizi Mkuu (Mikoa Yote za Tanzania)",
-                       map_regions=tz_map(ctx["regions"]), map_legend=MAP_LEGEND))
+                       map_regions=tz_map(ctx["regions"]),
+                       map_legend=tz_legend(ctx["regions"])))
     return render(request, "admin_panel/national.html", ctx)
 
 
-@staff_required
+@role_required(*REG_ROLES)
 def usajili(request):
     if request.method == "POST":
         form = ApplicationForm(request.POST, request.FILES)
@@ -1679,7 +2370,8 @@ def usajili(request):
         messages.error(request, _("Tafadhali sahihisha makosa hapa chini."))
     else:
         form = ApplicationForm()
-    ctx = q.usajili(year=_active_year(request))
+    ctx = q.usajili(year=_active_year(request),
+                    region_ids=scope_regions(request.user))
     ctx["form"] = form
     ctx.update(_chrome(request, nav=navs.usajili("usajili"),
                        topbar_title="MUWESTA Membership Management System",
@@ -1687,7 +2379,7 @@ def usajili(request):
     return render(request, "admin_panel/usajili.html", ctx)
 
 
-@staff_required
+@role_required(*MONEY_ROLES)
 def malipo(request):
     if request.method == "POST":
         form = PaymentForm(request.POST)
@@ -1714,7 +2406,7 @@ def malipo(request):
     return render(request, "admin_panel/malipo.html", ctx)
 
 
-@staff_required
+@role_required(*MONEY_ROLES)
 def michango(request):
     if request.method == "POST":
         form = ContributionForm(request.POST)
@@ -1741,16 +2433,19 @@ def michango(request):
     return render(request, "admin_panel/michango.html", ctx)
 
 
-@staff_required
+@role_required(*OUTREACH_ROLES)
 def wadau(request):
     ctx = q.wadau(year=_active_year(request))
+    ctx["can_see_contributions"] = request.user.role in [
+        r.value for r in MONEY_ROLES]
     ctx.update(_chrome(request, nav=navs.outreach("dashboard"), verse=q.verse(1),
                        show_search=True, search_placeholder="Tafuta...",
-                       map_regions=tz_map(ctx["regions"])))
+                       map_regions=tz_map(ctx["regions"]),
+                       map_legend=tz_legend(ctx["regions"])))
     return render(request, "admin_panel/wadau.html", ctx)
 
 
-@staff_required
+@role_required(*OUTREACH_ROLES)
 def matukio(request):
     allowed = scope_regions(request.user)
     ctx = q.matukio(month_key=request.GET.get("month"), year=_active_year(request),
@@ -1760,7 +2455,7 @@ def matukio(request):
     return render(request, "admin_panel/matukio.html", ctx)
 
 
-@staff_required
+@role_required(*OUTREACH_ROLES)
 def media(request):
     ctx = q.media(year=_active_year(request))
     nav = (navs.coordinator("media") if user_zone(request.user)
@@ -1771,13 +2466,17 @@ def media(request):
 
 @staff_required
 def dashboard(request):
-    ctx = q.superadmin(year=_active_year(request))
+    ctx = _gate_actions(q.superadmin(year=_active_year(request)), request.user)
     ctx.update(_chrome(request, nav=navs.superadmin("dashboard"),
                        show_search=True, search_placeholder="Tafuta hapa..."))
     return render(request, "admin_panel/dashboard.html", ctx)
 
 
-@staff_required
+#: Mratibu wa kanda anaona maombi ya kanda yake, KAMA `/uongozi/maombi/`
+#: inavyofanya: kuona tu. Kuhakiki na kuhariri (`maombi_action`,
+#: `application_edit`) yanabaki kwa usajili. Bila hii, menyu yake
+#: ilimwelekeza kwenye ukurasa aliokataliwa.
+@role_required(*(REG_ROLES + [Role.COORDINATOR]))
 def maombi(request):
     qs = Application.objects.select_related("category", "region", "district")
     # Mratibu anaona maombi ya kanda yake pekee
@@ -1814,7 +2513,7 @@ def maombi(request):
         #: Ombi lililohakikiwa linasubiri malipo. Afisa anahitaji kiungo
         #: cha kumpa mwombaji, na kiasi anachotakiwa kulipa.
         "awaiting": a.status == ApplicationStatus.AWAITING_PAYMENT,
-        "pay_url": f"{_s.SITE_URL}{reverse('core:lipa')}?ombi={a.reference}",
+        "pay_url": f"{_s.SITE_URL}{reverse('core:lipa')}?ombi={a.reference}&k={a.pay_token}",
         "due": a.amount_due() if a.status == ApplicationStatus.AWAITING_PAYMENT else 0,
         "phone_verified": a.phone_verified,
     } for a in qs[:50]]
@@ -1832,7 +2531,14 @@ def maombi(request):
         "regions_list": refdata.regions(),
         "detail": detail or (rows[0] if rows else None),
         "picked": picked,
-        "kpis": q.usajili()["kpis"],
+        #: KPI hizi zilikuwa za nchi nzima juu ya ukurasa
+        #: uliochujwa kwa kanda — namba zilizo juu ya jedwali
+        #: hazikulingana na safu zilizo chini yake.
+        "kpis": q.usajili(region_ids=scope_regions(request.user))["kpis"],
+        #: Mratibu anaona maombi lakini hahakiki. Bila bendera hii
+        #: angeona vitufe "Hakiki", "Kataa" na "Hariri" ambavyo
+        #: vinamkatalia akibofya.
+        "can_review": request.user.role in [r.value for r in REG_ROLES],
     }
     ctx.update(_chrome(request, nav=navs.usajili("maombi"),
                        topbar_title="MUWESTA Membership Management System",
@@ -1840,10 +2546,25 @@ def maombi(request):
     return render(request, "admin_panel/maombi.html", ctx)
 
 
-@staff_required
+@role_required(*REG_ROLES)
 @require_POST
 def maombi_action(request, pk, action):
+    """
+    Kuhakiki au kukataa ombi la uanachama.
+
+    Ilikuwa `@staff_required` pekee, yaani KILA jukumu la afisa. Afisa wa
+    michango, wa wadau na wa ustawi wote wangeweza kuhakiki ombi —
+    hatua inayoruhusu mtu kulipa na kuwa mwanachama kamili. Usajili ni
+    kazi ya afisa wa usajili.
+    """
     app = get_object_or_404(Application, pk=pk)
+    #: Orodha ya maombi ilikuwa ikichuja kwa mkoa, lakini kitendo cha
+    #: kuidhinisha hakikuchuja. Mratibu wa kanda moja angeweza
+    #: kuidhinisha ombi la kanda nyingine kwa POST moja, SMS ya malipo
+    #: ikatoka, na `reviewed_by` ikaandika afisa wa kanda isiyohusika.
+    regions = scope_regions(request.user)
+    if regions is not None and app.region_id not in regions:
+        raise Http404
     if app.status in (ApplicationStatus.APPROVED, ApplicationStatus.REJECTED,
                       ApplicationStatus.AWAITING_PAYMENT):
         messages.info(request, _("Ombi %(ref)s tayari limeshughulikiwa.") % {
@@ -1854,7 +2575,8 @@ def maombi_action(request, pk, action):
 
         app.approve(request.user)
         AuditLog.record(request, "application_approved", app)
-        pay_url = f"{settings.SITE_URL}{reverse('core:lipa')}?ombi={app.reference}"
+        pay_url = (f"{settings.SITE_URL}{reverse('core:lipa')}"
+                   f"?ombi={app.reference}&k={app.pay_token}")
         messages.success(request, _(
             "Ombi %(ref)s limehakikiwa. Sasa linasubiri malipo ya ada."
         ) % {"ref": app.reference})
@@ -1907,7 +2629,14 @@ def wanachama(request):
 
 def _member_list(request, region_ids=None, nav=None, zone=None):
     """Orodha ya wanachama. `region_ids` ikitolewa, inabana kwa mikoa hiyo."""
-    qs = Member.objects.select_related("category", "region", "district")
+    from geo.scope import scope_members
+
+    #: Ufinyu halisi unatoka `geo.scope` — ndiyo inayojua ngazi zote
+    #: tano. `region_ids` ni kwa kichujio cha mikoa kwenye fomu pekee:
+    #: kwa mwenyekiti wa KATA, mkoa ni mkubwa sana. Bila mstari huu
+    #: angeona wanachama wote wa mkoa wake badala ya kata yake.
+    qs = scope_members(request.user,
+                       Member.objects.select_related("category", "region", "district"))
     if region_ids is not None:
         qs = qs.filter(region_id__in=region_ids)
     f = {k: (request.GET.get(k) or "") for k in ("q", "status", "category", "region")}
@@ -1936,6 +2665,8 @@ def _member_list(request, region_ids=None, nav=None, zone=None):
         "regions_list": (Region.objects.filter(pk__in=region_ids)
                          if region_ids is not None else refdata.regions()),
         "zone": zone,
+        #: Kitufe cha "Sajili Mwanachama" ni cha usajili pekee.
+        "can_register": request.user.role in [r.value for r in REG_ROLES],
     }
     ctx.update(_chrome(request, nav=nav or navs.superadmin("wanachama"),
                        topbar_title=zone.tx("name") if zone else "MUWESTA Membership Management System",
@@ -2180,11 +2911,15 @@ def member_notices(request):
 # ===========================================================================
 #  AFISA — vitendo kwenye malipo na michango
 # ===========================================================================
-@staff_required
+@role_required(*MONEY_ROLES)
 @require_POST
 def payment_action(request, pk, action):
     """Thibitisha au ghairi malipo yanayosubiri."""
-    payment = get_object_or_404(Payment, pk=pk)
+    from finance.models import reverse_posting
+
+    payment = get_object_or_404(Payment.objects.select_related("member"), pk=pk)
+    if not _in_scope(request.user, payment.member):
+        raise Http404
     if action == "confirm":
         if payment.status == PaymentStatus.CONFIRMED:
             messages.info(request, _("Malipo haya tayari yamethibitishwa."))
@@ -2196,20 +2931,34 @@ def payment_action(request, pk, action):
             messages.success(request, _("Malipo %(no)s yamethibitishwa.") % {
                 "no": payment.receipt_no})
     elif action == "cancel":
-        payment.status = PaymentStatus.CANCELLED
-        payment.save(update_fields=["status", "updated_at"])
-        AuditLog.record(request, "payment_cancelled", payment)
-        messages.info(request, _("Malipo %(no)s yameghairiwa.") % {"no": payment.receipt_no})
+        if payment.status == PaymentStatus.CANCELLED:
+            messages.info(request, _("Malipo haya tayari yameghairiwa."))
+        else:
+            #: Kughairi kulikuwa kunabadilisha `status` pekee, huku leja
+            #: na pointi zikibaki. Sasa vinarudishwa kwa ingizo la
+            #: kinyume — leja haifutwi, inarekebishwa.
+            was_confirmed = payment.status == PaymentStatus.CONFIRMED
+            payment.status = PaymentStatus.CANCELLED
+            payment.save(update_fields=["status", "updated_at"])
+            if was_confirmed:
+                reverse_posting(payment, str(_("Malipo yameghairiwa")))
+            AuditLog.record(request, "payment_cancelled", payment)
+            messages.info(request, _("Malipo %(no)s yameghairiwa.") % {
+                "no": payment.receipt_no})
     else:
         raise Http404
-    return redirect(request.META.get("HTTP_REFERER") or reverse("core:malipo"))
+    return redirect(_back(request, reverse("core:malipo")))
 
 
-@staff_required
+@role_required(*MONEY_ROLES)
 @require_POST
 def contribution_action(request, pk, action):
     """Thibitisha au ghairi mchango."""
-    c = get_object_or_404(Contribution, pk=pk)
+    from finance.models import reverse_posting
+
+    c = get_object_or_404(Contribution.objects.select_related("member"), pk=pk)
+    if c.member_id and not _in_scope(request.user, c.member):
+        raise Http404
     if action == "confirm":
         if c.status == PaymentStatus.CONFIRMED:
             messages.info(request, _("Mchango huu tayari umethibitishwa."))
@@ -2221,13 +2970,19 @@ def contribution_action(request, pk, action):
             messages.success(request, _("Mchango %(no)s umethibitishwa.") % {
                 "no": c.receipt_no})
     elif action == "cancel":
-        c.status = PaymentStatus.CANCELLED
-        c.save(update_fields=["status", "updated_at"])
-        AuditLog.record(request, "contribution_cancelled", c)
-        messages.info(request, _("Mchango %(no)s umeghairiwa.") % {"no": c.receipt_no})
+        if c.status == PaymentStatus.CANCELLED:
+            messages.info(request, _("Mchango huu tayari umeghairiwa."))
+        else:
+            was_confirmed = c.status == PaymentStatus.CONFIRMED
+            c.status = PaymentStatus.CANCELLED
+            c.save(update_fields=["status", "updated_at"])
+            if was_confirmed:
+                reverse_posting(c, str(_("Mchango umeghairiwa")))
+            AuditLog.record(request, "contribution_cancelled", c)
+            messages.info(request, _("Mchango %(no)s umeghairiwa.") % {"no": c.receipt_no})
     else:
         raise Http404
-    return redirect(request.META.get("HTTP_REFERER") or reverse("core:michango"))
+    return redirect(_back(request, reverse("core:michango")))
 
 
 @staff_required
@@ -2235,6 +2990,8 @@ def receipt(request, kind, pk):
     """Risiti inayoweza kuchapishwa (Ctrl+P) kwa malipo au mchango."""
     if kind == "malipo":
         obj = get_object_or_404(Payment.objects.select_related("member"), pk=pk)
+        if not _in_scope(request.user, obj.member):
+            raise Http404
         ctx = {
             "no": obj.receipt_no, "kind": _("Ada ya Uanachama"),
             "name": obj.member.full_name, "membership_no": obj.member.membership_no,
@@ -2245,6 +3002,8 @@ def receipt(request, kind, pk):
         }
     elif kind == "mchango":
         obj = get_object_or_404(Contribution.objects.select_related("fund", "member"), pk=pk)
+        if obj.member_id and not _in_scope(request.user, obj.member):
+            raise Http404
         ctx = {
             "no": obj.receipt_no, "kind": obj.fund.tx("name"),
             "name": obj.display_name,
@@ -2278,6 +3037,11 @@ def member_detail(request, pk):
         elif action == "issue_card":
             from . import sms
 
+            #: Kadi ni kitambulisho rasmi. Kuitoa ni kazi ya usajili, si
+            #: ya afisa wa michango au wa wadau.
+            if request.user.role not in REG_ROLES:
+                messages.warning(request, _("Huna ruhusa ya kutoa kadi."))
+                return redirect("core:member_detail", pk=pk)
             card = Card.issue(member, expires_on=member.expires_on)
             AuditLog.record(request, "card_issued", member)
             sms.send_card_issued(member.phone, card.serial, card.expires_on)
@@ -2311,6 +3075,16 @@ def member_detail(request, pk):
                 ) % {"name": member.full_name, "t": special.name})
             return redirect("core:member_detail", pk=pk)
         elif action == "reset_login":
+            #: `grant_special` hapo juu ilikuwa imezuiwa kwa msimamizi,
+            #: lakini hii haikuwa imezuiwa kabisa. Afisa yeyote — hata
+            #: wa wadau — angeweza kurejesha nenosiri la mwanachama
+            #: yeyote, kusoma nenosiri la muda kwenye ujumbe ule ule,
+            #: na kuingia kama mtu huyo. Pia ilikuwa inamfufua
+            #: mwanachama aliyesimamishwa kimya kimya (`is_active=True`).
+            if request.user.role not in ACCOUNT_ROLES:
+                messages.warning(request, _("Msimamizi pekee ndiye anayeweza "
+                                            "kurejesha taarifa za kuingia."))
+                return redirect("core:member_detail", pk=pk)
             # Hutengeneza akaunti kama haipo, au huweka nenosiri jipya la muda
             import secrets
             alphabet = "abcdefghjkmnpqrstuvwxyz23456789"
@@ -2320,8 +3094,9 @@ def member_detail(request, pk):
                 AuditLog.record(request, "member_login_created", member)
             else:
                 member.user.set_password(pw)
-                member.user.is_active = True
-                member.user.save()
+                #: `is_active` haiguswi. Kurejesha nenosiri si sababu ya
+                #: kufufua akaunti iliyozimwa kwa makusudi.
+                member.user.save(update_fields=["password"])
                 AuditLog.record(request, "member_password_reset", member)
                 from . import sms
 
@@ -2332,7 +3107,25 @@ def member_detail(request, pk):
             ) % {"user": member.user.username, "pw": pw})
             return redirect("core:member_detail", pk=pk)
         if action in ("suspend", "activate"):
+            if request.user.role not in MEMBER_STATUS_ROLES:
+                messages.warning(request, _(
+                    "Huna ruhusa ya kubadilisha hali ya uanachama."))
+                return redirect("core:member_detail", pk=pk)
             member.save(update_fields=["status", "updated_at"])
+            #: Kusitisha LAZIMA kufunge akaunti ya kuingia pia. Awali
+            #: `Member.status` ilibadilika peke yake na `user.is_active`
+            #: ikabaki `True`; hakuna mahali pengine hali hiyo
+            #: ilikuwa ikiangaliwa, kwa hiyo aliyesitishwa aliendelea
+            #: kuingia na kutumia mfumo kama kawaida. Uamuzi wa afisa
+            #: haukuwa na athari yoyote.
+            #:
+            #: `is_active=False` inamtoa mara moja: `ModelBackend.get_user`
+            #: inarudisha `None`, kwa hiyo hata kipindi kilichofunguliwa
+            #: kinakoma kwenye ombi linalofuata — bila kuhitaji ukaguzi
+            #: kwenye kila view ya mwanachama.
+            if member.user_id:
+                member.user.is_active = (action == "activate")
+                member.user.save(update_fields=["is_active"])
             AuditLog.record(request, f"member_{action}", member)
             messages.success(request, _("Hali ya mwanachama imebadilishwa."))
         return redirect("core:member_detail", pk=pk)
@@ -2348,7 +3141,7 @@ def member_detail(request, pk):
     return render(request, "admin_panel/mwanachama_detail.html", ctx)
 
 
-@staff_required
+@role_required(*WELFARE_ROLES)
 def assistance_review(request):
     """Afisa wa ustawi: kupitia maombi ya msaada."""
     qs = AssistanceRequest.objects.select_related("member", "assistance_type")
@@ -2364,11 +3157,36 @@ def assistance_review(request):
     if request.method == "POST":
         from . import sms
 
-        req = get_object_or_404(AssistanceRequest, pk=request.POST.get("pk"))
+        req = get_object_or_404(
+            AssistanceRequest.objects.select_related("member"),
+            pk=request.POST.get("pk"))
+        if not _in_scope(request.user, req.member):
+            raise Http404
         action = request.POST.get("action")
         if action == "approve":
+            #: Kiasi kilikuwa kinachukuliwa moja kwa moja kutoka POST
+            #: bila ukaguzi wowote: "abc" ilivunja ukurasa kwa 500,
+            #: "-50000" iliingia kama ilivyo, na kiasi kikubwa kuliko
+            #: kilichoombwa nacho kiliingia. Sasa lazima kiwe namba,
+            #: chanya, na kisizidi kilichoombwa.
+            raw = (request.POST.get("amount") or "").replace(",", "").strip()
+            approved = req.amount_requested
+            if raw:
+                try:
+                    approved = Decimal(raw)
+                except (InvalidOperation, ValueError):
+                    messages.error(request, _("Kiasi ulichoweka si namba sahihi."))
+                    return redirect("core:assistance_review")
+                if approved <= 0:
+                    messages.error(request, _("Kiasi lazima kiwe zaidi ya sifuri."))
+                    return redirect("core:assistance_review")
+                if approved > req.amount_requested:
+                    messages.error(request, _(
+                        "Huwezi kuidhinisha zaidi ya kilichoombwa (TZS %(k)s)."
+                    ) % {"k": f"{req.amount_requested:,.0f}"})
+                    return redirect("core:assistance_review")
             req.status = "approved"
-            req.amount_approved = request.POST.get("amount") or req.amount_requested
+            req.amount_approved = approved
             req.approved_by = request.user
             req.approved_at = timezone.now()
             req.save()
@@ -2397,10 +3215,31 @@ def assistance_review(request):
 # ===========================================================================
 #  KUPAKUA RIPOTI (CSV — inafunguka Excel)
 # ===========================================================================
+#: Nani anaruhusiwa kupakua nini. CSV ni nakala inayotoka nje ya mfumo
+#: — haina AuditLog wala ufuatiliaji baada ya kuhifadhiwa kwenye simu ya
+#: mtu. Ilikuwa wazi kwa maafisa wote: afisa wa wadau angeweza kupakua
+#: daftari lote la wanachama (majina, simu, namba za vitambulisho,
+#: anwani), na afisa wa usajili orodha ya wahisani na michango yao.
+EXPORT_ROLES = {
+    "malipo": MONEY_ROLES,
+    "michango": MONEY_ROLES,
+    "wahisani": OUTREACH_ROLES,
+    "wanachama": REG_ROLES,
+    "maombi": REG_ROLES,
+    "msaada": WELFARE_ROLES,
+}
+
+
 @staff_required
 def export(request, kind):
     """Pakua data kama CSV. Vichujio vya ukurasa vinaheshimiwa."""
     from . import exports
+
+    wanaoruhusiwa = EXPORT_ROLES.get(kind)
+    if wanaoruhusiwa is not None and request.user.role not in [
+            r.value if hasattr(r, "value") else r for r in wanaoruhusiwa]:
+        messages.warning(request, _("Huna ruhusa ya kupakua data hii."))
+        return redirect(_back(request, reverse("core:dashboard")))
 
     allowed = scope_regions(request.user)   # mratibu: kanda yake tu
 
@@ -2452,7 +3291,14 @@ def export(request, kind):
         result = exports.applications_csv(qs.order_by("-created_at"))
 
     elif kind == "wahisani":
-        result = exports.donors_csv(Donor.objects.all().order_by("name"))
+        #: Tawi hili lilikuwa halina `allowed` kabisa, tofauti na kila
+        #: tawi jingine — mratibu wa kanda moja alipakua majina, simu na
+        #: barua pepe za wahisani wote nchini.
+        donors = Donor.objects.all()
+        if allowed is not None:
+            donors = donors.filter(
+                contributions__member__region_id__in=allowed).distinct()
+        result = exports.donors_csv(donors.order_by("name"))
 
     elif kind == "matukio":
         events = Event.objects.all()
@@ -2473,7 +3319,7 @@ def export(request, kind):
     return result
 
 
-@staff_required
+@role_required(*OUTREACH_ROLES)
 def media_upload(request):
     """Kupakia picha au video."""
     if request.method == "POST":
@@ -2527,22 +3373,95 @@ def user_zone(user):
 
 
 def scope_regions(user):
-    """Mikoa anayoruhusiwa kuona. `None` = mikoa yote."""
-    zone = user_zone(user)
-    return None if zone is None else list(zone.regions.values_list("pk", flat=True))
+    """
+    Mikoa anayoruhusiwa kuona. `None` = mikoa yote.
+
+    AWALI ILIKUWA IKIJUA NGAZI MOJA TU — KANDA. Ilikuwa:
+
+        zone = user_zone(user)
+        return None if zone is None else [mikoa ya kanda hiyo]
+
+    Kwa hiyo kiongozi WA MKOA, WA WILAYA au WA KATA alipata `None` —
+    yaani "mikoa yote". Jukumu lenyewe linaitwa "Mratibu wa MKOA", na
+    ngazi hizo tatu zipo kwenye `LeaderLevel`, lakini paneli ya
+    watumishi haikuzijua. Mwenyekiti wa kata mmoja aliona orodha ya
+    wanachama WOTE wa nchi pamoja na namba zao za simu, akaweza
+    kuwapakua kwa CSV, na `_in_scope` ilimruhusu kugusa malipo ya mtu
+    wa mkoa wowote.
+
+    Wakati huo huo `geo/scope.py` — ambayo docstring yake inasema wazi
+    kwamba mantiki hii haipaswi kuandikwa mahali pengine — ilikuwa
+    ikichuja ngazi zote tano kwa usahihi. Paneli mbili za mfumo mmoja
+    zilikuwa na majibu mawili tofauti kwa swali moja.
+
+    Sasa inatoka kwenye `geo.scope`: wadhifa wowote, ngazi yoyote.
+    Asiye na wadhifa wala jukumu la makao makuu haoni mkoa wowote
+    (`[]`), si nchi nzima — upande salama wa kukosea.
+    """
+    from geo.models import LeaderLevel
+    from geo.scope import active_posts, sees_everyone
+
+    if sees_everyone(user):
+        return None
+
+    ids = set()
+    for p in active_posts(user):
+        if p.level == LeaderLevel.ZONE and p.zone_id:
+            ids.update(Region.objects.filter(zone_id=p.zone_id)
+                       .values_list("pk", flat=True))
+        elif p.level == LeaderLevel.REGION and p.region_id:
+            ids.add(p.region_id)
+        elif p.level == LeaderLevel.DISTRICT and p.district_id:
+            if p.district and p.district.region_id:
+                ids.add(p.district.region_id)
+        elif p.level == LeaderLevel.WARD and p.ward_id:
+            reg = getattr(getattr(p.ward, "district", None), "region_id", None)
+            if reg:
+                ids.add(reg)
+
+    # Njia ya pili kwa rekodi za zamani: mratibu aliyewekwa kwenye
+    # `Zone.coordinator` bila wadhifa wa `Leadership`.
+    if not ids and user.is_authenticated and user.role == Role.COORDINATOR:
+        zone = Zone.objects.filter(coordinator=user).first()
+        if zone:
+            ids.update(zone.regions.values_list("pk", flat=True))
+
+    return sorted(ids)
 
 
-@staff_required
+def _zone_or_none(request):
+    """
+    Kanda ya kuonyesha kwenye dashibodi za kanda.
+
+    `?kanda=<code>` NI YA MSIMAMIZI PEKEE. Awali ilikuwa wazi kwa yeyote
+    aliyefika hapa: mratibu wa Kanda ya Kaskazini angeandika
+    `?kanda=mashariki` na kuona dashibodi nzima ya kanda nyingine —
+    wanachama, ada zisizolipwa, michango na ramani. Ufinyu wa kanda
+    ulikuwa unategemea mtu asijaribu kubadilisha URL.
+
+    Vivyo hivyo `Zone.objects.first()`: mratibu asiye na kanda
+    alionyeshwa kanda ya kwanza kwenye orodha — si yake, ila
+    ilifunguka kama yake.
+    """
+    zone = user_zone(request.user)
+    if zone is not None:
+        return zone
+    if request.user.role not in [r.value for r in ADMINS_PLUS]:
+        return None
+    code = request.GET.get("kanda")
+    return (Zone.objects.filter(code=code).first() if code
+            else Zone.objects.first())
+
+
+@role_required(*ZONE_ROLES)
 def coordinator(request):
     """Dashibodi ya mratibu — kanda yake pekee."""
-    zone = user_zone(request.user)
+    zone = _zone_or_none(request)
     if zone is None:
-        # Msimamizi anaweza kuchagua kanda kwa ?kanda=code
-        code = request.GET.get("kanda")
-        zone = Zone.objects.filter(code=code).first() if code else Zone.objects.first()
-    if zone is None:
-        messages.warning(request, _("Hakuna kanda iliyowekwa."))
-        return redirect("core:national")
+        messages.warning(request, _(
+            "Hujawekwa kwenye kanda yoyote. Wasiliana na msimamizi ili "
+            "uwekwe kwenye kanda yako."))
+        return redirect("core:dashboard")
 
     ctx = q.zone_dashboard(zone, year=_active_year(request))
     ctx["zone"] = zone
@@ -2550,11 +3469,12 @@ def coordinator(request):
     ctx.update(_chrome(request, nav=navs.coordinator("dashboard"),
                        topbar_title=zone.tx("name"),
                        topbar_sub=str(_("Mratibu wa Kanda")),
-                       map_regions=tz_map(ctx["regions"]), map_legend=MAP_LEGEND))
+                       map_regions=tz_map(ctx["regions"]),
+                       map_legend=tz_legend(ctx["regions"])))
     return render(request, "admin_panel/kanda.html", ctx)
 
 
-@staff_required
+@role_required(*ZONE_ROLES)
 def zone_members(request):
     """Wanachama wa kanda ya mratibu."""
     zone = user_zone(request.user)
@@ -2564,13 +3484,13 @@ def zone_members(request):
                         nav=navs.coordinator("wanachama"), zone=zone)
 
 
-@staff_required
+@role_required(*ZONE_ROLES)
 def zone_regions(request):
     """Mikoa na halmashauri za kanda."""
-    zone = user_zone(request.user)
+    zone = _zone_or_none(request)
     if zone is None:
-        code = request.GET.get("kanda")
-        zone = Zone.objects.filter(code=code).first() or Zone.objects.first()
+        messages.warning(request, _("Hujawekwa kwenye kanda yoyote."))
+        return redirect("core:dashboard")
     ctx = q.zone_regions(zone)
     ctx["zone"] = zone
     ctx.update(_chrome(request, nav=navs.coordinator("mikoa"),
@@ -2582,7 +3502,7 @@ def zone_regions(request):
 # ===========================================================================
 #  UJUMBE KWA WANACHAMA
 # ===========================================================================
-@staff_required
+@role_required(*ADMINS_PLUS)
 def broadcast(request):
     """
     Kutuma ujumbe kwa wanachama.
@@ -2660,7 +3580,7 @@ def broadcast(request):
     return render(request, "admin_panel/ujumbe.html", ctx)
 
 
-@staff_required
+@role_required(*REG_ROLES)
 def member_edit(request, pk):
     """Afisa kuhariri taarifa za mwanachama."""
     member = get_object_or_404(Member, pk=pk)
@@ -2691,7 +3611,7 @@ def member_edit(request, pk):
     return render(request, "admin_panel/mwanachama_hariri.html", ctx)
 
 
-@staff_required
+@role_required(*REG_ROLES)
 def application_edit(request, pk):
     """Afisa kusahihisha ombi kabla ya kuidhinisha."""
     app = get_object_or_404(Application, pk=pk)
@@ -2931,6 +3851,23 @@ def manage_edit(request, slug, pk=None):
                 if obj is None:
                     form.instance.created_by = request.user
             saved = form.save()
+            #: Fomu ya watumiaji haina uwanja wa nenosiri, kwa hiyo
+            #: `ModelForm.save()` ilihifadhi `password=""`. Akaunti
+            #: ilionekana imeundwa vizuri, `has_usable_password()`
+            #: ikarudisha `True`, lakini `check_password` ilikataa kila
+            #: kitu — mtumiaji mpya hakuweza kuingia kamwe, na hakuna
+            #: kosa lililoonekana popote. Sasa tunampa nenosiri la muda
+            #: na kumwonyesha msimamizi.
+            if slug == "watumiaji" and obj is None and not saved.has_usable_password():
+                import secrets
+                alphabet = "abcdefghjkmnpqrstuvwxyz23456789"
+                pw = "".join(secrets.choice(alphabet) for _i in range(10))
+                saved.set_password(pw)
+                saved.save(update_fields=["password"])
+                messages.info(request, _(
+                    "Nenosiri la muda la %(user)s ni %(pw)s. Mpe abadilishe "
+                    "mara ya kwanza atakapoingia."
+                ) % {"user": saved.username, "pw": pw})
             AuditLog.record(request, "created" if obj is None else "updated", saved,
                             detail=entry["label"])
             messages.success(request, _("\"%(x)s\" imehifadhiwa.") % {"x": saved})

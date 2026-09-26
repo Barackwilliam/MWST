@@ -39,7 +39,7 @@
         </div>
         <div>
           <dt>{% trans "Mfuko" %}</dt>
-          <dd>{{ gift.fund.tx_name|default:gift.fund.name }}</dd>
+          <dd>{{ gift.fund|tx:"name" }}</dd>
         </div>
         <div>
           <dt>{% trans "Hali" %}</dt>
@@ -79,19 +79,23 @@
               <dd>{{ member.expires_on|date:"d M Y" }}</dd>
             </div>
           </dl>
-          {% if temp_password %}
-            {# Nenosiri linaonyeshwa MARA MOJA tu; halihifadhiwi popote. #}
+          {% if setup_url %}
             <p class="thanks__small" style="margin-top:14px">
-              <b>{% trans "Taarifa za kuingia" %}</b><br>
+              <b>{% trans "Weka nenosiri lako" %}</b><br>
               {% trans "Jina la mtumiaji" %}: <b>{{ member.membership_no }}</b><br>
-              {% trans "Nenosiri la muda" %}: <b>{{ temp_password }}</b><br>
-              {% trans "Liandike sasa — halitaonyeshwa tena. Libadilishe ukiingia mara ya kwanza." %}
+              {% trans "Tumekutumia kiungo hiki kwa SMS pia. Kinafanya kazi mara moja tu." %}
             </p>
           {% endif %}
           <div class="hstack" style="flex-wrap:wrap;margin-top:18px">
-            <a href="{% url 'core:login' %}" class="btn btn--gold">
-              <svg><use href="#i-user-check"></use></svg> {% trans "Ingia Kwenye Akaunti Yako" %}
-            </a>
+            {% if setup_url %}
+              <a href="{{ setup_url }}" class="btn btn--gold">
+                <svg><use href="#i-lock"></use></svg> {% trans "Weka Nenosiri Lako" %}
+              </a>
+            {% else %}
+              <a href="{% url 'core:login' %}" class="btn btn--gold">
+                <svg><use href="#i-user-check"></use></svg> {% trans "Ingia Kwenye Akaunti Yako" %}
+              </a>
+            {% endif %}
           </div>
           <p class="thanks__small">
             {% trans "Uanachama hudumu miaka mitatu. Utakumbushwa kabla kipindi hakijaisha." %}

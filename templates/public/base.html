@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>{% block title %}MUWESTA{% endblock %} — Muslim Welfare Society of Tanzania</title>
-  <meta name="description" content="{% trans 'Tunatekeleza huduma za kijamii, kiuchumi na kiimani kwa mujibu wa maadili ya Kiislamu kwa maendeleo ya jamii na ustawi wa binadamu.' %}">
+  <title>{% block title %}{{ org_short }}{% endblock %} — {{ org_name }}</title>
+  {% comment %}Jina na maelezo yanatoka SiteSetting. Yalikuwa yameandikwa
+  hapa, na sentensi ile ile ikarudiwa tena kwenye footer — ofisi
+  ikibadilisha moja, nyingine ilibaki ya zamani.{% endcomment %}
+  <meta name="description" content="{{ org_description }}">
   <meta name="theme-color" content="#042318">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,10 +35,10 @@ ambazo rangi zake hazibadiliki.{% endcomment %}
 {# ---------------- Nav ---------------- #}
 <nav class="pub-nav">
   <a href="{% url 'core:home' %}" class="pub-brand">
-    <img src="{% static 'img/mwst-logo.svg' %}" alt="MUWESTA">
+    <img src="{% static 'img/mwst-logo.svg' %}" alt="{{ org_short }}">
     <span>
-      <b>MUWESTA</b>
-      <small>Muslim Welfare Society<br>of Tanzania</small>
+      <b>{{ org_short }}</b>
+      <small>{{ org_name }}</small>
     </span>
   </a>
 
@@ -140,6 +143,12 @@ ambazo rangi zake hazibadiliki.{% endcomment %}
       <a href="{% url 'core:jiunge' %}" class="btn btn--gold btn--block">
         <svg><use href="#i-user-plus"></use></svg> {% trans "Jiunge Sasa" %}
       </a>
+      {% comment %}Header ina nafasi ya vitufe viwili pekee (angalia maelezo
+      hapo juu), kwa hiyo mlango wa viongozi upo hapa na kwenye footer.
+      Bila hii ilihitajika kujua URL `/ingia/viongozi/` kichwani.{% endcomment %}
+      <a href="{% url 'core:leader_login' %}" class="btn btn--block">
+        <svg><use href="#i-shield"></use></svg> {% trans "Ingia kama Kiongozi" %}
+      </a>
     {% endif %}
   </div>
 </aside>
@@ -150,8 +159,8 @@ ambazo rangi zake hazibadiliki.{% endcomment %}
 <footer class="pub-foot">
   <div class="pub-foot__grid">
     <div class="pub-foot__brand">
-      <b>MUWESTA</b>
-      <p>{% trans "Tunatekeleza huduma za kijamii, kiuchumi na kiimani kwa mujibu wa maadili ya Kiislamu kwa maendeleo ya jamii na ustawi wa binadamu." %}</p>
+      <b>{{ org_short }}</b>
+      <p>{{ org_description }}</p>
       <div class="appfoot__social" style="margin-top:14px">
         {% for s in social %}<a href="{{ s.url }}" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7)" aria-label="{{ s.label }}"><svg width="16" height="16"><use href="#i-{{ s.icon }}"></use></svg></a>{% endfor %}
       </div>
@@ -164,10 +173,11 @@ ambazo rangi zake hazibadiliki.{% endcomment %}
 
     <div>
       <h5>{% trans "Huduma Zetu" %}</h5>
-      <a href="{% url 'core:huduma' %}">{% trans "Huduma za Ustawi" %}</a>
-      <a href="{% url 'core:huduma' %}">{% trans "Elimu na Mafunzo" %}</a>
-      <a href="{% url 'core:huduma' %}">{% trans "Huduma za Afya" %}</a>
-      <a href="{% url 'core:huduma' %}">{% trans "Miradi ya Maendeleo" %}</a>
+      {% comment %}Huduma tano za kwanza kutoka jedwali la Huduma.
+      Zilikuwa zimeandikwa hapa, na zote zikielekeza mahali pamoja.{% endcomment %}
+      {% for s in footer_services %}
+        <a href="{% url 'core:huduma' %}#{{ s.cat }}">{{ s.title }}</a>
+      {% endfor %}
       <a href="{% url 'core:uanachama' %}">{% trans "Uanachama" %}</a>
     </div>
 
@@ -190,10 +200,9 @@ ambazo rangi zake hazibadiliki.{% endcomment %}
   </div>
 
   <div class="pub-foot__bottom">
-    <span>&copy; {{ year }} Muslim Welfare Society of Tanzania (MUWESTA). {% trans "Haki zote zimehifadhiwa." %}</span>
+    <span>&copy; {{ year }} {{ org_name }} ({{ org_short }}). {% trans "Haki zote zimehifadhiwa." %}</span>
     <span class="pub-foot__values">
-      {% trans "Imani" %} <span>&bull;</span> {% trans "Huruma" %} <span>&bull;</span>
-      {% trans "Huduma" %} <span>&bull;</span> {% trans "Maendeleo" %}
+      {% for v in org_values %}{% if not forloop.first %}<span>&bull;</span> {% endif %}{{ v }} {% endfor %}
     </span>
   </div>
 </footer>

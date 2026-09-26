@@ -163,9 +163,13 @@
               </label>
               <input type="text" name="membership_no" id="id_membership_no" required
                      value="{{ form.membership_no.value|default:'' }}"
-                     data-ph-new="APP/MUWESTA/2026/0001"
-                     data-ph-member="MUWESTA/G/000123/2026"
-                     placeholder="APP/MUWESTA/2026/0001">
+                     {% comment %}Mifano hii ilikuwa imeandikwa na
+                     "MUWESTA" na "2026" ndani yake. `ID_PREFIX`
+                     ikibadilika, au mwaka ukisonga, mifano iliyoonyeshwa
+                     kwa mtu ingekuwa ya muundo usio sahihi.{% endcomment %}
+                     data-ph-new="{{ ref_example_new }}"
+                     data-ph-member="{{ ref_example_member }}"
+                     placeholder="{{ ref_example_new }}">
               <small class="field__hint" data-payer-hint>
                 {% trans "Namba uliyopewa baada ya kujiunga. Angalia ujumbe wako." %}
               </small>

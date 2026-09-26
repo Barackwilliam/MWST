@@ -78,9 +78,11 @@
     <section class="card">
       <div class="card__head">
         <h3 class="card__title">{% trans "Maombi" %}</h3>
-        <a href="{% url 'core:usajili' %}" class="btn btn--primary btn--sm">
-          <svg><use href="#i-plus"></use></svg> {% trans "Ombi Jipya" %}
-        </a>
+        {% if can_review %}
+          <a href="{% url 'core:usajili' %}" class="btn btn--primary btn--sm">
+            <svg><use href="#i-plus"></use></svg> {% trans "Ombi Jipya" %}
+          </a>
+        {% endif %}
       </div>
 
       <div class="card__body card__body--flush">
@@ -122,7 +124,7 @@
               Aikoni ya 15px isiyo na maandishi haijulikani ni ya nini,
               na "kataa" ni hatua isiyorudishwa nyuma.{% endcomment %}
               <div class="appcard__acts">
-                {% if r.pending %}
+                {% if r.pending and can_review %}
                   <form method="post" action="{% url 'core:maombi_action' r.id 'approve' %}">
                     {% csrf_token %}
                     <button class="btn btn--sm btn--primary">

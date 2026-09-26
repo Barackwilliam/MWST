@@ -104,14 +104,17 @@ class ApplicationForm(BootstrapMixin, forms.ModelForm):
         return digits
 
     def clean_date_of_birth(self):
-        """Umri wa chini ni miaka 18."""
+        """Umri wa chini unatoka `members.models.MIN_JOIN_AGE`."""
         from django.utils import timezone
+        from members.models import MIN_JOIN_AGE
+
         dob = self.cleaned_data["date_of_birth"]
         today = timezone.localdate()
         age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
-        if age < 18:
+        if age < MIN_JOIN_AGE:
             raise forms.ValidationError(
-                _("Mwombaji lazima awe na umri wa miaka 18 au zaidi."))
+                _("Mwombaji lazima awe na umri wa miaka %(n)d au zaidi.")
+                % {"n": MIN_JOIN_AGE})
         if age > 120:
             raise forms.ValidationError(_("Hakikisha tarehe ya kuzaliwa ni sahihi."))
         return dob
@@ -137,10 +140,20 @@ class ApplicationForm(BootstrapMixin, forms.ModelForm):
                 "Namba hii tayari ni ya mwanachama. Kama umesahau namba yako "
                 "ya uanachama, wasiliana nasi."))
 
+        #: `AWAITING_PAYMENT` ilikuwa imeachwa nje ya orodha hii. Ombi
+        #: lililohakikiwa lakini halijalipiwa halikuzuia ombi jipya, na
+        #: ukaguzi wa `Member` hapo juu haukuweza kusaidia kwa sababu
+        #: mwanachama huundwa baada ya malipo. Matokeo: mtu angewasilisha
+        #: mara mbili, akalipia maombi yote mawili, na `activate()`
+        #: ikaendeshwa mara mbili — wanachama wawili, namba mbili, kadi
+        #: mbili na akaunti mbili za kuingia kwa mtu mmoja.
+        blocking = [ApplicationStatus.PENDING, ApplicationStatus.REVIEW,
+                    ApplicationStatus.AWAITING_PAYMENT]
         pending = Application.objects.filter(
-            phone=phone,
-            status__in=[ApplicationStatus.PENDING, ApplicationStatus.REVIEW],
-        ).first()
+            phone=phone, status__in=blocking, member__isnull=True).first()
+        if pending is None and nid:
+            pending = Application.objects.filter(
+                national_id=nid, status__in=blocking, member__isnull=True).first()
         if pending:
             raise forms.ValidationError(_(
                 "Tayari una ombi linalosubiri, namba %(ref)s. Tutawasiliana "
@@ -154,8 +167,7 @@ class ApplicationForm(BootstrapMixin, forms.ModelForm):
         if not nid:
             return nid
         from members.models import Member
-        clash = Member.objects.filter(national_id=nid)
-        if clash.exists():
+        if Member.objects.filter(national_id=nid).exists():
             raise forms.ValidationError(
                 _("Namba hii ya kitambulisho tayari imesajiliwa."))
         return nid
@@ -530,7 +542,7 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
         from finance.models import Project
         super().__init__(*args, **kwargs)
         self.fields["purpose"].choices = [(p["key"], p["name"]) for p in giving.PURPOSES]
-        self.fields["currency"].choices = [(c["code"], c["code"]) for c in giving.CURRENCIES]
+        self.fields["currency"].choices = [(c["code"], c["code"]) for c in giving.currencies()]
         self.fields["recurrence"].choices = [(r["key"], r["name"]) for r in giving.RECURRENCES]
         self.fields["provider"].choices = [(p["key"], p["name"]) for p in giving.PROVIDERS]
         self.fields["project"].queryset = Project.objects.filter(status="ongoing")
@@ -626,7 +638,9 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
             currency=data["currency"],
             purpose=data["purpose"],
             recurrence=data["recurrence"],
-            method=data["provider"][:20],
+            #: `max_length` ya field ni 12; [:20] ingeweza kuvunja
+            #: uandishi kimya kimya kwenye database isiyokata yenyewe.
+            method=data["provider"][:12],
             note=data.get("message", "")[:200],
             status=PaymentStatus.PENDING,
             donor_name=(str(_("Mchangiaji asiyetajwa")) if data.get("anonymous")
@@ -635,6 +649,7 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
             #: jina" ni kuhusu kuonekana hadharani, si kuhusu risiti —
             #: aliyetoa TZS 200,000 anastahili uthibitisho.
             donor_phone=data.get("phone", ""),
+            donor_email=data.get("email", ""),
         )
 
 

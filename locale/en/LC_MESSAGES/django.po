@@ -10,6 +10,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "\"%(x)s\" imefutwa."
 msgstr "\"%(x)s\" has been deleted."
@@ -2471,8 +2472,8 @@ msgstr "This application is not in your zone."
 msgid "Ombi lako la msaada limepokelewa. Kumbukumbu: %(ref)s"
 msgstr "Your assistance request has been received. Reference: %(ref)s"
 
-msgid "Ombi lako limepokelewa. Namba ya kumbukumbu ni %(ref)s — iandike. Afisa wa usajili atahakiki taarifa zako, kisha utapigiwa simu na kupewa namba yako ya uanachama pamoja na nenosiri la kuingia kwenye mfumo."
-msgstr "Your application has been received. Your reference is %(ref)s — write it down. A registration officer will verify your details, then call you with your membership number and a password to sign in."
+msgid "Ombi lako limepokelewa. Namba ya kumbukumbu ni %(ref)s — iandike. Afisa wa usajili atahakiki taarifa zako, kisha utapata ujumbe wenye kiungo cha kulipia ada. Namba yako ya uanachama, kadi na akaunti hutolewa malipo yakithibitishwa."
+msgstr "Your application has been received. Your reference is %(ref)s — write it down. A registration officer will verify your details, then you will receive a message with a link to pay the fee. Your membership number, card and account are issued once payment is confirmed."
 
 msgid "Ombi lako limepokelewa. Namba ya kumbukumbu: %(ref)s. Tutawasiliana nawe baada ya kuhakiki taarifa zako."
 msgstr "Your application has been received. Reference: %(ref)s. We will contact you once your details are verified."
@@ -5521,3 +5522,1510 @@ msgstr "This project has already reached its goal. Please choose another project
 
 msgid "Lengo la mradi wa \"%(m)s\" limetimia — asante kwa wote waliochangia. Hapa kuna miradi mingine inayohitaji msaada."
 msgstr "The goal for \"%(m)s\" has been reached — thank you to everyone who gave. Here are other projects that still need support."
+
+msgid "Ili taarifa zako zijazwe zenyewe, tumia kiungo kilichokuja kwenye ujumbe wa simu."
+msgstr "To have your details filled in automatically, use the link sent to your phone."
+
+msgid "Hatukuweza kutuma code ya usalama kwenye simu yako. Kwa usalama wa taarifa za wanachama, hatuwezi kukuruhusu kuingia bila code. Wasiliana na msimamizi wa mfumo."
+msgstr "We could not send a security code to your phone. To protect members' information, we cannot let you sign in without one. Please contact the system administrator."
+
+msgid "Kwa msimamizi: NEXTSMS haijawekwa. Weka funguo zake kwenye environment, au — ukikubali hatari yake — weka LOGIN_OTP_ENABLED=False kwa muda."
+msgstr "For the administrator: NEXTSMS is not configured. Set its credentials in the environment, or — accepting the risk — set LOGIN_OTP_ENABLED=False temporarily."
+
+msgid "Huna ruhusa ya kufanya kitendo hiki."
+msgstr "You do not have permission to perform this action."
+
+msgid "Msimamizi pekee ndiye anayeweza kurejesha taarifa za kuingia."
+msgstr "Only an administrator can reset sign-in details."
+
+msgid "Kiasi ulichoweka si namba sahihi."
+msgstr "The amount you entered is not a valid number."
+
+msgid "Huwezi kuidhinisha zaidi ya kilichoombwa (TZS %(k)s)."
+msgstr "You cannot approve more than was requested (TZS %(k)s)."
+
+msgid "Malipo haya tayari yameghairiwa."
+msgstr "This payment has already been cancelled."
+
+msgid "Mchango huu tayari umeghairiwa."
+msgstr "This contribution has already been cancelled."
+
+msgid "Malipo yameghairiwa"
+msgstr "Payment cancelled"
+
+msgid "Mchango umeghairiwa"
+msgstr "Contribution cancelled"
+
+msgid "Kughairi"
+msgstr "Cancellation"
+
+msgid "Nenosiri la muda la %(user)s ni %(pw)s. Mpe abadilishe mara ya kwanza atakapoingia."
+msgstr "The temporary password for %(user)s is %(pw)s. Ask them to change it on first sign-in."
+
+msgid "Mwombaji lazima awe na umri wa miaka %(n)d au zaidi."
+msgstr "The applicant must be %(n)d years old or over."
+
+msgid "Habari zote"
+msgstr "All news"
+
+msgid "Barua Pepe ya Mchangiaji"
+msgstr "Donor Email"
+
+msgid "Kiwango cha Fedha"
+msgstr "Exchange Rate"
+
+msgid "Viwango vya Fedha"
+msgstr "Exchange Rates"
+
+msgid "Alama ya Fedha"
+msgstr "Currency Code"
+
+msgid "Kiashiria"
+msgstr "Symbol"
+
+msgid "Shilingi kwa kipimo kimoja"
+msgstr "Shillings per unit"
+
+msgid "Namba ya Mawasiliano"
+msgstr "Contact Number"
+
+msgid "Namba za Mawasiliano"
+msgstr "Contact Numbers"
+
+msgid "Idara"
+msgstr "Department"
+
+msgid "Namba au Barua Pepe"
+msgstr "Number or Email"
+
+msgid "Inaonekana wapi"
+msgstr "Shown where"
+
+msgid "Ukurasa wa mbele"
+msgstr "Home page"
+
+msgid "Mtandaoni (Selcom)"
+msgstr "Online (Selcom)"
+
+msgid "Jina la Shirika"
+msgstr "Organisation Name"
+
+msgid "Kifupi"
+msgstr "Short Name"
+
+msgid "Maadili"
+msgstr "Values"
+
+msgid "Maelezo mafupi"
+msgstr "Short description"
+
+msgid "Simu ya Msaada"
+msgstr "Support Phone"
+
+msgid "S.L.P."
+msgstr "P.O. Box"
+
+msgid "Tovuti"
+msgstr "Website"
+
+msgid "Kiungo cha Ramani"
+msgstr "Map Link"
+
+msgid "Nyaraka zinaanza kutumika"
+msgstr "Documents effective from"
+
+msgid "Eneo %(n)s la Huduma"
+msgid_plural "Maeneo %(n)s ya Huduma"
+msgstr[0] "%(n)s Service Area"
+msgstr[1] "%(n)s Service Areas"
+
+msgid "Pointi za %(org_short)s"
+msgstr "%(org_short)s Points"
+
+msgid "Imethibitishwa na %(org_name)s"
+msgstr "Verified by %(org_name)s"
+
+msgid "Michango hutoa pointi 1 kwa kila TSh %(k)s, na hujiongeza zenyewe malipo yakithibitishwa. Shughuli hizi hapa chini huthibitishwa na afisa."
+msgstr "Contributions earn 1 point for every TSh %(k)s, added automatically once a payment is confirmed. The activities below are confirmed by an officer."
+
+msgid "Lazima uwe na umri wa miaka %(n)s au zaidi. Malipo ya ada yatafanyika baada ya ombi lako kuidhinishwa — usilipe chochote sasa."
+msgstr "You must be %(n)s years old or over. Membership fees are paid after your application is approved — do not pay anything yet."
+
+msgid "Weka Nenosiri Lako"
+msgstr "Set Your Password"
+
+msgid "%(name)s, uanachama wako umeanza."
+msgstr "%(name)s, your membership has begun."
+
+msgid "Chagua nenosiri lako, kisha ingia kwa namba hii:"
+msgstr "Choose your password, then sign in with this number:"
+
+msgid "Kiungo hiki kinafanya kazi mara moja tu. Ukisha weka nenosiri, tumia \"Nimesahau nenosiri\" kama utahitaji kulibadilisha."
+msgstr "This link works only once. Once your password is set, use \"Forgot password\" if you need to change it."
+
+msgid "Kiungo hiki hakifanyi kazi tena. Huenda nenosiri lako lilikwisha wekwa — jaribu kuingia, au tumia \"Nimesahau nenosiri\"."
+msgstr "This link no longer works. Your password may already be set — try signing in, or use \"Forgot password\"."
+
+msgid "Nenosiri lako limewekwa. Sasa ingia kwa namba yako ya uanachama %(no)s."
+msgstr "Your password is set. Now sign in with your membership number %(no)s."
+
+msgid "Tumekutumia kiungo hiki kwa SMS pia. Kinafanya kazi mara moja tu."
+msgstr "We have also sent you this link by SMS. It works only once."
+
+msgid "Uanachama wako umesitishwa. Wasiliana na ofisi ya MUWESTA kwa maelezo zaidi."
+msgstr "Your membership has been suspended. Please contact the MUWESTA office for details."
+
+msgid "Huna ruhusa ya kubadilisha hali ya uanachama."
+msgstr "You do not have permission to change membership status."
+
+msgid "Huna ruhusa ya kutoa kadi."
+msgstr "You do not have permission to issue cards."
+
+msgid "Huna ruhusa ya kupakua data hii."
+msgstr "You do not have permission to download this data."
+
+msgid "Hujawekwa kwenye kanda yoyote. Wasiliana na msimamizi ili uwekwe kwenye kanda yako."
+msgstr "You have not been assigned to a zone. Contact an administrator to be assigned to your zone."
+
+msgid "Hujawekwa kwenye kanda yoyote."
+msgstr "You have not been assigned to a zone."
+
+msgid "Nyadhifa za Uongozi"
+msgstr "Leadership Posts"
+
+msgid "Maombi %(n)d yamehakikiwa. Mwombaji HAJAJULISHWA kutoka hapa — tumia ukurasa wa Maombi kwenye mfumo ili SMS ya kulipia itumwe, au mpe kiungo cha /lipa/?ombi=<namba>&k=<saini>."
+msgstr "%(n)d application(s) verified. The applicant is NOT notified from here — use the Applications page in the system so the payment SMS is sent, or give them the link /lipa/?ombi=<reference>&k=<signature>."
+
+msgid "Wanachama %(n)d wamekamilishwa. Kila mmoja amepokea SMS yenye kiungo cha kuweka nenosiri lake mwenyewe."
+msgstr "%(n)d membership(s) completed. Each one has received an SMS with a link to set their own password."
+
+#: accounts/models.py:13
+msgid "Afisa wa Usimamizi"
+msgstr "Management Officer"
+
+#: accounts/models.py:17
+msgid "Afisa Ustawi"
+msgstr "Welfare Officer"
+
+#: accounts/models.py:18
+msgid "Afisa Wadau na Wahisani"
+msgstr "Stakeholders and Donors Officer"
+
+#: accounts/models.py:19
+msgid "Mratibu wa Mkoa"
+msgstr "Region Coordinator"
+
+#: accounts/models.py:49
+msgid "Jukumu"
+msgstr "Role"
+
+#: accounts/models.py:58
+msgid "Uthibitisho wa hatua mbili"
+msgstr "Two-factor authentication"
+
+#: accounts/models.py:62
+msgid "Watumiaji"
+msgstr "Users"
+
+#: accounts/models.py:135
+msgid "Kumbukumbu ya Matendo"
+msgstr "Audit Log"
+
+#: accounts/models.py:157
+msgid "Kuthibitisha Namba ya Simu"
+msgstr "Phone Number Verification"
+
+#: accounts/models.py:158
+msgid "Kuingia kwenye Mfumo"
+msgstr "Signing In"
+
+#: accounts/models.py:197
+msgid "Code ya Uthibitisho"
+msgstr "Verification Code"
+
+#: accounts/models.py:198
+msgid "Code za Uthibitisho"
+msgstr "Verification Codes"
+
+#: config/admin.py:28
+msgid "MUWESTA — Usimamizi wa Mfumo"
+msgstr "MUWESTA — System Administration"
+
+#: config/admin.py:29
+msgid "MUWESTA Admin"
+msgstr "MUWESTA Admin"
+
+#: config/admin.py:30
+msgid "Usimamizi wa kina wa mfumo"
+msgstr "Full system administration"
+
+#: content/admin.py:121
+msgid "Rudisha kwenye foleni (jaribu tena)"
+msgstr "Return to the queue (retry)"
+
+#: content/admin.py:125
+#, python-format
+msgid ""
+"Ujumbe %(n)d umerudishwa kwenye foleni. Endesha `tuma_sms_foleni` "
+"kuutuma."
+msgstr ""
+"%(n)d message(s) returned to the queue. Run `tuma_sms_foleni` to "
+"send them."
+
+#: content/models.py:154
+msgid "Kiarabu"
+msgstr "Arabic"
+
+#: content/models.py:167
+msgid "Aya ya Qur'an"
+msgstr "Qur'an Verse"
+
+#: content/models.py:180
+msgid "Kategoria ya Habari"
+msgstr "News Category"
+
+#: content/models.py:199
+msgid "Habari kuu"
+msgstr "Featured news"
+
+#: content/models.py:246
+msgid "Tangazo"
+msgstr "Announcement"
+
+#: content/models.py:314
+msgid "Picha / Video"
+msgstr "Photo / Video"
+
+#: content/models.py:373 geo/models.py:184
+msgid "Kiongozi"
+msgstr "Leader"
+
+#: content/models.py:374 geo/models.py:185
+msgid "Viongozi"
+msgstr "Leaders"
+
+#: content/models.py:395
+msgid "Hatua ya Historia"
+msgstr "Milestone"
+
+#: content/models.py:481
+msgid "Imefika"
+msgstr "Delivered"
+
+#: content/models.py:492
+msgid "Kumbukumbu ya Ujumbe"
+msgstr "Message Log"
+
+#: content/models.py:514
+msgid "Imekata tamaa"
+msgstr "Given up"
+
+#: content/models.py:527
+msgid "SMS ya Foleni"
+msgstr "Queued SMS"
+
+#: content/models.py:528
+msgid "SMS za Foleni"
+msgstr "Queued SMS Messages"
+
+#: core/forms.py:713
+#, python-format
+msgid "Kiwango cha juu ni miezi %(limit_value)s."
+msgstr "The maximum is %(limit_value)s months."
+
+#: core/forms.py:790
+msgid ""
+"Weka namba ya ombi lako (mfano APP/MUWESTA/2026/0001). Utaipata "
+"kwenye ujumbe uliopokea baada ya kujiunga."
+msgstr ""
+"Enter your application reference (for example "
+"APP/MUWESTA/2026/0001). You will find it in the message you received "
+"after applying."
+
+#: core/forms.py:799
+msgid ""
+"Ombi hili tayari limekamilika. Tumia namba yako ya uanachama badala "
+"ya namba ya ombi."
+msgstr ""
+"This application is already complete. Use your membership number "
+"instead of the application reference."
+
+#: core/forms.py:804
+msgid ""
+"Ombi hili bado halijahakikiwa na afisa. Utapigiwa simu litakapokuwa "
+"tayari kulipiwa."
+msgstr ""
+"This application has not been verified by an officer yet. You will "
+"be called when it is ready to be paid for."
+
+#: core/leader_views.py:39
+msgid "Huna wadhifa wa uongozi kwenye mfumo."
+msgstr "You have no leadership post in the system."
+
+#: core/leader_views.py:134
+msgid "Tatizo hili tayari liko ngazi ya Taifa — hakuna pa kupandisha."
+msgstr ""
+"This issue is already at National level — there is nowhere to "
+"escalate it to."
+
+#: core/leader_views.py:138
+#, python-format
+msgid "Tatizo %(ref)s limepandishwa ngazi ya %(lv)s."
+msgstr "Issue %(ref)s has been escalated to %(lv)s level."
+
+#: core/leader_views.py:143
+msgid "Eleza suluhisho kabla ya kufunga tatizo."
+msgstr "Describe the resolution before closing the issue."
+
+#: core/leader_views.py:147
+#, python-format
+msgid "Tatizo %(ref)s limetatuliwa."
+msgstr "Issue %(ref)s has been resolved."
+
+#: core/leader_views.py:156
+msgid "Maoni yameongezwa."
+msgstr "Comment added."
+
+#: core/leader_views.py:173
+msgid "Weka kichwa na ujumbe."
+msgstr "Enter a subject and a message."
+
+#: core/leader_views.py:175
+msgid "Huna eneo la kutumia."
+msgstr "You have no area to work with."
+
+#: core/leader_views.py:188
+#, python-format
+msgid "Tangazo limetumwa kwa wanachama %(n)d."
+msgstr "Announcement sent to %(n)d member(s)."
+
+#: core/leader_views.py:195 geo/models.py:124 geo/models.py:205
+msgid "Taifa"
+msgstr "National"
+
+#: core/leader_views.py:264 core/leader_views.py:317
+msgid "Ukurasa huu ni wa wanachama."
+msgstr "This page is for members."
+
+#: core/leader_views.py:271
+msgid "Weka kichwa na maelezo ya tatizo."
+msgstr "Enter a title and a description of the issue."
+
+#: core/leader_views.py:280
+#, python-format
+msgid ""
+"Tatizo lako limepokelewa. Namba ya kumbukumbu: %(ref)s. Kiongozi wa "
+"kata yako atalishughulikia."
+msgstr ""
+"Your report has been received. Reference: %(ref)s. Your ward leader "
+"will handle it."
+
+#: core/leader_views.py:288 templates/member/tatizo_mpya.html:3
+msgid "Toa Taarifa"
+msgstr "Report an Issue"
+
+#: core/leader_views.py:303 templates/member/matatizo.html:3
+msgid "Matatizo Yangu"
+msgstr "My Issues"
+
+#: core/leader_views.py:325 templates/member/viongozi.html:3
+msgid "Viongozi Wangu"
+msgstr "My Leaders"
+
+#: core/leader_views.py:356 programs/models.py:672 programs/models.py:673
+msgid "Mazungumzo"
+msgstr "Conversations"
+
+#: core/leader_views.py:453
+msgid "Ukurasa huu ni wa viongozi wenye maeneo chini yao."
+msgstr "This page is for leaders with areas under them."
+
+#: core/leader_views.py:469
+msgid "Walio Chini Yangu"
+msgstr "Below Me"
+
+#: core/leader_views.py:470
+msgid "Wenzangu wa Ngazi Ile Ile"
+msgstr "My Peers at the Same Level"
+
+#: core/leader_views.py:471
+msgid "Walio Juu Yangu"
+msgstr "Above Me"
+
+#: core/queries.py:1899
+#, python-format
+msgid "Miaka %(y)d iliyopita"
+msgstr "%(y)d years ago"
+
+#: core/views.py:769
+msgid ""
+"Umeomba code nyingi mno kwa saa moja. Subiri kidogo kisha ujaribu "
+"tena."
+msgstr ""
+"You have requested too many codes in one hour. Wait a moment, then "
+"try again."
+
+#: core/views.py:818
+msgid ""
+"Hatukuweza kutuma code kwenye simu yako, kwa hiyo tumekuruhusu "
+"kuingia. Tafadhali mjulishe msimamizi."
+msgstr ""
+"We could not send a code to your phone, so we have let you in. "
+"Please inform an administrator."
+
+#: core/views.py:1181 core/views.py:1348
+#, python-format
+msgid ""
+"Hatukuweza kuanzisha malipo kwa sasa: %(sababu)s. Mchango wako "
+"umehifadhiwa — jaribu tena au wasiliana nasi."
+msgstr ""
+"We could not start the payment just now: %(sababu)s. Your "
+"contribution has been saved — try again or contact us."
+
+#: core/views.py:1389
+#, python-format
+msgid ""
+"Malipo ya mtandaoni hayapatikani kwa sasa. Ombi lako limehifadhiwa "
+"kwa namba %(risiti)s — tafadhali wasiliana nasi ili likamilishwe."
+msgstr ""
+"Online payment is unavailable at the moment. Your request has been "
+"saved under receipt %(risiti)s — please contact us so it can be "
+"completed."
+
+#: core/views.py:1398
+#, python-format
+msgid ""
+"Ombi lako limehifadhiwa kwa namba %(risiti)s. Tumia namba hiyo kama "
+"kumbukumbu unapotuma pesa benki; risiti itathibitishwa mara malipo "
+"yatakapopokelewa."
+msgstr ""
+"Your request has been saved under receipt %(risiti)s. Use that "
+"number as the reference when you send money by bank; the receipt is "
+"confirmed once the payment is received."
+
+#: core/views.py:1408
+#, python-format
+msgid ""
+"Njia ya malipo uliyochagua haipatikani. Ombi lako limehifadhiwa kwa "
+"namba %(risiti)s."
+msgstr ""
+"The payment method you chose is unavailable. Your request has been "
+"saved under receipt %(risiti)s."
+
+#: core/views.py:1973
+msgid ""
+"Hatukuweza kutuma code kwenye simu yako sasa hivi. Ombi lako "
+"limehifadhiwa — afisa atawasiliana nawe."
+msgstr ""
+"We could not send a code to your phone just now. Your application "
+"has been saved — an officer will contact you."
+
+#: core/views.py:2345
+#, python-format
+msgid ""
+"Mpe mwombaji kiungo hiki cha kulipia: %(url)s — kiasi kinachotakiwa "
+"ni TZS %(amount)s. Atapata namba ya uanachama, kadi na nenosiri la "
+"kuingia mara malipo yatakapothibitishwa."
+msgstr ""
+"Give the applicant this payment link: %(url)s — the amount due is "
+"TZS %(amount)s. They will receive their membership number, card and "
+"sign-in password once the payment is confirmed."
+
+#: core/views.py:2351
+msgid "Tumemtumia mwombaji SMS yenye kiungo hicho."
+msgstr "We have sent the applicant an SMS with that link."
+
+#: core/views.py:2354
+msgid "SMS haikumfikia mwombaji. Mpigie simu."
+msgstr "The SMS did not reach the applicant. Call them."
+
+#: finance/admin.py:44
+msgid "Thibitisha na ingiza kwenye leja"
+msgstr "Confirm and post to the ledger"
+
+#: finance/admin.py:52
+#, python-format
+msgid "Malipo %(n)d yamethibitishwa."
+msgstr "%(n)d payment(s) confirmed."
+
+#: finance/models.py:21
+msgid "Jina la Mfuko"
+msgstr "Fund Name"
+
+#: finance/models.py:27
+msgid "Lengo la mwaka"
+msgstr "Annual target"
+
+#: finance/models.py:73
+msgid "Mtandaoni (Pesapal)"
+msgstr "Online (Pesapal)"
+
+#: finance/models.py:113
+msgid "Akaunti ya Mwanachama"
+msgstr "Member Account"
+
+#: finance/models.py:190
+msgid "Namba ya Risiti"
+msgstr "Receipt Number"
+
+#: finance/models.py:350
+msgid "Mtu binafsi"
+msgstr "Individual"
+
+#: finance/models.py:350
+msgid "Kampuni"
+msgstr "Company"
+
+#: finance/models.py:371
+msgid "Mhisani / Mdau"
+msgstr "Donor / Stakeholder"
+
+#: finance/models.py:439
+msgid "Simu ya Mchangiaji"
+msgstr "Contributor's Phone"
+
+#: finance/models.py:464
+msgid "Zakat, Sadaqah, Waqf n.k. — angalia core/data/giving.py"
+msgstr "Zakat, Sadaqah, Waqf etc. — see core/data/giving.py"
+
+#: finance/models.py:468
+msgid "Mtoa huduma"
+msgstr "Provider"
+
+#: finance/models.py:469
+msgid "Namba ya mtoa huduma"
+msgstr "Provider reference"
+
+#: finance/models.py:478
+msgid "Miezi Iliyolipiwa"
+msgstr "Months Paid For"
+
+#: finance/models.py:680 finance/models.py:681
+msgid "Matumizi"
+msgstr "Expenses"
+
+#: geo/admin.py:67
+msgid "Eneo"
+msgstr "Area"
+
+#: geo/admin.py:71
+msgid "Anatumika"
+msgstr "Active"
+
+#: geo/models.py:162 programs/models.py:470 programs/models.py:625
+msgid "Ngazi"
+msgstr "Level"
+
+#: geo/models.py:163
+msgid "Wadhifa"
+msgstr "Post"
+
+#: geo/models.py:175
+msgid "Ameanza"
+msgstr "Started"
+
+#: geo/models.py:176
+msgid "Amemaliza"
+msgstr "Ended"
+
+#: geo/models.py:231
+msgid "Ngazi hii inahitaji eneo."
+msgstr "This level requires an area."
+
+#: geo/models.py:234
+msgid "Ngazi ya Taifa haina eneo maalum."
+msgstr "The National level has no specific area."
+
+#: geo/models.py:236
+msgid "Tarehe ya kumaliza ni kabla ya kuanza."
+msgstr "The end date is before the start date."
+
+#: members/admin.py:48
+msgid "Toa kadi mpya"
+msgstr "Issue a new card"
+
+#: members/admin.py:62
+msgid "Hakiki maombi (yasubiri malipo)"
+msgstr "Verify applications (awaiting payment)"
+
+#: members/admin.py:79
+msgid "Kamilisha uanachama (ada imelipwa nje ya mfumo)"
+msgstr "Complete membership (fee paid outside the system)"
+
+#: members/admin.py:101
+msgid "Kataa maombi"
+msgstr "Reject applications"
+
+#: members/models.py:50
+msgid "Pointi kwa malipo"
+msgstr "Points per payment"
+
+#: members/models.py:66
+msgid "Kategoria ya Uanachama"
+msgstr "Membership Category"
+
+#: members/models.py:103
+msgid "Kazi"
+msgstr "Occupation"
+
+#: members/models.py:123
+msgid "Tarehe ya Kuisha"
+msgstr "Expiry Date"
+
+#: members/models.py:403
+msgid "Namba Imethibitishwa"
+msgstr "Number Verified"
+
+#: members/models.py:579
+msgid "Imechapishwa"
+msgstr "Printed"
+
+#: members/models.py:631
+msgid "Mwanafamilia"
+msgstr "Family Member"
+
+#: members/models.py:632
+msgid "Familia"
+msgstr "Family"
+
+#: programs/admin.py:45
+msgid "Rekebisha (ondoa pointi zilizotolewa kimakosa)"
+msgstr "Reverse (remove points awarded in error)"
+
+#: programs/admin.py:53
+#, python-format
+msgid "Miamala %(n)d imerekebishwa. Ya asili imebaki kwenye leja."
+msgstr "%(n)d transaction(s) reversed. The originals remain in the ledger."
+
+#: programs/admin.py:61
+msgid "Huwezi kujipa pointi mwenyewe."
+msgstr "You cannot award points to yourself."
+
+#: programs/models.py:33
+msgid "Kanuni ya Pointi"
+msgstr "Points Rule"
+
+#: programs/models.py:55
+msgid "Mara"
+msgstr "Times"
+
+#: programs/models.py:56
+msgid "Kuanzia"
+msgstr "From"
+
+#: programs/models.py:115
+msgid "Muamala wa Pointi"
+msgstr "Points Transaction"
+
+#: programs/models.py:259
+msgid "Pointi zinazohitajika"
+msgstr "Points required"
+
+#: programs/models.py:306
+msgid "Ombi la Msaada"
+msgstr "Assistance Request"
+
+#: programs/models.py:334
+msgid "Aina ya Tukio"
+msgstr "Event Type"
+
+#: programs/models.py:392
+msgid "Alihudhuria"
+msgstr "Attended"
+
+#: programs/models.py:396
+msgid "Usajili wa Tukio"
+msgstr "Event Registration"
+
+#: programs/models.py:420
+msgid "Ustawi na Msaada"
+msgstr "Welfare and Assistance"
+
+#: programs/models.py:421
+msgid "Ada na Malipo"
+msgstr "Fees and Payments"
+
+#: programs/models.py:422
+msgid "Uanachama na Kadi"
+msgstr "Membership and Cards"
+
+#: programs/models.py:424
+msgid "Ushauri na Mapendekezo"
+msgstr "Advice and Suggestions"
+
+#: programs/models.py:429 programs/models.py:587
+msgid "Limefunguliwa"
+msgstr "Opened"
+
+#: programs/models.py:430
+msgid "Linashughulikiwa"
+msgstr "In progress"
+
+#: programs/models.py:431
+msgid "Limepandishwa"
+msgstr "Escalated"
+
+#: programs/models.py:432 programs/models.py:591
+msgid "Limetatuliwa"
+msgstr "Resolved"
+
+#: programs/models.py:433 programs/models.py:592
+msgid "Limefungwa"
+msgstr "Closed"
+
+#: programs/models.py:437
+msgid "Si ya Haraka"
+msgstr "Not urgent"
+
+#: programs/models.py:438
+msgid "Kawaida"
+msgstr "Normal"
+
+#: programs/models.py:439
+msgid "Ya Haraka"
+msgstr "Urgent"
+
+#: programs/models.py:454
+msgid "Namba ya Kumbukumbu"
+msgstr "Reference Number"
+
+#: programs/models.py:463 templates/member/tatizo_mpya.html:29
+msgid "Uzito"
+msgstr "Priority"
+
+#: programs/models.py:486 templates/leader/tatizo.html:34
+msgid "Suluhisho"
+msgstr "Resolution"
+
+#: programs/models.py:490
+msgid "Tatizo"
+msgstr "Issue"
+
+#: programs/models.py:491 templates/leader/matatizo.html:3
+msgid "Matatizo"
+msgstr "Issues"
+
+#: programs/models.py:588
+msgid "Maoni"
+msgstr "Comment"
+
+#: programs/models.py:589
+msgid "Limepandishwa na kiongozi"
+msgstr "Escalated by a leader"
+
+#: programs/models.py:590
+msgid "Limepanda lenyewe kwa muda"
+msgstr "Escalated automatically after time"
+
+#: programs/models.py:593
+msgid "Limefunguliwa upya"
+msgstr "Reopened"
+
+#: programs/models.py:607
+msgid "Hatua ya Tatizo"
+msgstr "Issue Event"
+
+#: programs/models.py:608
+msgid "Hatua za Matatizo"
+msgstr "Issue Events"
+
+#: programs/models.py:624
+msgid "Mtumaji"
+msgstr "Sender"
+
+#: programs/models.py:643
+msgid "Tangazo la Kiongozi"
+msgstr "Leader Announcement"
+
+#: programs/models.py:644
+msgid "Matangazo ya Viongozi"
+msgstr "Leader Announcements"
+
+#: programs/models.py:723 programs/models.py:724
+msgid "Mazungumzo ya Viongozi"
+msgstr "Leader Conversations"
+
+#: programs/models.py:762
+msgid "Ujumbe wa Kiongozi"
+msgstr "Leader Message"
+
+#: programs/models.py:763
+msgid "Ujumbe wa Viongozi"
+msgstr "Leader Messages"
+
+#: templates/admin_panel/kanda.html:12
+#, python-format
+msgid "Mkoa %(n)s"
+msgid_plural "Mikoa %(n)s"
+msgstr[0] "%(n)s Region"
+msgstr[1] "%(n)s Regions"
+
+#: templates/admin_panel/maombi.html:81
+msgid "Maombi"
+msgstr "Applications"
+
+#: templates/admin_panel/maombi.html:136
+#, python-format
+msgid "Kataa ombi la %(name)s? Hatua hii hairudishwi nyuma."
+msgstr "Reject the application from %(name)s? This cannot be undone."
+
+#: templates/admin_panel/maombi.html:206
+msgid "Tarehe ya Ombi"
+msgstr "Application Date"
+
+#: templates/leader/ada.html:3
+msgid "Ada za Wanachama"
+msgstr "Member Fees"
+
+#: templates/leader/ada.html:14
+msgid "Wanaohitaji Kulipa"
+msgstr "Due to Pay"
+
+#: templates/leader/ada.html:27
+msgid "Muda umeisha"
+msgstr "Expired"
+
+#: templates/leader/ada.html:29 templates/leader/tatizo.html:25
+#, python-format
+msgid "siku %(n)s"
+msgstr "%(n)s days"
+
+#: templates/leader/ada.html:37
+msgid "hadi"
+msgstr "until"
+
+#: templates/leader/ada.html:51
+msgid "Wote wako sawa"
+msgstr "Everyone is up to date"
+
+#: templates/leader/ada.html:52
+msgid "Hakuna anayekaribia kuisha muda kwenye eneo lako."
+msgstr "Nobody in your area is close to expiring."
+
+#: templates/leader/ada.html:68
+msgid "Yanasubiri"
+msgstr "Pending"
+
+#: templates/leader/ada.html:69
+msgid "Yaliyothibitishwa"
+msgstr "Confirmed"
+
+#: templates/leader/ada.html:106
+msgid "Ghairi malipo haya?"
+msgstr "Cancel this payment?"
+
+#: templates/leader/ada.html:117
+msgid "Hakuna malipo yanayolingana."
+msgstr "No matching payments."
+
+#: templates/leader/chat.html:24 templates/leader/mazungumzo_moja.html:28
+msgid "Piga simu"
+msgstr "Call"
+
+#: templates/leader/chat.html:56 templates/leader/mazungumzo_moja.html:59
+msgid "Hakuna ujumbe bado"
+msgstr "No messages yet"
+
+#: templates/leader/chat.html:57 templates/leader/mazungumzo_moja.html:60
+#, python-format
+msgid "Andika ujumbe wa kwanza kwa %(n)s."
+msgstr "Write the first message to %(n)s."
+
+#: templates/leader/chat.html:69
+msgid "Andika ujumbe..."
+msgstr "Write a message..."
+
+#: templates/leader/chat.html:70 templates/leader/matangazo.html:27
+msgid "Tuma"
+msgstr "Send"
+
+#: templates/leader/dashibodi.html:3
+msgid "Dashibodi ya Kiongozi"
+msgstr "Leader Dashboard"
+
+#: templates/leader/dashibodi.html:16 templates/leader/mazungumzo.html:14
+msgid "Anzisha Mazungumzo"
+msgstr "Start a Conversation"
+
+#: templates/leader/dashibodi.html:19 templates/leader/matangazo.html:10
+msgid "Tuma Tangazo"
+msgstr "Send an Announcement"
+
+#: templates/leader/dashibodi.html:49
+msgid "iliyopita"
+msgstr "previous"
+
+#: templates/leader/dashibodi.html:58
+msgid "Iliyotangulia"
+msgstr "Previous"
+
+#: templates/leader/dashibodi.html:88
+#, python-format
+msgid "ina matatizo %(n)s yanayosubiri"
+msgstr "has %(n)s pending issue(s)"
+
+#: templates/leader/dashibodi.html:89
+msgid "na haina kiongozi"
+msgstr "and has no leader"
+
+#: templates/leader/dashibodi.html:92
+msgid "Angalia"
+msgstr "View"
+
+#: templates/leader/dashibodi.html:107
+msgid "Mchanganuo wa Maeneo"
+msgstr "Area Breakdown"
+
+#: templates/leader/dashibodi.html:120
+msgid "matatizo"
+msgstr "issues"
+
+#: templates/leader/dashibodi.html:123
+msgid "muda umeisha"
+msgstr "expired"
+
+#: templates/leader/dashibodi.html:126
+msgid "HAINA KIONGOZI"
+msgstr "NO LEADER"
+
+#: templates/leader/dashibodi.html:134
+msgid "Hakuna kiongozi aliyewekwa — matatizo yatakuja moja kwa moja kwako."
+msgstr "No leader has been appointed — issues will come straight to you."
+
+#: templates/leader/dashibodi.html:155
+msgid "Matatizo Yanayosubiri"
+msgstr "Pending Issues"
+
+#: templates/leader/dashibodi.html:170 templates/leader/matatizo.html:35
+msgid "HARAKA"
+msgstr "URGENT"
+
+#: templates/leader/dashibodi.html:186
+msgid "Hakuna tatizo linalosubiri"
+msgstr "No pending issues"
+
+#: templates/leader/dashibodi.html:196
+msgid "Wanachama wa Karibuni"
+msgstr "Recent Members"
+
+#: templates/leader/dashibodi.html:223
+msgid "Hakuna mwanachama kwenye eneo lako bado."
+msgstr "No members in your area yet."
+
+#: templates/leader/maombi.html:15
+msgid ""
+"Haya ni maombi kutoka eneo lako. Ni ya kuona tu — kuidhinisha ni "
+"kazi ya afisa wa usajili."
+msgstr ""
+"These are applications from your area. They are view-only — "
+"approving them is the registration officer's job."
+
+#: templates/leader/maombi.html:28
+msgid "namba imethibitishwa"
+msgstr "number verified"
+
+#: templates/leader/maombi.html:51
+msgid "Hakuna ombi jipya kutoka eneo lako."
+msgstr "No new applications from your area."
+
+#: templates/leader/matangazo.html:14
+#, python-format
+msgid "Litafika wanachama %(n)s wa %(a)s."
+msgstr "It will reach %(n)s members in %(a)s."
+
+#: templates/leader/matangazo.html:34
+msgid "Uliyotuma"
+msgstr "Sent by You"
+
+#: templates/leader/matangazo.html:46
+#, python-format
+msgid "wanachama %(n)s"
+msgstr "%(n)s members"
+
+#: templates/leader/matangazo.html:55
+msgid "Hujatuma tangazo lolote bado."
+msgstr "You have not sent any announcements yet."
+
+#: templates/leader/matatizo.html:53
+msgid "Fungua"
+msgstr "Open"
+
+#: templates/leader/matatizo.html:61
+msgid "Hakuna tatizo"
+msgstr "No issues"
+
+#: templates/leader/matatizo.html:62
+msgid "Hakuna tatizo lililofika ngazi yako."
+msgstr "No issues have reached your level."
+
+#: templates/leader/mazungumzo.html:19
+msgid "Tafuta mwanachama kwa jina, namba au simu..."
+msgstr "Search for a member by name, number or phone..."
+
+#: templates/leader/mazungumzo.html:50
+msgid "Anza"
+msgstr "Start"
+
+#: templates/leader/mazungumzo.html:57
+msgid "Hakuna mwanachama anayelingana kwenye eneo lako."
+msgstr "No matching member in your area."
+
+#: templates/leader/mazungumzo.html:68 templates/leader/wenzangu.html:17
+msgid "Mazungumzo Yanayoendelea"
+msgstr "Ongoing Conversations"
+
+#: templates/leader/mazungumzo.html:94
+msgid "Hakuna mazungumzo bado"
+msgstr "No conversations yet"
+
+#: templates/leader/mazungumzo.html:96
+msgid "Tafuta mwanachama hapo juu kuanzisha, au subiri akuandikie."
+msgstr ""
+"Search for a member above to start one, or wait for them to write to "
+"you."
+
+#: templates/leader/mazungumzo_moja.html:68
+msgid "Andika jibu lako..."
+msgstr "Write your reply..."
+
+#: templates/leader/michango.html:39
+msgid "Hakuna mchango kutoka eneo lako bado."
+msgstr "No contributions from your area yet."
+
+#: templates/leader/msaada.html:37 templates/leader/viongozi.html:61
+msgid "Piga"
+msgstr "Call"
+
+#: templates/leader/msaada.html:46
+msgid "Hakuna ombi la msaada kutoka eneo lako."
+msgstr "No assistance requests from your area."
+
+#: templates/leader/tatizo.html:23
+msgid "Ngazi ya sasa"
+msgstr "Current level"
+
+#: templates/leader/tatizo.html:27
+msgid "Aina / Uzito"
+msgstr "Type / Priority"
+
+#: templates/leader/tatizo.html:42
+msgid "Hatua Zilizochukuliwa"
+msgstr "Actions Taken"
+
+#: templates/leader/tatizo.html:67
+msgid "Andika maoni au suluhisho..."
+msgstr "Write a comment or the resolution..."
+
+#: templates/leader/tatizo.html:69
+msgid "Ongeza Maoni"
+msgstr "Add Comment"
+
+#: templates/leader/tatizo.html:72
+msgid "Nimetatua"
+msgstr "Mark Resolved"
+
+#: templates/leader/tatizo.html:77
+msgid "Pandisha tatizo hili ngazi moja juu?"
+msgstr "Escalate this issue one level up?"
+
+#: templates/leader/tatizo.html:78
+msgid "Pandisha Juu"
+msgstr "Escalate"
+
+#: templates/leader/viongozi.html:3
+msgid "Viongozi Walio Chini"
+msgstr "Leaders Below"
+
+#: templates/leader/viongozi.html:10
+msgid "Viongozi Walio Chini Yangu"
+msgstr "Leaders Below Me"
+
+#: templates/leader/viongozi.html:11
+#, python-format
+msgid "Ngazi ya %(n)s — utendaji wa kila eneo"
+msgstr "%(n)s level — performance by area"
+
+#: templates/leader/viongozi.html:21
+msgid "Maeneo na Viongozi Wake"
+msgstr "Areas and Their Leaders"
+
+#: templates/leader/viongozi.html:34
+msgid "HAKUNA KIONGOZI"
+msgstr "NO LEADER"
+
+#: templates/leader/viongozi.html:37
+msgid "hajajibu"
+msgstr "no reply"
+
+#: templates/leader/viongozi.html:40
+msgid "Hakuna linalosubiri"
+msgstr "Nothing pending"
+
+#: templates/leader/viongozi.html:52
+msgid "Matatizo ya eneo hili yanakuja moja kwa moja kwako."
+msgstr "Issues from this area come straight to you."
+
+#: templates/leader/viongozi.html:75
+msgid "Hakuna eneo chini yako."
+msgstr "There is no area below you."
+
+#: templates/leader/wanachama.html:3 templates/leader/wanachama.html:10
+msgid "Wanachama Wangu"
+msgstr "My Members"
+
+#: templates/leader/wanachama.html:15
+msgid "Jina, namba, simu..."
+msgstr "Name, number, phone..."
+
+#: templates/leader/wanachama.html:48
+msgid "Halali hadi"
+msgstr "Valid until"
+
+#: templates/leader/wanachama.html:58 templates/leader/wenzangu.html:66
+msgid "Andika"
+msgstr "Write"
+
+#: templates/leader/wanachama.html:66
+msgid "Hakuna mwanachama"
+msgstr "No members"
+
+#: templates/leader/wanachama.html:67
+msgid "Hakuna anayelingana na kichujio hiki kwenye eneo lako."
+msgstr "Nobody matches this filter in your area."
+
+#: templates/leader/wenzangu.html:3 templates/leader/wenzangu.html:10
+msgid "Viongozi Wenzangu"
+msgstr "My Fellow Leaders"
+
+#: templates/leader/wenzangu.html:11
+msgid "Wasiliana na viongozi wa mnyororo wako ndani ya mfumo"
+msgstr "Reach the leaders in your chain from inside the system"
+
+#: templates/member/dashboard.html:182
+#, python-format
+msgid "Zimebaki pointi <b class=\"num\">%(n)s</b> kufikia %(name)s"
+msgstr "<b class=\"num\">%(n)s</b> points left to reach %(name)s"
+
+#: templates/member/matatizo.html:10 templates/member/matatizo.html:19
+msgid "Taarifa Zangu"
+msgstr "My Reports"
+
+#: templates/member/matatizo.html:11
+msgid "Ufuatiliaji wa taarifa ulizotoa kwa uongozi"
+msgstr "Follow-up on the reports you sent to the leadership"
+
+#: templates/member/matatizo.html:14
+msgid "Toa Taarifa Mpya"
+msgstr "New Report"
+
+#: templates/member/matatizo.html:34
+msgid "Iko"
+msgstr "At"
+
+#: templates/member/matatizo.html:45
+msgid "Hujatoa taarifa yoyote"
+msgstr "You have not filed any reports"
+
+#: templates/member/matatizo.html:54
+msgid "Matangazo ya Viongozi Wako"
+msgstr "Announcements from Your Leaders"
+
+#: templates/member/matatizo.html:74
+msgid "Hakuna tangazo bado."
+msgstr "No announcements yet."
+
+#: templates/member/mazungumzo.html:26
+msgid "Uongozi wa"
+msgstr "Leadership of"
+
+#: templates/member/mazungumzo.html:27 templates/member/viongozi.html:55
+msgid "Hakuna kiongozi aliyewekwa bado"
+msgstr "No leader has been appointed yet"
+
+#: templates/member/mazungumzo.html:61
+msgid "Anza mazungumzo"
+msgstr "Start a conversation"
+
+#: templates/member/mazungumzo.html:62
+msgid "Andika ujumbe wako hapa chini — kiongozi wako atajibu."
+msgstr "Write your message below — your leader will reply."
+
+#: templates/member/pointi.html:65
+#, python-format
+msgid "Kuanzia %(n)s"
+msgstr "Since %(n)s"
+
+#: templates/member/tatizo_mpya.html:8
+msgid "Toa Taarifa kwa Kiongozi Wako"
+msgstr "Report an Issue to Your Leader"
+
+#: templates/member/tatizo_mpya.html:12
+msgid ""
+"Taarifa yako itaenda kwa kiongozi wa kata yako. Asipoweza kuitatua, "
+"ataipandisha wilayani, kisha mkoani, kanda na hatimaye makao makuu."
+msgstr ""
+"Your report goes to your ward leader. If they cannot resolve it, "
+"they will escalate it to the district, then the region, the zone and "
+"finally head office."
+
+#: templates/member/tatizo_mpya.html:19
+msgid "Eleza kwa ufupi"
+msgstr "Describe it briefly"
+
+#: templates/member/tatizo_mpya.html:40
+msgid "Eleza tatizo lako kwa kina..."
+msgstr "Describe your issue in detail..."
+
+#: templates/member/tatizo_mpya.html:43
+msgid "Tuma Taarifa"
+msgstr "Send Report"
+
+#: templates/member/viongozi.html:11
+msgid ""
+"Hawa ndio viongozi wa eneo lako. Unaweza kuwapigia simu au "
+"kuwaandikia hapa."
+msgstr ""
+"These are the leaders of your area. You can call them or write to "
+"them here."
+
+#: templates/member/viongozi.html:16
+msgid "Wasiliana Nao"
+msgstr "Contact Them"
+
+#: templates/member/viongozi.html:57
+msgid ""
+"Eneo lako halina kiongozi kwenye mfumo kwa sasa. Unaweza bado kutoa "
+"taarifa — itaenda ngazi ya juu."
+msgstr ""
+"Your area has no leader in the system at the moment. You can still "
+"file a report — it will go to the level above."
+
+#: templates/member/viongozi.html:68
+msgid "Mazungumzo Yangu"
+msgstr "My Conversations"
+
+#: templates/public/changia_asante.html:17
+#, python-format
+msgid ""
+"Malipo yako yamekamilika, %(name)s. Allah akubariki kwa moyo wako wa "
+"kutoa."
+msgstr ""
+"Your payment is complete, %(name)s. May Allah bless you for your "
+"generosity."
+
+#: templates/public/changia_asante.html:27
+#, python-format
+msgid ""
+"Ombi lako limehifadhiwa, %(name)s. Malipo bado yanasubiri "
+"kukamilika."
+msgstr ""
+"Your request has been saved, %(name)s. The payment is still waiting "
+"to be completed."
+
+#: templates/public/donor_dashboard.html:119
+#, python-format
+msgid "Siku %(n)s zimebaki"
+msgstr "%(n)s days left"
+
+#: templates/public/donor_dashboard.html:153
+#, python-format
+msgid "kwa miaka %(y)s (%(membership.cheapest)s)"
+msgstr "for %(y)s years (%(membership.cheapest)s)"
+
+#: templates/public/lipa.html:87
+#, python-format
+msgid ""
+"Kuhuisha kunakupa kipindi kingine cha miaka %(y)s na kadi mpya. "
+"Ukihuisha kabla muda haujaisha, siku zilizobaki haziponyeki."
+msgstr ""
+"Renewing gives you another %(y)s-year term and a new card. If you "
+"renew before your term ends, the days you have left are not lost."
+
+#: templates/public/otp.html:31
+#, python-format
+msgid "Code inaisha baada ya dakika %(minutes)s."
+msgstr "The code expires in %(minutes)s minutes."
+
+#: templates/public/password_reset_email.txt:1
+msgid "Habari,"
+msgstr "Hello,"
+
+#: templates/public/password_reset_email.txt:3
+#, python-format
+msgid ""
+"Umeomba kubadilisha nenosiri la akaunti yako ya %(org_short)s. "
+"Bonyeza kiungo hapa chini:"
+msgstr ""
+"You have asked to change the password for your %(org_short)s "
+"account. Click the link below:"
+
+#: templates/public/selcom_subiri.html:17
+#, python-format
+msgid ""
+"Tumetuma kidokezo cha malipo kwenye <b>%(n)s</b>. Ingiza PIN yako ya "
+"mtandao ili kukamilisha."
+msgstr ""
+"We have sent a payment prompt to <b>%(n)s</b>. Enter your mobile "
+"money PIN to complete it."
+
+msgid ""
+"Ukiwa na tatizo linalohitaji ufuatiliaji, ni bora kutumia \"Toa "
+"Taarifa kwa Kiongozi\" badala ya ujumbe — utapata namba ya "
+"kumbukumbu na kuona limefikia wapi."
+msgstr ""
+"If your issue needs following up, it is better to use \"Report an "
+"Issue to Your Leader\" instead of a message — you will get a "
+"reference number and can see how far it has gone."
+
+msgid "Dashibodi ya Uongozi"
+msgstr "Leadership Dashboard"
+
+msgid "Familia & Wanufaika"
+msgstr "Family & Beneficiaries"
+
+msgid "Kadi Zilizotolewa"
+msgstr "Cards Issued"
+
+msgid "Kadi Zinazosubiri"
+msgstr "Cards Pending"
+
+msgid "Malipo ya Mkoa"
+msgstr "Region Payments"
+
+msgid "Maombi ya Mkoa"
+msgstr "Region Applications"
+
+msgid "Maombi yanayosubiri"
+msgstr "Pending applications"
+
+msgid "Matukio ya Mkoa"
+msgstr "Region Events"
+
+msgid "Matukio ya mkoa"
+msgstr "Region events"
+
+msgid "Mazungumzo na Wanachama"
+msgstr "Conversations with Members"
+
+msgid "Michango (Mwaka Huu)"
+msgstr "Contributions (This Year)"
+
+msgid "Pakua Ripoti ya Mkoa"
+msgstr "Download Region Report"
+
+msgid "Toa Taarifa kwa Kiongozi"
+msgstr "Report to Your Leader"
+
+msgid "Tuma Ujumbe kwa Wote"
+msgstr "Send a Message to Everyone"
+
+msgid "Uanachama Wangu"
+msgstr "My Membership"
+
+msgid "Ujumbe kwa Kiongozi"
+msgstr "Message Your Leader"
+
+msgid "Wanachama Mkoani"
+msgstr "Members in the Region"
+
+msgid "Wanachama Wote"
+msgstr "All Members"
+
+msgid "Wanachama wa Mkoa"
+msgstr "Region Members"
+
+msgid "Wanachama wapya mwezi huu"
+msgstr "New members this month"
+
+msgid "Wilaya Zinazohusika"
+msgstr "Districts Covered"
+
+msgid "Hawana Kiongozi"
+msgstr "No Leader"
+
+msgid "Kwenye kata yako"
+msgstr "In your ward"
+
+msgid "Kwenye maeneo yako yote"
+msgstr "Across all your areas"
+
+msgid "Maeneo Yangu"
+msgstr "My Areas"
+
+msgid "Matatizo Kwangu"
+msgstr "Issues With Me"
+
+msgid "Matatizo Wazi"
+msgstr "Open Issues"
+
+msgid "Matatizo yao yanakuja kwako"
+msgstr "Their issues come to you"
+
+msgid "Wanahitaji kupigiwa simu"
+msgstr "They need a phone call"
+
+msgid "Yanasubiri jibu lako"
+msgstr "Awaiting your reply"
+
+msgid "Yenye uzito wa juu"
+msgstr "High priority"
+
+#, python-format
+msgid "Hai: %(n)s"
+msgstr "Active: %(n)s"
+
+#, python-format
+msgid "Ya haraka: %(n)s"
+msgstr "Urgent: %(n)s"
+
+#, python-format
+msgid "%(pct)s%% ya jumla ya wanachama"
+msgstr "%(pct)s%% of all members"
+
+msgid "Kidokezo: Unaweza kupanga, kuhariri na kushiriki picha na video katika albamu au miradi husika."
+msgstr "Tip: you can arrange, edit and share photos and videos within an album or a project."
+
+msgid "Akaunti hii ni ya kiongozi. Tumia ukurasa wa kuingia wa viongozi."
+msgstr "This is a leader's account. Please use the leaders' sign-in page."
+
+msgid "Akaunti hii ni ya mwanachama. Tumia ukurasa wa kuingia wa wanachama."
+msgstr "This is a member's account. Please use the members' sign-in page."
+
+msgid "Mwenyekiti au katibu wa kata, wilaya, mkoa, kanda au taifa."
+msgstr "Chairperson or secretary of a ward, district, region, zone or the nation."
+
+msgid "Kata, wilaya, mkoa, kanda na taifa"
+msgstr "Ward, district, region, zone and national"
+
+msgid "Wewe ni kiongozi au afisa?"
+msgstr "Are you a leader or an officer?"
+
+msgid "Ingia — Eneo la Viongozi"
+msgstr "Sign In — Leadership Area"
+
+msgid "Eneo la Viongozi"
+msgstr "Leadership Area"
+
+msgid "Kata, Wilaya, Mkoa, Kanda, Taifa — na maafisa wa ofisi"
+msgstr "Ward, District, Region, Zone, National — and office staff"
+
+msgid "Ingia kwa Wadhifa Wako"
+msgstr "Sign In With Your Post"
+
+msgid "Ukurasa huu ni wa viongozi na maafisa pekee."
+msgstr "This page is for leaders and officers only."
+
+msgid "Eneo hili lina taarifa binafsi za wanachama. Utaombwa code ya SMS kwenye kifaa kipya, na kila kuingia kunaandikwa kwenye kumbukumbu."
+msgstr "This area holds members' personal information. You will be asked for an SMS code on a new device, and every sign-in is recorded in the audit log."
+
+msgid "Hujapewa wadhifa bado? Wasiliana na ofisi ya MUWESTA."
+msgstr "Not been given a post yet? Contact the MUWESTA office."
+
+msgid "Wewe ni mwanachama au mhisani?"
+msgstr "Are you a member or a donor?"
+
+msgid "Ingia kama Kiongozi"
+msgstr "Sign In as a Leader"
+
+msgid "Ingia Kwenye Eneo la Viongozi"
+msgstr "Sign In to the Leadership Area"

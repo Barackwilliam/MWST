@@ -127,7 +127,9 @@
       <div class="card__body pkg__contact">
         <a href="tel:{{ org_phone_link }}"><svg width="15" height="15"><use href="#i-phone"></use></svg> {{ org_phone }}</a>
         <a href="mailto:{{ org_email }}"><svg width="15" height="15"><use href="#i-mail"></use></svg> {{ org_email }}</a>
-        <a href="{% url 'core:home' %}"><svg width="15" height="15"><use href="#i-globe"></use></svg> www.muslimwelfare.or.tz</a>
+        {% comment %}Anwani ya tovuti ilikuwa imeandikwa hapa, karibu
+        kabisa na simu na barua pepe zinazotoka SiteSetting.{% endcomment %}
+        {% if org_website %}<a href="{{ org_website }}" target="_blank" rel="noopener"><svg width="15" height="15"><use href="#i-globe"></use></svg> {{ org_website|cut:"https://"|cut:"http://" }}</a>{% endif %}
         <span><svg width="15" height="15"><use href="#i-map-pin"></use></svg> {{ org_address }}</span>
       </div>
     </article>

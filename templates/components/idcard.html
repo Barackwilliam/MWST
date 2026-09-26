@@ -30,7 +30,7 @@ inachapishwa kama maandishi. Kwa maelezo marefu tumia `{% templatetag openblock 
         </svg>
       </span>
       <span class="idcard__org">
-        <b>{{ settings_obj.org_name|default:"Muslim Welfare Society of Tanzania" }}</b>
+        <b>{{ org_name|default:settings_obj.org_name }}</b>
         <span>{% trans "Kadi ya Uanachama" %} · Membership Card</span>
       </span>
       <span class="idcard__tier">{{ m.category.name }}</span>
@@ -76,7 +76,7 @@ inachapishwa kama maandishi. Kwa maelezo marefu tumia `{% templatetag openblock 
 
     <footer class="idcard__foot">
       <span class="idcard__serial">{{ card.serial|default:"—" }}</span>
-      <span class="idcard__motto">{% trans "Imani · Huruma · Huduma · Maendeleo" %}</span>
+      <span class="idcard__motto">{% for v in org_values %}{% if not forloop.first %} · {% endif %}{{ v }}{% endfor %}</span>
     </footer>
   </div>
 </div>
