@@ -105,20 +105,27 @@
       </div>
     </article>
 
-    <article class="card reveal">
-      <div class="card__head"><h3>{% trans "Njia za Malipo" %}</h3></div>
-      <div class="card__body">
-        <div class="pkg__methods">
-          {% for m in methods %}
-            <span class="pkg__method">
-              <svg width="18" height="18"><use href="#i-{{ m.icon }}"></use></svg>
-              {{ m.label }}
-            </span>
-          {% endfor %}
+    {% comment %}ORODHA YA NJIA ZA MALIPO IMEONDOLEWA.
+
+    Ilikuwa ikiorodhesha Benki, M-Pesa, Airtel Money, Tigo Pesa na
+    HaloPesa — huku mtu bado akitakiwa kubofya kitufe kingine ili
+    kulipa. Orodha haikumsaidia: hachagui hapo, na huchagua mtandao
+    wake akiwa kwenye ukurasa wa malipo.
+
+    Badala yake kuna kitufe kimoja kinachomfikisha mahali anapotaka
+    kwenda.{% endcomment %}
+    <article class="card card--pay reveal">
+      <div class="card__body pkg__pay">
+        <span class="pkg__payico">
+          <svg width="22" height="22"><use href="#i-wallet"></use></svg>
+        </span>
+        <div class="pkg__paytxt">
+          <b>{% trans "Uko tayari kulipa?" %}</b>
+          <span>{% trans "Mitandao yote ya simu na kadi za benki zinakubalika" %}</span>
         </div>
-        <p class="legal__note" style="margin-top:14px">
-          {% trans "Baada ya kulipa, tuma namba ya muamala ili malipo yako yathibitishwe haraka." %}
-        </p>
+        <a href="{% url 'core:lipa' %}" class="btn btn--primary">
+          <svg><use href="#i-arrow-right"></use></svg> {% trans "Lipa Ada" %}
+        </a>
       </div>
     </article>
 

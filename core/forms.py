@@ -526,7 +526,11 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
     amount = forms.DecimalField(label=_("Kiasi"), max_digits=14, decimal_places=2)
     currency = forms.ChoiceField(label=_("Fedha"))
     recurrence = forms.ChoiceField(label=_("Rudia mchango"))
-    provider = forms.ChoiceField(label=_("Njia ya malipo"))
+    #: Njia ya malipo haionyeshwi tena kwa mtumiaji — ni moja tu.
+    #: `required=False` inaruhusu fomu kutumwa bila sehemu hii, na
+    #: `clean_provider` inaweka chaguo-msingi. Bado ni `ChoiceField`
+    #: ili njia ya pili ikirudishwa, hakuna cha kubadilisha hapa.
+    provider = forms.ChoiceField(label=_("Njia ya malipo"), required=False)
 
     full_name = forms.CharField(label=_("Jina kamili"), max_length=160)
     phone = forms.CharField(label=_("Simu"), max_length=24)
@@ -576,16 +580,20 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
 
     def clean_provider(self):
         """
-        Njia zilizowekwa `soon` zinaonekana kwenye fomu lakini haziruhusiwi.
-        Ukaguzi upo hapa — si kwenye JavaScript pekee — kwa sababu mtu
-        anaweza kuondoa `disabled` kwenye kivinjari. Mchango ungekwama
-        `pending` milele bila mtu kujua.
+        Njia ya malipo — haionyeshwi tena kwa mtumiaji.
+
+        Fomu isipotuma sehemu hii, tunatumia ile pekee iliyopo. Ukaguzi
+        wa `soon` unabaki kwa ajili ya siku njia ya pili itakaporudishwa:
+        upo hapa, si kwenye JavaScript pekee, kwa sababu mtu anaweza
+        kuondoa `disabled` kwenye kivinjari na mchango ukakwama `pending`
+        milele bila mtu kujua.
         """
+        if not self.data.get("provider"):
+            return giving.DEFAULT_PROVIDER
         key = self.cleaned_data["provider"]
         if giving.is_soon(key):
             raise forms.ValidationError(
-                _("Njia hii ya malipo inakuja hivi punde. Kwa sasa tafadhali "
-                  "tumia Pesapal."))
+                _("Njia hii ya malipo inakuja hivi punde."))
         return key
 
     # -- Muhtasari unaotumika kwenye paneli ya kulia --------------------------
@@ -726,7 +734,11 @@ class MembershipPaymentForm(BootstrapMixin, forms.Form):
                                   required=False)
     address = forms.CharField(label=_("Anwani"), max_length=200, required=False)
 
-    provider = forms.ChoiceField(label=_("Njia ya malipo"))
+    #: Njia ya malipo haionyeshwi tena kwa mtumiaji — ni moja tu.
+    #: `required=False` inaruhusu fomu kutumwa bila sehemu hii, na
+    #: `clean_provider` inaweka chaguo-msingi. Bado ni `ChoiceField`
+    #: ili njia ya pili ikirudishwa, hakuna cha kubadilisha hapa.
+    provider = forms.ChoiceField(label=_("Njia ya malipo"), required=False)
     note = forms.CharField(label=_("Maelezo"), max_length=200, required=False,
                            widget=forms.Textarea(attrs={"rows": 2}))
 
@@ -744,12 +756,13 @@ class MembershipPaymentForm(BootstrapMixin, forms.Form):
         self._style()
 
     def clean_provider(self):
-        """Kama ilivyo kwenye michango: `soon` haiwezi kupitishwa."""
+        """Kama ilivyo kwenye michango: haionyeshwi, na `soon` haipiti."""
+        if not self.data.get("provider"):
+            return giving.DEFAULT_PROVIDER
         key = self.cleaned_data["provider"]
         if giving.is_soon(key):
             raise forms.ValidationError(
-                _("Njia hii ya malipo inakuja hivi punde. Kwa sasa tafadhali "
-                  "tumia Pesapal."))
+                _("Njia hii ya malipo inakuja hivi punde."))
         return key
 
     def clean(self):

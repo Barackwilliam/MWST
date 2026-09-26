@@ -69,16 +69,57 @@
           </div>
         </div>
 
-        <div class="field" style="margin-top:14px">
-          <label class="field__label">{% trans "Aina ya Uanachama" %} <em>*</em></label>
-          <div class="grid grid--4" style="gap:9px">
+        {% comment %}AINA YA UANACHAMA — kadi kwenye kompyuta, orodha
+        kunjuzi kwenye simu.
+
+        Kadi nne kwenye `grid--4` zilibanana kwenye simu: jina na bei
+        zilikatika, na kugusa kulikuwa kugumu. Orodha kunjuzi inachukua
+        mstari mmoja na inatumia kichagua cha mfumo, ambacho ni rahisi
+        kuliko chochote tunachoweza kujenga.
+
+        Vyote viwili vinatuma sehemu ile ile (`category`) — seva
+        haijui tofauti. Kinachoonekana kinategemea upana wa skrini,
+        si JavaScript, kwa hiyo kinafanya kazi hata bila yake.{% endcomment %}
+        <div class="field catpick" style="margin-top:14px">
+          <label class="field__label" for="id_category_sel">
+            {% trans "Aina ya Uanachama" %} <em>*</em>
+          </label>
+
+          {# --- Kadi: kompyuta na tableti --- #}
+          <div class="catpick__cards" data-catcards>
             {% for c in categories %}
-              <label class="qa" style="cursor:pointer">
-                <input type="radio" name="category" value="{{ c.pk }}" {% if c.is_featured %}checked{% endif %} style="accent-color:var(--g-500)" required>
-                <span class="qa__label"><b>{{ c.name }}</b><br>TZS {{ c.monthly_fee|floatformat:0 }}</span>
+              <label class="catcard{% if c.is_featured %} is-on{% endif %}">
+                <input type="radio" name="category" value="{{ c.pk }}"
+                       {% if c.is_featured %}checked{% endif %} required>
+                <span class="catcard__top">
+                  <b>{{ c.name }}</b>
+                  <span class="catcard__tick">
+                    <svg width="11" height="11"><use href="#i-check"></use></svg>
+                  </span>
+                </span>
+                <span class="catcard__fee">
+                  TZS {{ c.monthly_fee|floatformat:0 }}
+                  <small>/{% trans "mwezi" %}</small>
+                </span>
               </label>
             {% endfor %}
           </div>
+
+          {# --- Orodha kunjuzi: simu --- #}
+          {% comment %}`disabled` mwanzoni kwa makusudi: sehemu
+          iliyozimwa haitumwi na fomu. JavaScript huiwasha na kuzima
+          kadi pale skrini inapokuwa nyembamba, na kinyume chake.
+
+          Bila JavaScript, kadi ndizo zinazotumika kila mahali — ni
+          hali ile ile ya awali, kwa hiyo hakuna kinachovunjika.{% endcomment %}
+          <select class="select catpick__sel" id="id_category_sel"
+                  name="category" required disabled data-catsel>
+            {% for c in categories %}
+              <option value="{{ c.pk }}" {% if c.is_featured %}selected{% endif %}>
+                {{ c.name }} &mdash; TZS {{ c.monthly_fee|floatformat:0 }}/{% trans "mwezi" %}
+              </option>
+            {% endfor %}
+          </select>
         </div>
 
         {% comment %}Kikasha hiki kilikuwa kikimtaka mtu akubali "masharti"

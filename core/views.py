@@ -1826,6 +1826,8 @@ def changia(request):
         "recurrences": giving.localise(giving.RECURRENCES, lang),
         "providers": giving.localise(giving.PROVIDERS, lang),
         "provider_groups": giving.localise(giving.PROVIDER_GROUPS, lang),
+        #: Njia ya malipo haionyeshwi tena; inawekwa kama sehemu iliyofichwa.
+        "default_provider": giving.DEFAULT_PROVIDER,
         "currencies": giving.currencies(),
         "presets": giving.PRESETS,
     }

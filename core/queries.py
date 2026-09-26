@@ -2603,6 +2603,7 @@ def public_lipa(lang="sw"):
         "payer_types": _g.localise(_g.PAYER_TYPES, lang),
         "purposes": _g.localise(_g.PURPOSES, lang),
         "providers": _g.localise(_g.PROVIDERS, lang),
+        "default_provider": _g.DEFAULT_PROVIDER,
         "provider_groups": _g.localise(_g.PROVIDER_GROUPS, lang),
         "currencies": _g.currencies(),
         "steps": [
