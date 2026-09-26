@@ -710,8 +710,32 @@ def _login_ctx(request, door="member", extra=None):
         return {k: (gettext(v) if k in ("label", "placeholder", "hint") else v)
                 for k, v in row.items()}
 
+    # Vikundi vya kuonyesha kwenye fomu.
+    #
+    # MLANGO WA WANACHAMA hauna kikundi: mwanachama, mhisani na
+    # mjitoleaji wote huingia kwa namba ya uanachama au barua pepe.
+    # Kuwaonyesha vitufe vitatu vinavyobadilisha dokezo pekee ni hatua
+    # ya ziada isiyobadilisha chochote — na iliwachanganya watu.
+    #
+    # MLANGO WA VIONGOZI una vikundi viwili halisi: kiongozi wa
+    # kuchaguliwa ana namba ya uanachama, afisa wa ofisi ana jina la
+    # mtumiaji. Hapo kuchagua kunabadilisha sehemu ya kujaza kweli.
+    groups = []
+    if door == "leader":
+        groups = [
+            {"key": "leader", "label": gettext("Kiongozi wa Kuchaguliwa"),
+             "icon": "shield", "staff": False,
+             "desc": gettext("Mwenyekiti au katibu wa kata, wilaya, "
+                             "mkoa, kanda au taifa")},
+            {"key": "officer", "label": gettext("Afisa wa Ofisi"),
+             "icon": "briefcase", "staff": True,
+             "desc": gettext("Usajili, malipo, michango, ustawi, "
+                             "wadau, mratibu na usimamizi")},
+        ]
+
     ctx = {
         "login_roles": roles,
+        "login_groups": groups,
         "door": door,
         "active_role": picked,
         "role_hint": gettext(spec["hint"]),

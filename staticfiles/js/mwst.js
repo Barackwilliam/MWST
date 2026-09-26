@@ -1535,3 +1535,38 @@
     if (step) show(step.getAttribute("data-login-step"));
   }
 })();
+
+/* ==========================================================================
+   KUCHAGUA KIKUNDI KWENYE UKURASA WA KUINGIA
+   Uwanja wa kitambulisho hubadilika: kiongozi wa kuchaguliwa ana namba
+   ya uanachama, afisa wa ofisi ana jina la mtumiaji.
+   ========================================================================== */
+(function () {
+  "use strict";
+  var pick = document.querySelector("[data-authpick]");
+  var box = document.querySelector("[data-ident]");
+  if (!pick || !box) return;
+
+  var label = box.querySelector("[data-ident-label]");
+  var input = box.querySelector("[data-ident-input]");
+  var hint = box.querySelector("[data-ident-hint]");
+  var icon = box.querySelector("[data-ident-icon]");
+
+  function apply(staff) {
+    var p = staff ? "staff" : "public";
+    if (label) label.textContent = box.getAttribute("data-" + p + "-label");
+    if (input) input.setAttribute("placeholder", box.getAttribute("data-" + p + "-ph"));
+    if (hint) hint.textContent = box.getAttribute("data-" + p + "-hint");
+    if (icon) icon.setAttribute("href", "#i-" + box.getAttribute("data-" + p + "-icon"));
+  }
+
+  pick.addEventListener("change", function (e) {
+    var opt = e.target.closest(".authpick__opt");
+    if (!opt) return;
+    var all = pick.querySelectorAll(".authpick__opt");
+    for (var i = 0; i < all.length; i++) all[i].classList.remove("is-on");
+    opt.classList.add("is-on");
+    apply(opt.getAttribute("data-staff") === "1");
+    if (input) input.focus();
+  });
+})();

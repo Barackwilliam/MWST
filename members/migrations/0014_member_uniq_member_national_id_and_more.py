@@ -4,6 +4,61 @@ from django.conf import settings
 from django.db import migrations, models
 
 
+#: Safu zinazokuwa za kipekee, na maelezo ya kuonyesha kwenye log.
+FIELDS = [
+    ("national_id", "namba ya kitambulisho"),
+    ("phone", "namba ya simu"),
+    ("email", "barua pepe"),
+]
+
+
+def safisha(apps, schema_editor):
+    """
+    Ondoa marudio kabla kizuizi hakijawekwa.
+
+    KWA NINI HII IPO: database halisi tayari ina rekodi zenye barua pepe
+    na namba za simu zinazojirudia — nyingi zikitokana na data ya mfano.
+    `AddConstraint` peke yake ilikuwa ikivunja deploy, na kila mtu
+    atakayerudisha nakala ya database angekumbana na ukuta ule ule.
+
+    KANUNI: rekodi ya KWANZA inabaki na thamani yake; zinazofuata
+    zinafutwa thamani hiyo (kuwa tupu). Hakuna rekodi inayofutwa.
+
+    Kila kilichobadilishwa kinaandikwa kwenye log ya deploy, ili
+    isipotee kimya kimya — afisa anaweza kurudi kuzijaza kwa mkono.
+    """
+    Member = apps.get_model("members", "Member")
+
+    for field, jina in FIELDS:
+        seen, cleared = set(), []
+        # Mpangilio wa `pk` unahakikisha rekodi ya kwanza ndiyo inayobaki,
+        # bila kujali `ordering` ya modeli.
+        for m in Member.objects.exclude(**{field: ""}).exclude(
+                **{f"{field}__isnull": True}).order_by("pk").only("pk", field):
+            value = (getattr(m, field) or "").strip()
+            if not value:
+                continue
+            key = value.lower()
+            if key in seen:
+                cleared.append((m.pk, value))
+                Member.objects.filter(pk=m.pk).update(**{field: ""})
+            else:
+                seen.add(key)
+
+        if cleared:
+            print(f"  {jina}: rekodi {len(cleared)} zimefutwa thamani "
+                  f"iliyojirudia")
+            for pk, value in cleared[:20]:
+                print(f"    mwanachama #{pk}: {value}")
+            if len(cleared) > 20:
+                print(f"    ... na nyingine {len(cleared) - 20}")
+
+
+def rudisha(apps, schema_editor):
+    """Hakuna cha kurudisha — thamani zilizofutwa hazikuhifadhiwa."""
+    pass
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -13,6 +68,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        #: Kusafisha KWANZA, kisha kuweka kizuizi. Mpangilio ni muhimu.
+        migrations.RunPython(safisha, rudisha),
         migrations.AddConstraint(
             model_name="member",
             constraint=models.UniqueConstraint(

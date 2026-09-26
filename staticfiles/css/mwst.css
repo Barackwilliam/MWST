@@ -6040,3 +6040,60 @@ html { overflow-x: clip; }
   .lwpick__ico { width: 38px; height: 38px; }
   .lwpick:hover { transform: none; }
 }
+
+/* ==========================================================================
+   KUCHAGUA KIKUNDI KWENYE UKURASA WA KUINGIA
+   --------------------------------------------------------------------------
+   Kinaonekana kwenye mlango wa VIONGOZI pekee, ambako sehemu ya kujaza
+   inatofautiana kweli: kiongozi wa kuchaguliwa ana namba ya uanachama,
+   afisa wa ofisi ana jina la mtumiaji.
+
+   Mlango wa wanachama hauna hiki — hapo kuchagua hakubadilishi lolote.
+   ========================================================================== */
+.authpick { display: grid; gap: 9px; margin-bottom: 20px; }
+
+.authpick__opt {
+  position: relative; display: flex; align-items: center; gap: 12px;
+  padding: 13px 14px; cursor: pointer;
+  border-radius: 14px; background: var(--surface);
+  border: 1.5px solid var(--line);
+  transition: border-color .16s, background .16s, box-shadow .16s;
+}
+.authpick__opt:hover { border-color: var(--g-300); background: var(--g-50); }
+.authpick__opt.is-on {
+  border-color: var(--g-500); background: var(--g-50);
+  box-shadow: 0 0 0 3.5px color-mix(in srgb, var(--g-500) 11%, transparent);
+}
+.authpick__opt input { position: absolute; opacity: 0; pointer-events: none; }
+
+.authpick__ico {
+  width: 40px; height: 40px; flex: none; border-radius: 12px;
+  display: grid; place-items: center;
+  background: var(--canvas); color: var(--muted);
+  transition: background .16s, color .16s;
+}
+.authpick__opt.is-on .authpick__ico {
+  background: linear-gradient(150deg, var(--g-500), var(--g-700)); color: #fff;
+}
+
+.authpick__txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.authpick__txt b { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+.authpick__txt small { font-size: 11.5px; line-height: 1.45; color: var(--muted); }
+
+.authpick__tick {
+  width: 21px; height: 21px; flex: none; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1.5px solid var(--line); background: var(--surface);
+  color: transparent; transition: background .16s, border-color .16s, color .16s;
+}
+.authpick__opt.is-on .authpick__tick {
+  background: var(--g-500); border-color: var(--g-500); color: #fff;
+}
+
+/* Fomu yenyewe inapumua zaidi baada ya kuondoa hatua za uongo. */
+.authform .field { margin-bottom: 15px; }
+
+@media (max-width: 480px) {
+  .authpick__opt { padding: 11px 12px; gap: 10px; }
+  .authpick__ico { width: 36px; height: 36px; }
+}
