@@ -113,6 +113,11 @@ def contribution_posted(sender, instance, **kwargs):
     if instance.ledger_entry_id is None and instance.member_id:
         instance.post_to_ledger()
 
+    # Mchango huu ukitimiza lengo la mradi, mradi unafungwa hapa hapa —
+    # kadi inaonyesha "EXPIRED" na fomu haziupokei tena.
+    if instance.project_id:
+        instance.project.close_if_full()
+
     # Risiti mwishoni — ikitangulia, `apply_membership` isingekuwa
     # imeweka tarehe mpya wala mwanachama.
     instance.refresh_from_db()

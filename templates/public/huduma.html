@@ -55,12 +55,12 @@
   </div>
   <div class="grid grid--3">
     {% for p in projects %}
-      <article class="card reveal">
-        <span class="illus illus--card"><span class="illus__tag">{{ p.place|tr }}</span>{% include "components/illus.html" with scene=p.scene %}</span>
+      <article class="card reveal{% if p.full %} proj--full{% endif %}">
+        <span class="illus illus--card"><span class="illus__tag">{{ p.place|tr }}</span>{% include "components/illus.html" with scene=p.scene %}{% if p.full %}<span class="proj__stamp proj__stamp--expired"><svg width="13" height="13"><use href="#i-check-circle"></use></svg> {% trans "EXPIRED" %}</span>{% endif %}</span>
         <div class="card__body" style="padding:16px">
           <h4 style="font-size:15px;font-weight:700">{{ p.title|tr }}</h4>
           <span class="rowlist__sub" style="margin:4px 0 10px"><svg width="12" height="12" style="vertical-align:-1px"><use href="#i-map-pin"></use></svg> {{ p.place|tr }}</span>
-          <div class="prog"><i data-prog="{{ p.bar }}" style="width:0"></i></div>
+          <div class="prog"><i data-fill="{{ p.bar }}" style="width:0"></i></div>
           <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-top:7px">
             <b class="num">{{ p.raised }}</b>
             <span style="color:var(--muted)">/ {{ p.goal }} ·
@@ -74,10 +74,10 @@
           `mradi` ni NAMBA, si kichwa: kichwa hakikuweza kuunganisha
           mchango na mradi, kwa hiyo bar haikupanda kamwe.{% endcomment %}
           {% if p.full %}
-            <a class="btn btn--ghost btn--block" style="margin-top:12px"
-               href="{% url 'core:changia' %}?mradi={{ p.id }}">
-              <svg><use href="#i-check-circle"></use></svg> {% trans "Imetimia — changia mwingine" %}
-            </a>
+            <button type="button" class="btn btn--ghost btn--block" style="margin-top:12px"
+                    disabled aria-disabled="true">
+              <svg><use href="#i-check-circle"></use></svg> {% trans "Mradi Umekamilika" %}
+            </button>
           {% else %}
             <a class="btn btn--primary btn--block" style="margin-top:12px"
                href="{% url 'core:changia' %}?aina={{ p.purpose|default:'maendeleo' }}&mradi={{ p.id }}">

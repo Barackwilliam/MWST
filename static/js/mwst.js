@@ -236,6 +236,28 @@
     });
   });
 
+  /* ---------- Bar za michango ya miradi ----------
+     Kila bar inaanza 0 na kujaa hadi kiwango chake mara moja tu, pale
+     inapoonekana kwenye skrini — mtu akishuka hadi kwenye miradi ataona
+     inajaa, si iliyokwisha jaa. Fremu mbili zinahakikisha kivinjari
+     kimechora upana 0 kwanza, vinginevyo `transition` haianzi. */
+  (() => {
+    const bars = $$("[data-fill]");
+    if (!bars.length) return;
+    const fill = (el) => requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.width = el.getAttribute("data-fill") + "%";
+    }));
+    if (!("IntersectionObserver" in window)) { bars.forEach(fill); return; }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        fill(e.target);
+      });
+    }, { threshold: 0.4 });
+    bars.forEach((el) => io.observe(el));
+  })();
+
   /* ---------- Gauge rings ---------- */
   $$("[data-gauge]").forEach((el) => {
     const pct = Number(el.getAttribute("data-gauge"));

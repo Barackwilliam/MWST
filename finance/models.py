@@ -332,6 +332,30 @@ class Project(Bilingual, TimeStamped):
         """Mradi unaokubali michango: unaendelea NA lengo halijatimia."""
         return self.status == "ongoing" and not self.is_full()
 
+    def close_if_full(self):
+        """
+        Lengo likitimia, mradi unakuwa `completed` — hapo hapo.
+
+        Huitwa na signal kila mchango wa mradi unapothibitishwa, kwa hiyo
+        haijalishi fedha zimetoka Pesapal, Selcom au kwa afisa. Fomu zote
+        za michango zinachuja `status="ongoing"`, kwa hiyo mradi uliofungwa
+        hauwezi kuchangiwa tena kwa njia yoyote.
+
+        Hurudisha True ikiwa hali imebadilika.
+        """
+        if self.status != "ongoing" or not self.is_full():
+            return False
+        self.status = "completed"
+        if not self.end_date:
+            self.end_date = timezone.localdate()
+        self.save(update_fields=["status", "end_date", "updated_at"])
+        return True
+
+    @classmethod
+    def close_all_full(cls):
+        """Funga kila mradi unaoendelea ambao lengo lake limetimia."""
+        return [p for p in cls.objects.filter(status="ongoing") if p.close_if_full()]
+
     @classmethod
     def suggest_other(cls, exclude_pk=None, limit=3):
         """

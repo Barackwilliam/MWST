@@ -385,9 +385,9 @@ ukurasa wa nyumbani si orodha, ni mwaliko.{% endcomment %}
         <span class="illus illus--card proj__pic">
           {% include "components/illus.html" with scene=p.scene|default:"ujenzi" %}
           {% if p.full %}
-            <span class="proj__stamp">
+            <span class="proj__stamp proj__stamp--expired">
               <svg width="13" height="13"><use href="#i-check-circle"></use></svg>
-              {% trans "IMETIMIA" %}
+              {% trans "EXPIRED" %}
             </span>
           {% endif %}
         </span>
@@ -400,20 +400,21 @@ ukurasa wa nyumbani si orodha, ni mwaliko.{% endcomment %}
           <h3>{{ p.title }}</h3>
           {% if p.text %}<p>{{ p.text|truncatewords:18 }}</p>{% endif %}
 
-          <div class="proj__bar"><span style="width:{{ p.bar }}%"></span></div>
+          {# Bar inaanza 0 na kujaa hadi kiwango halisi mara moja inapoonekana — angalia `data-fill` kwenye mwst.js. #}
+          <div class="proj__bar"><span data-fill="{{ p.bar }}" style="width:0"></span></div>
           <div class="proj__figs">
             <b>{{ p.raised }}</b>
             <span>{% trans "kati ya" %} {{ p.goal }}</span>
           </div>
 
           {% if p.full %}
-            {% comment %}Lengo limetimia — mtu apelekwe kwenye mradi
-            unaohitaji fedha, si kwenye fomu isiyoweza kupokea.{% endcomment %}
-            <a href="{% url 'core:changia' %}?mradi={{ p.id }}"
-               class="btn btn--ghost btn--block">
-              <svg><use href="#i-arrow-right"></use></svg>
-              {% trans "Changia Mradi Mwingine" %}
-            </a>
+            {% comment %}Mradi umekamilika — hakuna kiungo cha kuchangia
+            kabisa, ni kitufe kilichozimwa tu.{% endcomment %}
+            <button type="button" class="btn btn--ghost btn--block" disabled
+                    aria-disabled="true">
+              <svg><use href="#i-check-circle"></use></svg>
+              {% trans "Mradi Umekamilika" %}
+            </button>
           {% else %}
             <a href="{% url 'core:changia' %}?aina={{ p.purpose }}&mradi={{ p.id }}"
                class="btn btn--gold btn--block">

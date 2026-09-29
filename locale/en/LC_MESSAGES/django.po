@@ -7029,3 +7029,9 @@ msgstr "Sign In as a Leader"
 
 msgid "Ingia Kwenye Eneo la Viongozi"
 msgstr "Sign In to the Leadership Area"
+
+msgid "EXPIRED"
+msgstr "EXPIRED"
+
+msgid "Mradi Umekamilika"
+msgstr "Project Completed"
