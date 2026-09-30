@@ -1807,9 +1807,14 @@ def changia(request):
     suggested = []
     raw = (request.GET.get("mradi") or "").strip()
     if raw.isdigit():
-        project = Project.objects.filter(pk=int(raw), status="ongoing").first()
-        if project is not None and project.is_full():
-            # Lengo limetimia — usimwache atume fedha zisizohitajika.
+        #: Bila kuchuja `status` hapa: mradi uliokamilika ulikuwa unarudi
+        #: `None` kimya kimya, na mtu akabaki kwenye fomu ya jumla bila
+        #: kujua kwa nini mradi wake haupo.
+        project = Project.objects.filter(pk=int(raw)).first()
+        if project is not None and project.status in ("paused", "planned"):
+            project = None
+        elif project is not None and not project.accepts_donations():
+            # Mradi umekamilika — usimwache atume fedha zisizohitajika.
             messages.info(request, _(
                 "Lengo la mradi wa \"%(m)s\" limetimia — asante kwa wote "
                 "waliochangia. Hapa kuna miradi mingine inayohitaji msaada."

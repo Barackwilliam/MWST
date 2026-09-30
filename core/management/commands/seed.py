@@ -696,11 +696,20 @@ class Command(BaseCommand):
             amount = Decimal(random.choice([50000, 100000, 150000, 200000, 250000,
                                             500000, 750000, 1000000, 1500000,
                                             5000000, 25000000, 50000000]))
+            # Mchango wa mradi usivuke kilichobaki kwenye lengo. Awali kiasi
+            # cha TZS 50,000,000 kiliweza kuangukia mradi wa lengo la
+            # 9,000,000, na tovuti ikaonyesha "50,050,000 kati ya 9,000,000".
+            # Kisichotosha kinaenda kwenye mfuko wa jumla badala yake.
+            project = None
+            if projects and random.random() < 0.4:
+                project = random.choice(projects)
+                if project.status != "ongoing" or amount >= project.remaining():
+                    project = None
             c = Contribution.objects.create(
                 fund=fund,
                 donor=random.choice(donors) if use_donor else None,
                 member=None if use_donor else random.choice(members),
-                project=random.choice(projects) if random.random() < 0.4 else None,
+                project=project,
                 campaign=random.choice(campaigns) if random.random() < 0.5 else None,
                 amount=amount,
                 method=random.choice([PaymentMethod.MPESA, PaymentMethod.BANK,

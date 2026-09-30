@@ -1363,13 +1363,12 @@ def public_home():
                       "place": p.region.name if p.region else "",
                       "pct": p.progress(), "bar": p.progress_bar(),
                       "raised": tzs(p.raised()), "goal": tzs(p.target_amount),
-                      #: `full` inabadilisha kadi kuwa "IMETIMIA" na
-                      #: kuzima kitufe cha kuchangia.
-                      "full": p.is_full(), "remaining": tzs(p.remaining()),
+                      #: `full` inabadilisha kadi kuwa "EXPIRED" na
+                      #: kuzima kitufe cha kuchangia kabisa.
+                      "full": not p.accepts_donations(), "remaining": tzs(p.remaining()),
                       "purpose": _project_purpose(p), "scene": p.scene}
-                     for p in Project.objects.filter(status="ongoing")
-                     .order_by("-created_at")[:3]],
-        "projects_total": Project.objects.filter(status="ongoing").count(),
+                     for p in _public_projects().select_related("region")[:3]],
+        "projects_total": _public_projects().count(),
         "bottom_stats": _bottom_stats(),
     }
 
@@ -1509,6 +1508,17 @@ _SCENE_PURPOSE = {
 }
 
 
+def _public_projects():
+    """
+    Miradi inayoonyeshwa hadharani: inayoendelea NA iliyokamilika.
+
+    Mradi uliotimiza lengo haupotei — kadi yake inabaki mahali pale pale
+    ikiwa na alama ya "EXPIRED", ili wachangiaji waone kazi yao imekamilika.
+    """
+    return (Project.objects.filter(status__in=("ongoing", "completed"))
+            .order_by("-created_at"))
+
+
 def _project_purpose(project):
     """Aina ya mchango inayolingana na mradi, kwa `/changia/?aina=`."""
     key = _SCENE_PURPOSE.get(getattr(project, "scene", "") or "", "maendeleo")
@@ -1540,10 +1550,10 @@ def public_huduma():
                       "title": p.tx("title"), "place": p.region.name if p.region else "—",
                       "pct": p.progress(), "bar": p.progress_bar(),
                       "raised": tzs(p.raised()), "goal": num(p.target_amount),
-                      "full": p.is_full(), "remaining": tzs(p.remaining()),
+                      "full": not p.accepts_donations(), "remaining": tzs(p.remaining()),
                       "purpose": _project_purpose(p),
                       "scene": p.scene, "over": p.progress() > 100}
-                     for p in Project.objects.select_related("region").filter(status="ongoing")[:3]],
+                     for p in _public_projects().select_related("region")[:3]],
         "impact": [
             #: Ilikuwa jumla ya usajili WOTE tangu mwanzo, ikiitwa "kwa
             #: mwezi". Sasa ni wa mwezi huu kweli.

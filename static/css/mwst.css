@@ -5903,6 +5903,17 @@ html { overflow-x: clip; }
   box-shadow: 0 4px 12px -3px rgba(4,35,24,.5);
 }
 .proj__stamp svg { flex: none; }
+/* Mradi uliokamilika: alama ya EXPIRED juu ya picha, na kitufe kilichozimwa */
+.proj__stamp--expired { background: #9b1c1c; color: #fff; }
+.proj--full .btn:disabled {
+  cursor: not-allowed; opacity: .75;
+  background: var(--line-soft); color: var(--muted); border-color: transparent;
+}
+
+/* Bar za michango: zinaanza 0 na kujaa MARA MOJA hadi kiwango halisi
+   (JS inaweka upana kadi inapoonekana). Si mzunguko usio na mwisho. */
+[data-fill] { transition: width 1.6s cubic-bezier(.22, 1, .36, 1); }
+@media (prefers-reduced-motion: reduce) { [data-fill] { transition: none; } }
 
 /* --------------------------------------------------------------------------
    Hatua ya malipo ilikuwa 829px — karibu nusu ya fomu nzima. Vipengele vya

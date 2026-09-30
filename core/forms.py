@@ -561,7 +561,7 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
         hii, fedha zingeingia kwenye mradi uliokwisha kamilika.
         """
         project = self.cleaned_data.get("project")
-        if project is not None and project.is_full():
+        if project is not None and not project.accepts_donations():
             raise forms.ValidationError(
                 _("Lengo la mradi huu tayari limetimia. Chagua mradi mwingine."))
         return project
