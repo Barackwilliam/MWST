@@ -9,7 +9,7 @@ from collections import OrderedDict
 from datetime import timedelta
 from decimal import Decimal
 
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, F, Q, Sum
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from django.utils.translation import gettext, gettext as _
@@ -1510,12 +1510,22 @@ _SCENE_PURPOSE = {
 
 def _public_projects():
     """
-    Miradi inayoonyeshwa hadharani: inayoendelea NA iliyokamilika.
+    Miradi inayoonyeshwa hadharani: inayoendelea, NA iliyokamilika kwa
+    kutimiza lengo lake.
 
     Mradi uliotimiza lengo haupotei — kadi yake inabaki mahali pale pale
     ikiwa na alama ya "EXPIRED", ili wachangiaji waone kazi yao imekamilika.
+
+    Mradi wenye `completed` bila kufikia lengo (uliofungwa kwa mkono, au
+    wa data ya zamani) HAUONYESHWI: kadi ya "TZS 0 kati ya 5,000,000" yenye
+    "EXPIRED" ingeonekana kana kwamba fedha zote zimepatikana.
     """
-    return (Project.objects.filter(status__in=("ongoing", "completed"))
+    raised = Sum("contributions__amount",
+                 filter=Q(contributions__status=PaymentStatus.CONFIRMED))
+    return (Project.objects.annotate(_raised=raised)
+            .filter(Q(status="ongoing")
+                    | Q(status="completed", target_amount__gt=0,
+                        _raised__gte=F("target_amount")))
             .order_by("-created_at"))
 
 
