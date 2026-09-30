@@ -9,7 +9,7 @@ from collections import OrderedDict
 from datetime import timedelta
 from decimal import Decimal
 
-from django.db.models import Count, F, Q, Sum
+from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 from django.utils.translation import gettext, gettext as _
@@ -1362,7 +1362,7 @@ def public_home():
                       "text": p.tx("summary"),
                       "place": p.region.name if p.region else "",
                       "pct": p.progress(), "bar": p.progress_bar(),
-                      "raised": tzs(p.raised()), "goal": tzs(p.target_amount),
+                      "raised": tzs(_shown_raised(p)), "goal": tzs(p.target_amount),
                       #: `full` inabadilisha kadi kuwa "EXPIRED" na
                       #: kuzima kitufe cha kuchangia kabisa.
                       "full": not p.accepts_donations(), "remaining": tzs(p.remaining()),
@@ -1510,23 +1510,25 @@ _SCENE_PURPOSE = {
 
 def _public_projects():
     """
-    Miradi inayoonyeshwa hadharani: inayoendelea, NA iliyokamilika kwa
-    kutimiza lengo lake.
+    Miradi inayoonyeshwa hadharani: inayoendelea NA iliyokamilika.
 
-    Mradi uliotimiza lengo haupotei — kadi yake inabaki mahali pale pale
-    ikiwa na alama ya "EXPIRED", ili wachangiaji waone kazi yao imekamilika.
-
-    Mradi wenye `completed` bila kufikia lengo (uliofungwa kwa mkono, au
-    wa data ya zamani) HAUONYESHWI: kadi ya "TZS 0 kati ya 5,000,000" yenye
-    "EXPIRED" ingeonekana kana kwamba fedha zote zimepatikana.
+    Hakuna mradi unaofichwa. Uliokamilika unabaki mahali pake ukiwa na
+    alama ya "EXPIRED" na kitufe kilichozimwa — hauwezi kuchangiwa.
     """
-    raised = Sum("contributions__amount",
-                 filter=Q(contributions__status=PaymentStatus.CONFIRMED))
-    return (Project.objects.annotate(_raised=raised)
-            .filter(Q(status="ongoing")
-                    | Q(status="completed", target_amount__gt=0,
-                        _raised__gte=F("target_amount")))
+    return (Project.objects.filter(status__in=("ongoing", "completed"))
             .order_by("-created_at"))
+
+
+def _shown_raised(p):
+    """
+    Kiasi kinachoonyeshwa kwenye kadi — hakivuki lengo la mradi.
+
+    Fomu zote sasa zinazuia kuchangia zaidi ya kilichobaki, lakini data
+    ya zamani inaweza kuwa imevuka; kadi isionyeshe "50,050,000 kati ya
+    9,000,000".
+    """
+    raised = p.raised()
+    return min(raised, p.target_amount) if p.target_amount else raised
 
 
 def _project_purpose(project):
@@ -1558,12 +1560,13 @@ def public_huduma():
         #: Mfuko wa mradi ndio chanzo; ukikosekana, "maendeleo".
         "projects": [{"id": p.pk,
                       "title": p.tx("title"), "place": p.region.name if p.region else "—",
-                      "pct": p.progress(), "bar": p.progress_bar(),
-                      "raised": tzs(p.raised()), "goal": num(p.target_amount),
+                      "pct": p.progress_bar(), "bar": p.progress_bar(),
+                      "raised": tzs(_shown_raised(p)), "goal": num(p.target_amount),
                       "full": not p.accepts_donations(), "remaining": tzs(p.remaining()),
                       "purpose": _project_purpose(p),
-                      "scene": p.scene, "over": p.progress() > 100}
-                     for p in _public_projects().select_related("region")[:3]],
+                      "scene": p.scene, "over": p.progress() >= 100}
+                     #: Zote — hapa ndipo "Tazama Yote" ya ukurasa wa nyumbani inapoelekea.
+                     for p in _public_projects().select_related("region")],
         "impact": [
             #: Ilikuwa jumla ya usajili WOTE tangu mwanzo, ikiitwa "kwa
             #: mwezi". Sasa ni wa mwezi huu kweli.
