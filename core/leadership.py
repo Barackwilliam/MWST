@@ -9,7 +9,7 @@ from django.db.models import Count, Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from geo.models import LeaderLevel, LEVEL_ORDER, Leadership, next_level
+from geo.models import LeaderLevel, LEVEL_ORDER, Leadership, POST_RANK, next_level
 from geo.scope import (active_posts, areas_label, member_filter, scope_members,
                        sees_everyone, top_level)
 from members.models import Member, MemberStatus
@@ -350,7 +350,7 @@ def my_leaders(member):
     # wadhifa kwa alfabeti, kwa hiyo "Katibu" ilitangulia "Mwenyekiti" —
     # na kitufe cha simu kikamfuata katibu badala ya mwenyekiti.
     order = {lv: i for i, lv in enumerate(LEVEL_ORDER)}
-    rank = {"chair": 0, "secretary": 1, "treasurer": 2}
+    rank = POST_RANK
     out.sort(key=lambda r: (order.get(r["level"], 99),
                             rank.get(r["post_key"], 9)))
     return out
@@ -739,7 +739,7 @@ def wenzangu(user):
                     juu.append(_leader_card(l, "juu"))
 
     # Mwenyekiti kwanza kwenye kila kundi.
-    rank = {"chair": 0, "secretary": 1, "treasurer": 2}
+    rank = POST_RANK
     for lst in (chini, wenza, juu):
         lst.sort(key=lambda r: (rank.get(r["post_key"], 9), r["area"]))
     return {"chini": chini, "wenzangu": wenza, "juu": juu}

@@ -5,3 +5,6 @@ db.sqlite3
 .env
 venv/
 .venv/
+
+# Orodha za watu halisi (majina, simu) — zisiingie git
+viongozi*.csv

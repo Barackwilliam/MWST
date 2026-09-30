@@ -7038,3 +7038,6 @@ msgstr "Project Completed"
 
 msgid "Kiasi kinazidi kilichobaki kwenye lengo la mradi. Unaweza kuchangia hadi TSh %(k)s."
 msgstr "The amount exceeds what remains of this project's goal. You can give up to TSh %(k)s."
+
+msgid "Mjumbe"
+msgstr "Committee Member"

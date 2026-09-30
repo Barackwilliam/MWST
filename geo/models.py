@@ -152,8 +152,18 @@ def next_level(level):
 
 class LeaderPost(models.TextChoices):
     CHAIR = "chair", _("Mwenyekiti")
+    VICE_CHAIR = "vice_chair", _("Makamu Mwenyekiti")
     SECRETARY = "secretary", _("Katibu")
+    ASST_SECRETARY = "asst_sec", _("Katibu Msaidizi")
     TREASURER = "treasurer", _("Mweka Hazina")
+    ASST_TREASURER = "asst_treas", _("Mweka Hazina Msaidizi")
+    COMMITTEE = "committee", _("Mjumbe")
+
+
+#: Mpangilio wa vyeo ndani ya ngazi moja — Mwenyekiti kwanza, Mjumbe mwisho.
+#: Ni mpangilio wa `LeaderPost` wenyewe, ili cheo kipya kikiongezwa hapo
+#: juu kipate nafasi yake bila kubadilisha sehemu nyingine.
+POST_RANK = {value: i for i, value in enumerate(LeaderPost.values)}
 
 
 class Leadership(models.Model):
