@@ -192,6 +192,24 @@ class ContactForm(BootstrapMixin, forms.ModelForm):
         self._style()
 
 
+def project_limit_error(project, amount, exclude=None):
+    """
+    Ujumbe wa kosa kama mchango (TZS) unazidi kilichobaki kwenye lengo la
+    mradi; vinginevyo `None`. Mradi usio na lengo hauna kikomo.
+    """
+    if project is None or amount is None or not project.target_amount:
+        return None
+    raised = project.raised()
+    if exclude is not None and exclude.project_id == project.pk \
+            and exclude.status == "confirmed":
+        raised -= exclude.amount
+    left = max(project.target_amount - raised, 0)
+    if amount > left:
+        return _("Kiasi kinazidi kilichobaki kwenye lengo la mradi. "
+                 "Unaweza kuchangia hadi TSh %(k)s.") % {"k": f"{left:,.0f}"}
+    return None
+
+
 class PaymentForm(BootstrapMixin, forms.ModelForm):
     class Meta:
         model = Payment
@@ -230,6 +248,12 @@ class ContributionForm(BootstrapMixin, forms.ModelForm):
         if not (cleaned.get("member") or cleaned.get("donor") or cleaned.get("donor_name")):
             raise forms.ValidationError(
                 _("Weka mwanachama, mhisani au jina la mchangiaji."))
+        # Mchango uliopo ukihaririwa, kiasi chake cha zamani hakihesabiwi
+        # mara mbili dhidi ya lengo.
+        err = project_limit_error(cleaned.get("project"), cleaned.get("amount"),
+                                  exclude=self.instance if self.instance.pk else None)
+        if err:
+            self.add_error("amount", err)
         return cleaned
 
 
@@ -324,6 +348,14 @@ class MemberContributionForm(BootstrapMixin, forms.Form):
         self.fields["project"].queryset = Project.objects.filter(status="ongoing")
         self.fields["project"].empty_label = _("Uendeshaji wa jumla")
         self._style()
+
+    def clean(self):
+        """Mchango wa mradi usizidi kilichobaki kwenye lengo."""
+        cleaned = super().clean()
+        err = project_limit_error(cleaned.get("project"), cleaned.get("amount"))
+        if err:
+            self.add_error("amount", err)
+        return cleaned
 
     def save(self, member):
         c = Contribution.objects.create(
@@ -577,6 +609,24 @@ class PublicDonationForm(BootstrapMixin, forms.Form):
         if len(phone.lstrip("+")) < 9:
             raise forms.ValidationError(_("Weka namba kamili ya simu."))
         return phone
+
+    def clean(self):
+        """
+        Mchango wa mradi usizidi kilichobaki kwenye lengo.
+
+        Hesabu ni ya JUMLA kwa TZS (miezi × punguzo, kisha kiwango cha
+        fedha) — ndicho kinachohifadhiwa kwenye `Contribution.amount` na
+        kuhesabiwa kwenye bar ya mradi.
+        """
+        cleaned = super().clean()
+        project, amount = cleaned.get("project"), cleaned.get("amount")
+        if project is None or amount is None or not cleaned.get("currency"):
+            return cleaned
+        total = giving.recurrence_total(amount, cleaned.get("recurrence") or "once")
+        err = project_limit_error(project, giving.to_tzs(total, cleaned["currency"]))
+        if err:
+            self.add_error("amount", err)
+        return cleaned
 
     def clean_provider(self):
         """
