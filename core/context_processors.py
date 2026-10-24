@@ -1,4 +1,5 @@
 """Vitu vinavyoonekana kwenye kila ukurasa."""
+from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import get_language, gettext
 
@@ -97,6 +98,8 @@ def brand(request):
         #: Bango la "bei za majaribio" juu ya kila ukurasa wa umma.
         "test_prices": test_prices_on(),
         "is_authed": authed,
+        #: Sekunde za kukaa bila shughuli kabla ya kutolewa (`mwst.js`).
+        "idle_seconds": getattr(settings, "SESSION_IDLE_SECONDS", 0) if authed else 0,
         # Mhisani bado anaweza kujiunga kama mwanachama; wengine tayari wamo.
         "can_join": (not authed) or role == "donor",
         "is_donor": role == "donor",

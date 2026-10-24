@@ -64,6 +64,9 @@ urlpatterns = [
     #: kiungo cha mlango wake.
     path("ingia/viongozi/", views.leader_login, name="leader_login"),
     path("toka/", views.logout_view, name="logout"),
+    #: Kivinjari kinaiambia seva "bado nipo" mtu anapoandika au kusogeza
+    #: ukurasa bila kufungua ukurasa mpya — angalia `IdleTimeoutMiddleware`.
+    path("hai/", views.keepalive, name="keepalive"),
     #: Mwanachama mpya anaweka nenosiri lake mara ya kwanza. Kiungo
     #: kinatoka kwenye SMS ya "uanachama umeanza"; bila ukurasa huu
     #: akaunti ilibaki na nenosiri ambalo hakuna mtu analijua.

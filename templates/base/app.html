@@ -17,7 +17,7 @@
 {% comment %}`role_key` inatoka `_chrome` — inaruhusu CSS kubadilisha
 rangi ya kichwa kwa kila jukumu. Afisa akifungua akaunti isiyo yake
 anaigundua kwa rangi kabla hajasoma menyu.{% endcomment %}
-<body class="app-{{ role_key|default:'member' }}">
+<body class="app-{{ role_key|default:'member' }}"{% if idle_seconds %} data-idle="{{ idle_seconds }}"{% endif %}>
 {% include "base/icons.html" %}
 
 <div class="app">

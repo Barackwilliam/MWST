@@ -1643,3 +1643,46 @@
                           : narrow.addListener(sync);
   sync();
 })();
+
+/* ==========================================================================
+   KUTOLEWA BAADA YA KUKAA BILA SHUGHULI
+   Mtu aliyeingia (`<body data-idle="300">`) anapelekwa kwenye kuingia
+   baada ya sekunde hizo bila kubofya, kuandika wala kusogeza ukurasa.
+   Akiwa anaandika fomu ndefu, `/hai/` inaiambia seva kimya kimya kwamba
+   bado yupo, ili asitolewe na kupoteza alichoandika. Shughuli ya tab moja
+   inahesabiwa kwa tabs zote (localStorage), ili tab iliyoachwa wazi
+   isimtoe mtu anayefanya kazi kwenye tab nyingine.
+   ========================================================================== */
+(function () {
+  var idle = Number(document.body.getAttribute("data-idle")) || 0;
+  if (!idle) return;
+
+  // Seva inaambiwa "bado nipo" mara tatu ndani ya muda wa kutolewa.
+  var KEY = "mwst-last-activity", PING_EVERY = Math.min(60000, idle * 1000 / 3);
+  var last = Date.now(), lastPing = Date.now();
+
+  function shared() {
+    try { return Number(localStorage.getItem(KEY)) || 0; } catch (e) { return 0; }
+  }
+  function leave() { window.location.href = "/toka/?muda=1"; }
+
+  function active() {
+    last = Date.now();
+    try { localStorage.setItem(KEY, String(last)); } catch (e) { /* hali ya faragha */ }
+    if (last - lastPing < PING_EVERY) return;
+    lastPing = last;
+    fetch("/hai/", { credentials: "same-origin",
+                     headers: { "X-Requested-With": "XMLHttpRequest" } })
+      .then(function (r) { if (r.status === 401) leave(); })
+      .catch(function () { /* mtandao umekatika — jaribio lijalo */ });
+  }
+
+  ["click", "keydown", "scroll", "touchstart", "mousemove"].forEach(function (ev) {
+    window.addEventListener(ev, active, { passive: true });
+  });
+  active();
+
+  setInterval(function () {
+    if (Date.now() - Math.max(last, shared()) >= idle * 1000) leave();
+  }, 5000);
+})();

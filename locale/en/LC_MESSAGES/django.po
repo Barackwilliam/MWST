@@ -7044,3 +7044,6 @@ msgstr "Committee Member"
 
 msgid "BEI ZA MAJARIBIO: bei za vifurushi zimepunguzwa kwa ajili ya majaribio tu. Malipo yanayofanyika sasa ni ya kweli."
 msgstr "TEST PRICES: package prices have been reduced for testing only. Payments made now are real."
+
+msgid "Umetolewa kwa sababu hukuwa na shughuli kwa muda. Tafadhali ingia upya."
+msgstr "You were signed out after a period of inactivity. Please sign in again."
