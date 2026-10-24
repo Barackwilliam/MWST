@@ -22,6 +22,13 @@ ambazo rangi zake hazibadiliki.{% endcomment %}
 <body class="pub{% if page_key %} pg-{{ page_key }}{% endif %}">
 {% include "base/icons.html" %}
 
+{% if test_prices %}
+  {# Bei za vifurushi zimegawanywa kwa majaribio — angalia `bei_za_majaribio`. #}
+  <div class="test-prices" role="status">
+    {% trans "BEI ZA MAJARIBIO: bei za vifurushi zimepunguzwa kwa ajili ya majaribio tu. Malipo yanayofanyika sasa ni ya kweli." %}
+  </div>
+{% endif %}
+
 {# ---------------- Utility bar ---------------- #}
 <div class="pub-utility">
   <a href="tel:{{ org_phone_link }}"><svg width="14" height="14"><use href="#i-phone"></use></svg>{{ org_phone }}</a>

@@ -63,6 +63,20 @@ def footer_services(lang):
     return rows
 
 
+def test_prices_on():
+    """
+    Je, bei za majaribio zimewashwa (`bei_za_majaribio --washa`)?
+
+    Inahifadhiwa kwa dakika moja ili kila ukurasa usiulize database.
+    """
+    from django.core.cache import cache
+    from members.models import Category
+
+    return cache.get_or_set(
+        "mwst-test-prices",
+        lambda: Category.objects.exclude(price_backup=None).exists(), 60)
+
+
 def brand(request):
     from content.models import SiteSetting
 
@@ -80,6 +94,8 @@ def brand(request):
     phone_link = phone.replace(" ", "").replace("-", "")
 
     return {
+        #: Bango la "bei za majaribio" juu ya kila ukurasa wa umma.
+        "test_prices": test_prices_on(),
         "is_authed": authed,
         # Mhisani bado anaweza kujiunga kama mwanachama; wengine tayari wamo.
         "can_join": (not authed) or role == "donor",

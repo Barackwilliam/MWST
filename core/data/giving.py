@@ -426,6 +426,10 @@ def months_price(monthly_fee, months):
     n = clamp_months(months)
     gross = Decimal(str(monthly_fee or 0)) * n
     net = gross * (Decimal(100) - Decimal(discount_for(n))) / Decimal(100)
+    #: Kiasi chini ya shilingi 100 (bei za majaribio) kingezungushwa kuwa
+    #: SIFURI — malipo ya bure. Kinazungushwa hadi shilingi nzima badala yake.
+    if 0 < net < 100:
+        return max(int(net.quantize(Decimal("1"), rounding=ROUND_HALF_UP)), 1)
     hundreds = (net / Decimal(100)).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
     return int(hundreds * 100)
 

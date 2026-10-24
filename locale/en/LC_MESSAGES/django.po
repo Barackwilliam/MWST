@@ -7041,3 +7041,6 @@ msgstr "The amount exceeds what remains of this project's goal. You can give up 
 
 msgid "Mjumbe"
 msgstr "Committee Member"
+
+msgid "BEI ZA MAJARIBIO: bei za vifurushi zimepunguzwa kwa ajili ya majaribio tu. Malipo yanayofanyika sasa ni ya kweli."
+msgstr "TEST PRICES: package prices have been reduced for testing only. Payments made now are real."
