@@ -1,0 +1,38 @@
+{% extends "public/base.html" %}
+{% load static i18n %}
+{% block title %}{% trans "Ombi Limepokelewa" %}{% endblock %}
+
+{% block body %}
+<div class="section" style="padding-bottom:0">{% include "base/messages.html" %}</div>
+
+{% comment %}Mwisho wa kujaza ombi. Awali mtu alirudishwa kwenye fomu tupu ya
+Jiunge baada ya kuthibitisha simu, na alidhani ombi halikwenda.{% endcomment %}
+<section class="section otp">
+  <div class="otp__card">
+    <span class="otp__ico"><svg width="24" height="24"><use href="#i-check-circle"></use></svg></span>
+    <h1>{% trans "Ombi Limepokelewa" %}</h1>
+    <p class="otp__lead">{% trans "Asante! Ombi lako la uanachama limehifadhiwa. Namba yako ya kumbukumbu ni:" %}</p>
+    <p class="otp__to done__ref">{{ app.reference }}</p>
+    <p class="otp__hint">{% trans "Iandike au ipige picha — utaihitaji kulipia ada." %}</p>
+
+    <p class="done__phone {% if app.phone_verified %}is-ok{% endif %}">
+      {% if app.phone_verified %}
+        {% blocktrans %}Namba ya simu {{ phone }} imethibitishwa.{% endblocktrans %}
+      {% else %}
+        {% blocktrans %}Namba ya simu {{ phone }} bado haijathibitishwa.{% endblocktrans %}
+      {% endif %}
+    </p>
+    {% if can_verify %}
+      <a href="{% url 'core:thibitisha_simu' %}" class="otp__resend">{% trans "Thibitisha namba sasa" %}</a>
+    {% endif %}
+
+    <ol class="done__steps">
+      <li><b>{% trans "Uhakiki" %}</b> — {% trans "Afisa wa usajili atahakiki taarifa zako." %}</li>
+      <li><b>{% trans "SMS ya kulipa" %}</b> — {% trans "Ukikubaliwa, utapokea SMS yenye kiungo cha kulipia ada." %}</li>
+      <li><b>{% trans "Uanachama" %}</b> — {% trans "Malipo yakithibitishwa, utapata namba ya uanachama, kadi na SMS ya kuweka nenosiri lako." %}</li>
+    </ol>
+
+    <a href="{% url 'core:home' %}" class="btn btn--primary btn--block otp__go">{% trans "Rudi Nyumbani" %}</a>
+  </div>
+</section>
+{% endblock %}

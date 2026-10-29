@@ -2247,8 +2247,12 @@ def _start_phone_check(request, app):
     from . import sms
 
     to = sms.msisdn(app.phone)
+    #: Ombi tayari limehifadhiwa. Kila njia kuanzia hapa inamalizikia
+    #: kwenye ukurasa wa "Ombi Limepokelewa", si kwenye fomu tupu — mtu
+    #: aliyerudishwa kwenye fomu alidhani ombi halikwenda, akajaza upya.
+    request.session["mwst_done_ref"] = app.reference
     if VerificationCode.too_many(to):
-        return redirect("core:jiunge")
+        return redirect("core:jiunge_tayari")
 
     row, code = VerificationCode.issue(to, CodePurpose.PHONE,
                                        reference=app.reference,
@@ -2264,7 +2268,7 @@ def _start_phone_check(request, app):
         messages.info(request, _(
             "Hatukuweza kutuma code kwenye simu yako sasa hivi. Ombi lako "
             "limehifadhiwa — afisa atawasiliana nawe."))
-        return redirect("core:jiunge")
+        return redirect("core:jiunge_tayari")
 
     request.session["mwst_verify_ref"] = app.reference
     return redirect("core:thibitisha_simu")
@@ -2310,7 +2314,7 @@ def thibitisha_simu(request):
             AuditLog.record(request, "phone_verified", app)
             request.session.pop("mwst_verify_ref", None)
             messages.success(request, _("Namba yako imethibitishwa. Asante!"))
-            return redirect("core:jiunge")
+            return redirect("core:jiunge_tayari")
 
         messages.error(request, {
             "none": _("Hakuna code inayosubiri. Omba nyingine."),
@@ -2323,11 +2327,33 @@ def thibitisha_simu(request):
         "page_lead": _("Tumekutumia code ya tarakimu sita. Iweke hapa "
                        "kuthibitisha kuwa namba hii ni yako."),
         "submit_label": _("Thibitisha"),
-        "back_url": reverse("core:jiunge"),
+        "back_url": reverse("core:jiunge_tayari"),
         "back_label": _("Nitafanya baadaye"),
         "target": _mask_phone(app.phone),
         "minutes": VerificationCode.TTL_MINUTES,
     })
+
+
+def jiunge_tayari(request):
+    """
+    "Ombi Limepokelewa" — mwisho wa kujaza ombi.
+
+    Inaonyesha namba ya kumbukumbu na hatua zinazofuata. Inasoma ombi la
+    kipindi hiki pekee (`mwst_done_ref`), kwa hiyo mtu hawezi kuona ombi
+    la mwingine kwa kubadilisha URL.
+    """
+    ref = request.session.get("mwst_done_ref")
+    app = Application.objects.filter(reference=ref).first() if ref else None
+    if app is None:
+        return redirect("core:jiunge")
+    return render(request, "public/jiunge_tayari.html", _pub(request, "uanachama", {
+        "app": app,
+        "phone": _mask_phone(app.phone),
+        #: Bado ipo kwenye session ikiwa hajathibitisha — kiungo cha
+        #: kurudi kuthibitisha kinaonekana pale tu kinapofanya kazi.
+        "can_verify": (not app.phone_verified
+                       and request.session.get("mwst_verify_ref") == app.reference),
+    }))
 
 
 @require_POST
