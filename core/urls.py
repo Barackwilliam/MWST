@@ -77,6 +77,7 @@ urlpatterns = [
     path("ingia/code/", views.login_code_view, name="login_code"),
     #: Kuthibitisha namba ya simu ya ombi jipya la uanachama.
     path("jiunge/thibitisha/", views.thibitisha_simu, name="thibitisha_simu"),
+    path("jiunge/tayari/", views.jiunge_tayari, name="jiunge_tayari"),
     # --- Sehemu ya uongozi (kata, wilaya, mkoa, kanda, taifa) ---------------
     path("uongozi/", lv.dashibodi, name="leader_dashboard"),
     path("uongozi/wanachama/", lv.wanachama, name="leader_wanachama"),

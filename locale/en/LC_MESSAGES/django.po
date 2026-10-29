@@ -7050,3 +7050,36 @@ msgstr "You were signed out after a period of inactivity. Please sign in again."
 
 msgid "ONYO: SMS ZOTE (pamoja na code za kuingia za wanachama) zinaelekezwa kwenye namba %(n)s. Futa SMS_REDIRECT_TO kwenye Render ili kila mtu apokee SMS zake."
 msgstr "WARNING: ALL SMS (including members' login codes) are being redirected to %(n)s. Remove SMS_REDIRECT_TO on Render so everyone receives their own SMS."
+
+msgid "Ombi Limepokelewa"
+msgstr "Application Received"
+
+msgid "Asante! Ombi lako la uanachama limehifadhiwa. Namba yako ya kumbukumbu ni:"
+msgstr "Thank you! Your membership application has been saved. Your reference number is:"
+
+msgid "Iandike au ipige picha — utaihitaji kulipia ada."
+msgstr "Write it down or take a photo — you will need it to pay the fee."
+
+msgid "Namba ya simu %(phone)s imethibitishwa."
+msgstr "Phone number %(phone)s has been verified."
+
+msgid "Namba ya simu %(phone)s bado haijathibitishwa."
+msgstr "Phone number %(phone)s has not been verified yet."
+
+msgid "Thibitisha namba sasa"
+msgstr "Verify number now"
+
+msgid "Afisa wa usajili atahakiki taarifa zako."
+msgstr "A registration officer will review your details."
+
+msgid "SMS ya kulipa"
+msgstr "Payment SMS"
+
+msgid "Ukikubaliwa, utapokea SMS yenye kiungo cha kulipia ada."
+msgstr "If approved, you will receive an SMS with a link to pay the fee."
+
+msgid "Malipo yakithibitishwa, utapata namba ya uanachama, kadi na SMS ya kuweka nenosiri lako."
+msgstr "Once payment is confirmed, you will receive a membership number, a card and an SMS to set your password."
+
+msgid "Rudi Nyumbani"
+msgstr "Back to Home"
