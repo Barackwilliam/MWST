@@ -1,4 +1,5 @@
 """Vitu vinavyoonekana kwenye kila ukurasa."""
+from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import get_language, gettext
 
@@ -63,6 +64,20 @@ def footer_services(lang):
     return rows
 
 
+def test_prices_on():
+    """
+    Je, bei za majaribio zimewashwa (`bei_za_majaribio --washa`)?
+
+    Inahifadhiwa kwa dakika moja ili kila ukurasa usiulize database.
+    """
+    from django.core.cache import cache
+    from members.models import Category
+
+    return cache.get_or_set(
+        "mwst-test-prices",
+        lambda: Category.objects.exclude(price_backup=None).exists(), 60)
+
+
 def brand(request):
     from content.models import SiteSetting
 
@@ -80,7 +95,15 @@ def brand(request):
     phone_link = phone.replace(" ", "").replace("-", "")
 
     return {
+        #: Onyo kwa maafisa: `SMS_REDIRECT_TO` ikiwa imewekwa, SMS ZOTE —
+        #: code za kuingia za wanachama pia — zinaenda namba hiyo moja.
+        "sms_redirect": (getattr(settings, "SMS_REDIRECT_TO", "")
+                         if authed and getattr(user, "is_staff_role", False) else ""),
+        #: Bango la "bei za majaribio" juu ya kila ukurasa wa umma.
+        "test_prices": test_prices_on(),
         "is_authed": authed,
+        #: Sekunde za kukaa bila shughuli kabla ya kutolewa (`mwst.js`).
+        "idle_seconds": getattr(settings, "SESSION_IDLE_SECONDS", 0) if authed else 0,
         # Mhisani bado anaweza kujiunga kama mwanachama; wengine tayari wamo.
         "can_join": (not authed) or role == "donor",
         "is_donor": role == "donor",

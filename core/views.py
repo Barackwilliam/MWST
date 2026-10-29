@@ -1265,8 +1265,25 @@ def logout_view(request):
     if request.user.is_authenticated:
         AuditLog.record(request, "logout")
     auth_logout(request)
+    #: `?muda=1` = kivinjari kimemtoa mtu baada ya dakika za kukaa bila
+    #: shughuli (`mwst.js`). Anapelekwa moja kwa moja kwenye kuingia.
+    if request.GET.get("muda"):
+        messages.info(request, _(
+            "Umetolewa kwa sababu hukuwa na shughuli kwa muda. Tafadhali ingia upya."))
+        return redirect("core:login")
     messages.info(request, _("Umetoka kwenye mfumo."))
     return redirect("core:home")
+
+
+def keepalive(request):
+    """
+    "Bado nipo" — kazi yote inafanywa na `IdleTimeoutMiddleware`.
+
+    Session ikiwa imekwisha, middleware inajibu 401 kabla ya kufika hapa.
+    """
+    from django.http import HttpResponse
+    status = 204 if request.user.is_authenticated else 401
+    return HttpResponse(status=status)
 
 
 def weka_nenosiri(request):
@@ -1955,10 +1972,13 @@ def lipa(request):
                     and request.user.role in STAFF_ONLY:
                 app = Application.objects.filter(reference__iexact=ref).first()
             if app and not app.member_id:
+                #: `months: 1` — SMS ya idhini inamwambia mwombaji kiasi cha
+                #: `amount_due()` (usajili + mwezi 1). Fomu ilikuwa ikifunguka
+                #: na miezi 12, ikionyesha jumla tofauti na aliyoambiwa.
                 initial.update({"payer_type": "new", "membership_no": app.reference,
                                 "full_name": app.full_name, "phone": app.phone,
                                 "email": app.email, "package": app.category.code,
-                                "include_registration": True})
+                                "include_registration": True, "months": 1})
             elif app is None:
                 messages.info(request, _(
                     "Ili taarifa zako zijazwe zenyewe, tumia kiungo "

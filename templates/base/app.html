@@ -17,7 +17,13 @@
 {% comment %}`role_key` inatoka `_chrome` — inaruhusu CSS kubadilisha
 rangi ya kichwa kwa kila jukumu. Afisa akifungua akaunti isiyo yake
 anaigundua kwa rangi kabla hajasoma menyu.{% endcomment %}
-<body class="app-{{ role_key|default:'member' }}">
+<body class="app-{{ role_key|default:'member' }}"{% if idle_seconds %} data-idle="{{ idle_seconds }}"{% endif %}>
+{% if sms_redirect %}
+  {# `SMS_REDIRECT_TO` imewekwa kwenye environment — angalia core/sms.py `effective()`. #}
+  <div class="test-prices" role="alert">
+    {% blocktrans with n=sms_redirect %}ONYO: SMS ZOTE (pamoja na code za kuingia za wanachama) zinaelekezwa kwenye namba {{ n }}. Futa SMS_REDIRECT_TO kwenye Render ili kila mtu apokee SMS zake.{% endblocktrans %}
+  </div>
+{% endif %}
 {% include "base/icons.html" %}
 
 <div class="app">

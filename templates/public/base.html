@@ -19,8 +19,15 @@
 {% comment %}`page_key` inaruhusu CSS kutambua ukurasa. Inatumika
 kuweka rangi za awali kwenye Changia, Lipa Ada na Ingia — kurasa
 ambazo rangi zake hazibadiliki.{% endcomment %}
-<body class="pub{% if page_key %} pg-{{ page_key }}{% endif %}">
+<body class="pub{% if page_key %} pg-{{ page_key }}{% endif %}"{% if idle_seconds %} data-idle="{{ idle_seconds }}"{% endif %}>
 {% include "base/icons.html" %}
+
+{% if test_prices %}
+  {# Bei za vifurushi zimegawanywa kwa majaribio — angalia `bei_za_majaribio`. #}
+  <div class="test-prices" role="status">
+    {% trans "BEI ZA MAJARIBIO: bei za vifurushi zimepunguzwa kwa ajili ya majaribio tu. Malipo yanayofanyika sasa ni ya kweli." %}
+  </div>
+{% endif %}
 
 {# ---------------- Utility bar ---------------- #}
 <div class="pub-utility">

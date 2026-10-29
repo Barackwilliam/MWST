@@ -404,7 +404,8 @@ def send_contribution_receipt(phone, amount, receipt_no, purpose=""):
 
 def send_fee_receipt(phone, amount, receipt_no, months=0):
     """Risiti ya ada ya uanachama."""
-    muda = f" kwa miezi {months}" if months else ""
+    muda = (" kwa mwezi 1" if months == 1
+            else f" kwa miezi {months}" if months else "")
     text = (f"MUWESTA: Tumepokea ada yako TZS {amount:,}{muda}. "
             f"Risiti: {receipt_no}. Asante.")
     return send(phone, text, reference="risiti-ada")

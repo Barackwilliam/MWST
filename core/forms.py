@@ -864,8 +864,8 @@ class MembershipPaymentForm(BootstrapMixin, forms.Form):
             return
         if app.status != ApplicationStatus.AWAITING_PAYMENT:
             self.add_error("membership_no", _(
-                "Ombi hili bado halijahakikiwa na afisa. Utapigiwa simu "
-                "litakapokuwa tayari kulipiwa."))
+                "Ombi hili bado halijahakikiwa na afisa. Utapokea SMS yenye "
+                "kiungo cha kulipia litakapokuwa tayari."))
             return
         # Kifurushi kinatoka kwenye ombi, si kwenye fomu — mtu asijilipie
         # daraja la chini kuliko alilokubaliwa.

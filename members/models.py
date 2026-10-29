@@ -60,6 +60,9 @@ class Category(Bilingual):
         _("Daraja maalum"), default=False,
         help_text=_("Linaonyeshwa kwa heshima kwenye tovuti lakini si la kuomba."))
     order = models.PositiveSmallIntegerField(default=0)
+    #: Bei halisi zilizohifadhiwa wakati wa "bei za majaribio" (angalia
+    #: `bei_za_majaribio`). Tupu = bei zinazoonekana ndizo halisi.
+    price_backup = models.JSONField(null=True, blank=True, editable=False)
 
     class Meta:
         ordering = ["order", "monthly_fee"]

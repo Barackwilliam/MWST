@@ -97,11 +97,16 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    # Baada ya auth na messages: inamtoa mtu asiye na shughuli (dakika 5).
+    "core.middleware.IdleTimeoutMiddleware",
     # Lazima iwe KABLA ya LocaleMiddleware ili iondoe Accept-Language
     "core.middleware.DefaultSwahiliMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+#: Mtu aliyeingia anatolewa baada ya dakika hizi bila shughuli. 0 = zima.
+SESSION_IDLE_SECONDS = int(os.environ.get("SESSION_IDLE_MINUTES", "5")) * 60
 
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
