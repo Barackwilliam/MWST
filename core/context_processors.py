@@ -95,6 +95,10 @@ def brand(request):
     phone_link = phone.replace(" ", "").replace("-", "")
 
     return {
+        #: Onyo kwa maafisa: `SMS_REDIRECT_TO` ikiwa imewekwa, SMS ZOTE —
+        #: code za kuingia za wanachama pia — zinaenda namba hiyo moja.
+        "sms_redirect": (getattr(settings, "SMS_REDIRECT_TO", "")
+                         if authed and getattr(user, "is_staff_role", False) else ""),
         #: Bango la "bei za majaribio" juu ya kila ukurasa wa umma.
         "test_prices": test_prices_on(),
         "is_authed": authed,

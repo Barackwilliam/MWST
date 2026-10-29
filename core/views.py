@@ -1972,10 +1972,13 @@ def lipa(request):
                     and request.user.role in STAFF_ONLY:
                 app = Application.objects.filter(reference__iexact=ref).first()
             if app and not app.member_id:
+                #: `months: 1` — SMS ya idhini inamwambia mwombaji kiasi cha
+                #: `amount_due()` (usajili + mwezi 1). Fomu ilikuwa ikifunguka
+                #: na miezi 12, ikionyesha jumla tofauti na aliyoambiwa.
                 initial.update({"payer_type": "new", "membership_no": app.reference,
                                 "full_name": app.full_name, "phone": app.phone,
                                 "email": app.email, "package": app.category.code,
-                                "include_registration": True})
+                                "include_registration": True, "months": 1})
             elif app is None:
                 messages.info(request, _(
                     "Ili taarifa zako zijazwe zenyewe, tumia kiungo "

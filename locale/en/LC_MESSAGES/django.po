@@ -5852,11 +5852,11 @@ msgstr ""
 
 #: core/forms.py:804
 msgid ""
-"Ombi hili bado halijahakikiwa na afisa. Utapigiwa simu litakapokuwa "
-"tayari kulipiwa."
+"Ombi hili bado halijahakikiwa na afisa. Utapokea SMS yenye kiungo cha "
+"kulipia litakapokuwa tayari."
 msgstr ""
 "This application has not been verified by an officer yet. You will "
-"be called when it is ready to be paid for."
+"receive an SMS with a payment link when it is ready."
 
 #: core/leader_views.py:39
 msgid "Huna wadhifa wa uongozi kwenye mfumo."
@@ -7047,3 +7047,6 @@ msgstr "TEST PRICES: package prices have been reduced for testing only. Payments
 
 msgid "Umetolewa kwa sababu hukuwa na shughuli kwa muda. Tafadhali ingia upya."
 msgstr "You were signed out after a period of inactivity. Please sign in again."
+
+msgid "ONYO: SMS ZOTE (pamoja na code za kuingia za wanachama) zinaelekezwa kwenye namba %(n)s. Futa SMS_REDIRECT_TO kwenye Render ili kila mtu apokee SMS zake."
+msgstr "WARNING: ALL SMS (including members' login codes) are being redirected to %(n)s. Remove SMS_REDIRECT_TO on Render so everyone receives their own SMS."
