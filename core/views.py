@@ -2286,12 +2286,10 @@ def thibitisha_simu(request):
     from . import sms
 
     ref = request.session.get("mwst_verify_ref")
-    if not ref:
-        return redirect("core:jiunge")
-    app = Application.objects.filter(reference=ref).first()
+    app = Application.objects.filter(reference=ref).first() if ref else None
     if app is None:
         request.session.pop("mwst_verify_ref", None)
-        return redirect("core:jiunge")
+        return _lost_application(request)
 
     to = sms.msisdn(app.phone)
     if request.method == "POST":
@@ -2313,6 +2311,9 @@ def thibitisha_simu(request):
             app.save(update_fields=["phone_verified", "updated_at"])
             AuditLog.record(request, "phone_verified", app)
             request.session.pop("mwst_verify_ref", None)
+            #: Inawekwa tena hapa, si kwenye `_start_phone_check` pekee —
+            #: ombi lililoanzishwa kabla ya mabadiliko haya halikuwa nayo.
+            request.session["mwst_done_ref"] = app.reference
             messages.success(request, _("Namba yako imethibitishwa. Asante!"))
             return redirect("core:jiunge_tayari")
 
@@ -2334,6 +2335,19 @@ def thibitisha_simu(request):
     })
 
 
+def _lost_application(request):
+    """
+    Ombi la kipindi hiki halipatikani (session imeisha, au kivinjari
+    kimezuia cookies). Awali mtu alirudishwa kwenye fomu tupu BILA ujumbe
+    wowote, na alidhani ombi lake limepotea — akajaza upya.
+    """
+    messages.warning(request, _(
+        "Hatukuweza kuendelea na ombi lako kwenye ukurasa huu. Kama tayari "
+        "umetuma ombi, USILIJAZE TENA — limehifadhiwa, na namba yake ya "
+        "kumbukumbu iko kwenye SMS uliyopokea. Afisa atakuwasiliana nawe."))
+    return redirect("core:jiunge")
+
+
 def jiunge_tayari(request):
     """
     "Ombi Limepokelewa" — mwisho wa kujaza ombi.
@@ -2342,10 +2356,11 @@ def jiunge_tayari(request):
     kipindi hiki pekee (`mwst_done_ref`), kwa hiyo mtu hawezi kuona ombi
     la mwingine kwa kubadilisha URL.
     """
-    ref = request.session.get("mwst_done_ref")
+    ref = (request.session.get("mwst_done_ref")
+           or request.session.get("mwst_verify_ref"))
     app = Application.objects.filter(reference=ref).first() if ref else None
     if app is None:
-        return redirect("core:jiunge")
+        return _lost_application(request)
     return render(request, "public/jiunge_tayari.html", _pub(request, "uanachama", {
         "app": app,
         "phone": _mask_phone(app.phone),

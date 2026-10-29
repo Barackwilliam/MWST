@@ -7083,3 +7083,6 @@ msgstr "Once payment is confirmed, you will receive a membership number, a card 
 
 msgid "Rudi Nyumbani"
 msgstr "Back to Home"
+
+msgid "Hatukuweza kuendelea na ombi lako kwenye ukurasa huu. Kama tayari umetuma ombi, USILIJAZE TENA — limehifadhiwa, na namba yake ya kumbukumbu iko kwenye SMS uliyopokea. Afisa atakuwasiliana nawe."
+msgstr "We could not continue your application on this page. If you have already submitted an application, DO NOT FILL IT IN AGAIN — it has been saved, and its reference number is in the SMS you received. An officer will contact you."
